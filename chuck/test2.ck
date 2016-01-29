@@ -1,14 +1,7 @@
-SinOsc s => dac;
+[1,2,3,4] @=> int test[];
 
-100 => int direction;
+<<< test.size() >>>;
 
-600 => s.freq;
-
-while(true){
-    if(s.freq() > 1000 || s.freq() < 440){
-        direction * -1 => direction;
-    }
-    
-    s.freq() + direction => s.freq;
-    100::ms => now;
-}
+5 => int i;
+i++;
+<<<  Math.random2(5,10) >>>;
