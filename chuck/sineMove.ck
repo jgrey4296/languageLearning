@@ -7,7 +7,7 @@ SinOsc s => dac;
 //Target Frequencies:
 [440.0,1000.0] @=> float pitches[];
 pitches[1] - pitches[0] => float range;
-Std.rand2f(pitches[0],pitches[1]) => s.freq;
+440.0 => s.freq;
 //The Increment
 range / incrementDivision => float inc;
 //Duration of movement
