@@ -1,7 +1,7 @@
 --Typical Typeclasses: Eq,Ord,Show,Read,Bounded,Enum
 --Type Declarations
 data Point = Point Int Int deriving (Read)
---custom show function
+--custom show function, making point part of the show typeclass
 instance Show Point where
   show (Point x y) = "X: " ++ (show x) ++ " Y: " ++ (show y)
 
@@ -48,3 +48,11 @@ main = do
   let x' = read x :: Int
       y' = read y :: Int
   putStrLn $ show $ x'  +  y'
+
+
+--- state monad exploration
+simp :: String -> State String String
+simp inp = do
+  z1 <- get --take the state as the value z1
+  put (z1 ++ "test")
+  return z1 -- combine the value with the state
