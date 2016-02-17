@@ -12,7 +12,7 @@ Math.random2f(2.0,5.0) => float patternInt;
 1::second * patternInt => dur patternLength;
 <<< "Pattern Length:", patternInt >>>;
 //Pattern:
-[0,0,0,0,1,1,0,0] @=> int pattern[];
+[0,1,0,0,1,1,0,0] @=> int pattern[];
 [1.0,0.5,0.5,0.5,0.5,0.5,0.5,0.5] @=> float pattern2[];
 //Note: if going to use arrays of midi note numbers,
 //use float mtof(float value);

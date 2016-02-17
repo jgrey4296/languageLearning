@@ -28,7 +28,7 @@ fun void keyUp(MidiMsg m){
 crotchet / 4 => dur quaver;
 
 //Wait for an initial event
-min => now;
+//min => now;
 //wait for a bar
 crotchet * 4 => now;
 
