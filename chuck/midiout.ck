@@ -1,3 +1,5 @@
+//For reference: http://www.tonalsoft.com/pub/news/pitch-bend.aspx
+
 //Midi setup
 MidiIn min;
 if(! min.open( 1 ) ) me.exit();
