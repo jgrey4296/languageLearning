@@ -1,7 +1,7 @@
 var MongoClient = require('mongodb').MongoClient,
     assert = require('assert'),
     ObjectId = require('mongodb').ObjectID,
-    url = 'mongodb://localhost:27017/test';
+    url = 'mongodb://localhost:27017/myTest';
 
 var testDoc = {
         "address" : {
@@ -33,12 +33,16 @@ MongoClient.connect(url, function(err,db){
     console.log("Connected correctly");
     //insertDoc(db,'restaurants',testDoc)
     var promises = [
+        insertDoc(db,"restaurants",{
+            _id : new ObjectId(),
+            name : "blah"
+        }),
         findRestaurants(db),
         findIndividual(db,{
-            _id : new ObjectId("56c6439e4b0030645a518be7")
+            _id : new ObjectId("56c673d82a7d707e85988bd0")
         }),
         findAll(db,{
-            borough : "Queens"
+            //borough : "Queens"
         })
     ];
 
@@ -74,10 +78,14 @@ var findRestaurants = function(db){
 var findIndividual = function(db,criteria){
     var p = db.collection('restaurants').findOne(criteria)
         .then(function(val){
-        //console.log("find ind: ", val);
-        console.log(val.name);
+            //console.log("find ind: ", val);
+            if(val === null) throw new Error("Val is null");
+        console.log("Ind result: " + val.name);
         return val;
-    });
+        })
+        .catch(function(e){
+            console.log("Error: " + e.message);
+        });
     return p;
 };
 
@@ -85,15 +93,18 @@ var findAll = function(db,criteria){
     console.log("Finding all");
     return db.collection('restaurants').find(criteria).limit(20).toArray()
         .then(function(arr){
+            if(arr.length === 0) throw new Error("nothing found");
             arr.forEach(function(d){
                 console.log(`Findall result: ${d.name} --- ${d.borough}`);
             });
             return arr;
         })
         .then(function(arr){
-            console.log(arr.map(function(d){ return d.name; }));
+            console.log(arr);
+        })
+        .catch(function(e){
+            console.log("Findall error: " + e.message);
         });
-        
 };
 
 
