@@ -1,0 +1,14 @@
+* Fluxus notes and plan
+** Notes
+*** File IO
+Use `find-system-path` to get the home directory, 
+open the file with (open=output-file fileName #:exists `truncate)
+or `extend?
+write using (display text outputPort) or (fprintf outPort text)
+*** Sequencing
+Sequence actions using `begin`
+can do everything in a list with (let ([i list]) (stuff))
+** Plan
+*** DONE Load and execute file
+*** TODO create a chair
+*** DONE Export / write to file
