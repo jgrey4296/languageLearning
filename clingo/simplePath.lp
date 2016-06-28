@@ -6,7 +6,7 @@ size(7).
 %%the max number of moves:
 moves(30).
 %% the grid itself
-grid(X,Y) :- size(S), X=0..S, Y=0..S.
+grid(0..X,0..Y) :- size(S), X=0..S, Y=0..S.
 %%start state and goal state
 startPos(0,0).
 endPos(S,S) :- size(S).

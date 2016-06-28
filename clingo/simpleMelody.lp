@@ -10,16 +10,22 @@ melodyLength(8).
 
 %%Key Signature...
 
+
 %%scale
 
 %%channels:
-channels(2).
+channels(1).
 
 %%----------generate
 %%select a note, with a length, for each T of the melody length
-1 { note(P,L,T,C) : notePitch(P), noteLength(L) } 1 :- melodyLength(A), T=1..A, channels(B), C=1..B.
+1 { note(T,P,L,C) : notePitch(P), noteLength(L) } 1 :- melodyLength(A), T=1..A, channels(B), C=1..B.
 
 %%----------define
+%%start:
+:- not note(1,1,_,_).
+%%end:
+:- not note(L,1,_,_), melodyLength(L).
+
 %%harmony
 
 %%discord
@@ -33,5 +39,8 @@ channels(2).
 %%ends on key origin
 
 %%cadence
+
+
+%%test sum:
 
 
