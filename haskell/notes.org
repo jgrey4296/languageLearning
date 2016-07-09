@@ -1,0 +1,97 @@
+* Haskell Notes
+Real World Haskell
+** ghc
+   compiles programs
+** runghc
+   allows running of hs programs without compiling
+** ghci
+:module + Data.Ratio
+:info x
+:set +t --->  makes ghci print type information automatically
+
+   :browse[!] [[*]<mod>]       display the names defined by module <mod>
+   (!: more details; *: all top-level names)
+   :help, :?                   display this list of commands
+   :info[!] [<name> ...]       display information about the given names
+   (!: do not filter instances)
+   :kind[!] <type>             show the kind of <type>
+   :module [+/-] [*]<mod> ...  set the context for expression evaluation
+   
+   :show bindings              show the current bindings made at the prompt
+   :show breaks                show the active breakpoints
+   :show context               show the breakpoint context
+   :show imports               show the current imports
+   :show linker                show current linker state
+   :show modules               show the currently loaded modules
+   :show packages              show the currently active package flags
+   :show paths                 show the currently active search paths
+   :show language              show the currently active language flags
+   :show <setting>             show value of <setting>, which is one of
+   [args, prog, prompt, editor, stop]
+   :showi language             show language flags for interactive evaluation
+   
+** language
+
+*** qualified imports 
+import qualified Data.ByteString.Lazy as L
+
+*** Pragmas
+{-# LANGUAGE TypeSynonymInstances, OverlappingInstances #-}
+type synonyms allows useful for typeclass instances for Strings (as strings are [Char],
+which are [a] )
+overlapping instances allows for the most specific instance functions of typeclasses 
+
+*** type and newtype and data
+data     : creation of new types.
+type     : synonyms of types *that are interchangeable*
+newtype  : *constrained* synonym of type *that is not interchangeable*
+
+*** general notes
+[1..5] = [1,2,3,4,5] ;;beware roundoff errors
+
+map (\x -> x + 2) [1,2,3,4]
+map (\x -> x > 2) [1,2,3,4]
+foldr
+foldl' --prefer foldl' to foldl due to thunk space issues
+
+*** Modules
+module *name* 
+(
+   exportedValues
+   , ExportedType(...) --adds constructors
+) where
+*definitions*
+
+*** Typeclasses:
+definition:
+class BasicEq a where
+	isEqual :: a -> a -> Bool
+    isEqual x y = not (isNotEqual x y)
+
+    isNotEqual :: a -> a -> Bool
+    isNotEqual x y = not (isEqual x y)
+
+
+instantiation:
+instance BasicEq Bool where
+	isEqual True  True  = True
+    isEqual False False = True
+    isEqual _     _     = False
+
+
+**** Automatic derivation:
+can occur for Read, Show, Bounded, Enum, Eq, Ord
+
+*** Simple Lambda pattern matching:
+data Test = Something Int Int
+let a = Test 5 3
+let myFunc = \x -> case x of Something a b -> a + b
+
+** useful command line options:
+-Wall
+-Werror
+-Wwarn
+-fwarn-name-shadowing
+--supported-languages
+--supported-extensions
+--show-packages
