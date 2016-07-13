@@ -32,14 +32,64 @@ Real World Haskell
    
 ** language
 
+*** STATE MONAD
+--Construct an initial state constructor:
+let initialState = state $ \x -> (0,x)
+-- create a modifying function of the state:
+let stateMod oldValue = state $ \oldState -> (oldValue+1,oldState-1)
+let stateMod2 oldValue = state $ \oldState -> (oldValue-1,oldState+1)
+
+-- or do syntax:
+let stateMod3 = \val -> do { state <- get; put (state-1); return (val+1) }
+
+--run a sequence of actions on the state, starting with an initial value:
+let result = runState (initialState >>= stateMod >>= stateMod) 10
+
+--can also do: (for lists/strings)
+let strMod v = do { st <- get; let (h:tl) = st in do put tl; return h; }
+
+*** List comprehensions
+comp xs ys = [(x,y) | x <- xs, y <- ys]
+*** Record Syntax 
+can copy and modify a record datatype:
+data Test = Test { theInt :: Int, theString :: String }
+chng x y = x { theInt = y }
+
+*** Precedence and Associativity (fixity)
+1 = lowest, 9 = highest
+specify fixity type and priority thus:
+(+) :: a -> a -> a
+infixl 5 +
+or 
+infixr 5 +
+
+1 is 
+
+*** Regex
+import Text.Regex.Posix
+use =~, polymorphic so specify return type:
+"my test" =~ "test" :: Bool --match exists or not
+"my test" =~ "t.*" :: String --matching string
+
+
+"blah bloo blee" =~ "(bl)" :: [ [String] ] --all matches
+--or use getAllTextMatches() :: [String]
+
+use :: (String, String, String) to get prior,matching,post text
+
+*** FilePaths
+import System.FilePath
+concat filepaths using </>
+
 *** qualified imports 
 import qualified Data.ByteString.Lazy as L
 
 *** Pragmas
-{-# LANGUAGE TypeSynonymInstances, OverlappingInstances #-}
+{-# LANGUAGE TypeSynonymInstances, OverlappingInstances, FlexibleInstances #-}
 type synonyms allows useful for typeclass instances for Strings (as strings are [Char],
 which are [a] )
 overlapping instances allows for the most specific instance functions of typeclasses 
+FlexibleInstances goes beyond haskell98 typechecking, allowing eg: Functors on Either Int b
 
 *** type and newtype and data
 data     : creation of new types.
@@ -77,7 +127,6 @@ instance BasicEq Bool where
 	isEqual True  True  = True
     isEqual False False = True
     isEqual _     _     = False
-
 
 **** Automatic derivation:
 can occur for Read, Show, Bounded, Enum, Eq, Ord
