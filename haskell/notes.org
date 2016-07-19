@@ -1,10 +1,20 @@
 * Haskell Notes
 Real World Haskell
-** ghc
-   compiles programs
-** runghc
-   allows running of hs programs without compiling
-** ghci
+
+** CLI programs
+   1) ghc    -   compiles programs
+   2) runghc -   allows running of hs programs without compiling
+   3) ghci   -   REPL interpreter
+** useful command line options:
+-Wall
+-Werror
+-Wwarn
+-fwarn-name-shadowing
+--supported-languages
+--supported-extensions
+--show-packages
+
+*** ghci commands
 :module + Data.Ratio
 :info x
 :set +t --->  makes ghci print type information automatically
@@ -32,6 +42,17 @@ Real World Haskell
    
 ** language
 
+
+*** Pragmas
+{-# LANGUAGE TypeSynonymInstances, OverlappingInstances, FlexibleInstances, GeneralizedNewtypeDeriving #-}
+type synonyms allows useful for typeclass instances for Strings (as strings are [Char],
+which are [a] )
+overlapping instances allows for the most specific instance functions of typeclasses 
+FlexibleInstances goes beyond haskell98 typechecking, allowing eg: Functors on Either Int b
+gen newtype deriving to allow derivations of Monads
+
+possible *MultiParamTypeClasses*
+
 *** STATE MONAD
 --Construct an initial state constructor:
 let initialState = state $ \x -> (0,x)
@@ -48,12 +69,25 @@ let result = runState (initialState >>= stateMod >>= stateMod) 10
 --can also do: (for lists/strings)
 let strMod v = do { st <- get; let (h:tl) = st in do put tl; return h; }
 
+*** Association Lists and maps
+let a = [(1,"blah"),(2,"bloo"),(3,"blee")]
+lookup 2 a
+
+import qualified Data.Map as Map
+let aMap = Map.fromList a
+
+let aMap' = Map.insert 10 "awef" aMap
+
 *** List comprehensions
 comp xs ys = [(x,y) | x <- xs, y <- ys]
+with guards or lets:
+let abs xs ys = [(x,y) | (x,y) <- zip xs ys, x+y < 60, x+y > 20]
 *** Record Syntax 
 can copy and modify a record datatype:
 data Test = Test { theInt :: Int, theString :: String }
 chng x y = x { theInt = y }
+
+see state monad for use case
 
 *** Precedence and Associativity (fixity)
 1 = lowest, 9 = highest
@@ -62,20 +96,18 @@ specify fixity type and priority thus:
 infixl 5 +
 or 
 infixr 5 +
-
-1 is 
-
 *** Regex
 import Text.Regex.Posix
 use =~, polymorphic so specify return type:
 "my test" =~ "test" :: Bool --match exists or not
 "my test" =~ "t.*" :: String --matching string
 
-
 "blah bloo blee" =~ "(bl)" :: [ [String] ] --all matches
 --or use getAllTextMatches() :: [String]
 
 use :: (String, String, String) to get prior,matching,post text
+
+TODO: find a regex library that has meta characters
 
 *** FilePaths
 import System.FilePath
@@ -84,21 +116,15 @@ concat filepaths using </>
 *** qualified imports 
 import qualified Data.ByteString.Lazy as L
 
-*** Pragmas
-{-# LANGUAGE TypeSynonymInstances, OverlappingInstances, FlexibleInstances #-}
-type synonyms allows useful for typeclass instances for Strings (as strings are [Char],
-which are [a] )
-overlapping instances allows for the most specific instance functions of typeclasses 
-FlexibleInstances goes beyond haskell98 typechecking, allowing eg: Functors on Either Int b
-
 *** type and newtype and data
 data     : creation of new types.
 type     : synonyms of types *that are interchangeable*
 newtype  : *constrained* synonym of type *that is not interchangeable*
 
+newtype constructors take a single parameter, are typically a wrapping record to give an auto unwrap
+
 *** general notes
 [1..5] = [1,2,3,4,5] ;;beware roundoff errors
-
 map (\x -> x + 2) [1,2,3,4]
 map (\x -> x > 2) [1,2,3,4]
 foldr
@@ -135,12 +161,3 @@ can occur for Read, Show, Bounded, Enum, Eq, Ord
 data Test = Something Int Int
 let a = Test 5 3
 let myFunc = \x -> case x of Something a b -> a + b
-
-** useful command line options:
--Wall
--Werror
--Wwarn
--fwarn-name-shadowing
---supported-languages
---supported-extensions
---show-packages
