@@ -54,10 +54,12 @@ gen newtype deriving to allow derivations of Monads
 possible *MultiParamTypeClasses*
 
 *** STATE MONAD
+import Control.Monad.State
 --Construct an initial state constructor:
 let initialState = state $ \x -> (0,x)
+
 -- create a modifying function of the state:
-let stateMod oldValue = state $ \oldState -> (oldValue+1,oldState-1)
+let stateMod oldValue = state $ \oldState-> (oldValue+1,oldState-1)
 let stateMod2 oldValue = state $ \oldState -> (oldValue-1,oldState+1)
 
 -- or do syntax:
@@ -68,6 +70,15 @@ let result = runState (initialState >>= stateMod >>= stateMod) 10
 
 --can also do: (for lists/strings)
 let strMod v = do { st <- get; let (h:tl) = st in do put tl; return h; }
+
+the value is passed in explicitly, while the state container is passed
+implicitly, to be modified with 'get' and 'put'
+
+
+-- State >>= 
+theMonad >>=  theFunction = \s -> (theFunction value) s'
+								 where (value,s') = theMonad s
+
 
 *** Association Lists and maps
 let a = [(1,"blah"),(2,"bloo"),(3,"blee")]
