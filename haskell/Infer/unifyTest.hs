@@ -1,8 +1,8 @@
 import Unify
 
-a = Var "a"
-b = Var "b"
-c = App "c" [a,b]
+a = TypeVar "a"
+b = TypeVar "b"
+c = Arrow "c" [a,b]
 
 aSub = Sub [("a",b),("b",c)]
 
@@ -15,12 +15,12 @@ t2b = occurs "c" c == False -- the id of an app doesnt count
 -- test substitution
 t3 = substitute b "a" a == b
 t4 = substitute c "a" a == c
-t5 = substitute b "a" c == App "c" [b,b]
+t5 = substitute b "a" c == Arrow "c" [b,b]
 
 --test application
 t6 = apply aSub a == b
-t7 = apply aSub b == App "c" [b,b]
-t8 = apply aSub c == App "c" [b, App "c" [ b, b] ]
+t7 = apply aSub b == Arrow "c" [TypeVar "b",TypeVar "b"]
+t8 = apply aSub c == Arrow "c" [b,Arrow "c" [TypeVar "b",TypeVar "b"]]
 
 
 tests = [
