@@ -5,9 +5,17 @@ Use `find-system-path` to get the home directory,
 open the file with (open=output-file fileName #:exists `truncate)
 or `extend?
 write using (display text outputPort) or (fprintf outPort text)
+*** Frame Dumping
+use (framedump filename)
 *** Sequencing
 Sequence actions using `begin`
 can do everything in a list with (let ([i list]) (stuff))
+*** Pdata
+    pdata of primitives are vertices. Elements of the pdata:
+    t -> texture
+    p -> position
+    c -> color
+
 ** Plan
 *** DONE Load and execute file
 *** TODO create a chair
