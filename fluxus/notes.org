@@ -20,3 +20,4 @@ can do everything in a list with (let ([i list]) (stuff))
 *** DONE Load and execute file
 *** TODO create a chair
 *** DONE Export / write to file
+*** TODO mess with set-searchpaths and get-searchpaths
