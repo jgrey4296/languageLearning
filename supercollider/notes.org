@@ -1,0 +1,189 @@
+* Supercollider notes
+** emacs specific:
+C-c C-o         sclang-start
+C-c C-c         sclang-eval-region-or-line
+C-c C-s         stop sounds
+
+s.status
+
+To Start:
+s.boot
+
+To Stop:
+s.reboot
+or:
+s.freeAll
+
+//Scope the current output
+s.scope
+
+** Useful Debugging / Introspection
+   "test".dump // dumps information about the class/type, 
+   and internal data of object
+   
+   "test".class // get the class type
+
+   "test".inspect // opens up a detailed inspector
+
+   "test".class.dumpinterface //prints all methods the class can respond to
+
+   {...synthdef...}.scope //create a gui scope of the signal
+
+   Server.instVarNames.dump //all instance variable names of a class
+
+   "test".class.findMethod("blah")
+
+   SynthDef... .dumpUGens
+
+   this.dump // get info on the interpreter
+
+** sclang
+   uses dot syntax.
+   
+   
+*** SynthDefs versus Synths
+    The point is to abstract concepts from the server to the client.
+    Class - Instance : SynthDef - Synth
+    
+    Synthdefs are evald *only once*, so changes are through messages,
+    initializations, or ugens.
+    
+    //a Sound Function:
+    { SinOsc.ar(440, 0, 0.2) }.play
+    
+    //SynthDef:
+    aSynthDef = SynthDef.new("tutorial", { Out.ar(0, Sin.ar(440, 0, 0.2)) });
+    //start it
+    aSynth = aSynthDef.play
+    //stop it
+    aSynth.free
+    
+    //Or create a synth by string:
+    anotherSynth = Synth.new("tutorial")
+
+    //Must *add* the synth to the server:
+    SynthDef.new("Blah",{arg pitch = 440; var outArray;
+    outArray = [SinOsc.ar(pitch,0,0.2), SinOsc.ar(pitch+2,0,0.2)];
+    Out.ar(0,outArray);
+    }).add
+    //then play it: *args can be symbols*: \pitch
+    b = Synth.new("Blah", [ "pitch", 220 ])
+    //and modify it by parameters:
+    b.set("pitch",220)
+    //then kill it
+    b.free
+    
+
+    
+*** UGens
+SinOsc
+PinkNoise
+Saw
+
+
+Pan2
+Mix
+
+Out
+In
+
+Rand(low,high)
+
+*** Classes
+MyClass {
+	*new { }
+}
+
+*** Multiple assignment
+#a,b,c = [1,2,3]
+#[a,b,c] = [1,2,3]
+
+*** Series assignment
+a = (start,next..end)
+
+*** Variables
+defined with 'var' after the open curly bracket
+of a function.
+
+*** Functions
+a = { arg a; a + 2 }
+a = {|a| a + 2}
+a.value(2) //4
+
+Functions return the last value eval'd.
+
+*** list comprehensions
+defined as routines:
+{: x, x <- (1..5) }
+{: [x,y], x <- 2, y <- (1..5), (x+y).isprime }
+
+use 'all' to get the values out:
+all {:x, x <- (1..5)
+
+generator clauses: v <- e
+var clauses: var v = e
+expression clauses: :: e
+termination clause: :while e
+
+*** Operators
+== : Equivalance
+=== : identity
+& : bitwise and
+bitwise or: |
+<< : bitwise left
+>> : bitwise right
+&& : logical and
+logical or: ||
+
+++ : concatenation
++++ : lamination (repeating combination/pairing)
+
+@ : array indexing (.at)
+@@ : array index with wrapping (.wrapAt)
+@|@ : array index with folding (.foldAt)
+|@| : array index with clipping (.clipAt)
+
+<> : function composition (going RIGHT to LEFT)
+
+*** Sets
+Set.new
+set.add
+set & set : intersection
+set | set : union
+set - set : difference
+set -- set : symmetric different
+
+*** Geometry
+2 @ 3 : Point(2,3)
+point @ point : rectangle, top left -> bottom right
+
+rect & rect : intersection of rectangles
+rect | rect : union of rectangles
+
+
+*** GUI
+Create a window:
+w = Window.new("name", (200 @ 200) @ (400 @ 400))
+
+//display it:
+w.front
+
+//Create a button:
+b = Button.new(w,(20 @ 20) @ (40 @ 40)
+//Set states:
+b.states = [ [ "bloo", Color.red "]" ]
+
+
+*** Control Flow
+if ( x, { then }, { else })
+
+*** Useful Examples
+8.rand //generate random number from 0-8
+#[1,2,3] //literal, constant array
+Ref.new(a) //create a reference to a
+[1,2,3,4].choose // random num from array
+10.do({|x| "hello".postln}) //no returns
+x ! n // create array of x, n times
+
+** scsynth
+   
