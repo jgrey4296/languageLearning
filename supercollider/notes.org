@@ -68,26 +68,68 @@ s.scope
     }).add
     //then play it: *args can be symbols*: \pitch
     b = Synth.new("Blah", [ "pitch", 220 ])
+    //can place new synths after others in signal chain
+    // "before" can also be used
+    //which is useful for busses:
+    c = Synth.after(b,"Blah",["pitch",220]);
+    //Synth.head
+    //Synth.tail
+    //Synth.before
+    //Synth.after
+    //Synth.replace
     //and modify it by parameters:
     b.set("pitch",220)
     //then kill it
     b.free
     
+    //can move nodes with:
+    //.moveBefore, .moveAfter, .moveToHead, .moveToTail
 
+    //for freedback, use InFeedback
     
 *** UGens
-SinOsc
+SinOsc.ar/kr (freq, phase, amp, add)
 PinkNoise
 Saw
+Formant.ar (fundfreq,formfreq,bwfreq,mul,add)
+LFSaw.ar/kr (freq,iphase,mul,add)
+VarSaw.ar/kr (freq,iphase,width,mul,add)
+LFPulse.ar/kr (freq,iphase,width,mul,add)
+Impulse.ar/kr (freq,phase,mul,add)
+SyncSaw.ar/kr (syncFreq,sawFreq,mul,add) // careful
 
 
 Pan2
 Mix
+Decay2
+AllpassC
 
-Out
-In
+Out.ar/kr (busNum, numChannels)
+In.ar/kr  (busNum, numChannels)
+InFeedback.ar
 
 Rand(low,high)
+
+*** Busses
+    //For Routing audio
+
+    Bus.control(server, numChannels=1)
+    Bus.audio(server, numChannels=1)
+
+    b = Bus.audio(s)
+    b.index 
+    b.numChannels
+    b.free
+
+    //can map any synth arg to read from a control bus
+    x.map(\freq1,b,\freq2, c)
+
+    //can also set/get constant values to a bus
+    b.get({ |val| val.postln; });
+    b.set(30)
+    // set the synth to a constant value, unmapping from control
+    x.set(\freq2, 100)
+
 
 *** Classes
 MyClass {
