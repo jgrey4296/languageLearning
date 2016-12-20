@@ -54,7 +54,48 @@ x.set("freq",1000)
 y.set("freqOffset",200)
 z.set("freqOffset",250)
 
+r = Routine({
+	loop {
+		({SinOsc.ar(440,0,0.2) * EnvGen.kr(Env.perc(0.01, 0.2), doneAction: 2);}).play;
+		1.yield;
+	}
+});
 
+r.play
+r.stop
 
+//Repeating task
+t = { Task({
+	var i = 0, n = [440,560,880,1000];
+	loop {
+		//note the wrapping/folding 'at' operator:
+		({ SinOsc.ar(n@@i,0,0.2) * EnvGen.kr(Env.perc(0.01,0.2), doneAction: 2);}).play;
+		i = i + 1;
+		1.wait;
+	}
+});
+}
 
+u = t.value
+v = t.value
+c = TempoClock.default
+c.tempo = 2
+q = Task({var i = 0;
+	loop{
+		"Beat: ".post;
+		(i % 4).postln;
+		i = i + 1;
+		1.yield;
+	}
+})
 
+(
+q.play(c,true,[4,0]);
+u.play(c,true,[4,0]);
+v.play(c,true,[4,1.222]);
+)
+v.stop
+u.stop
+q.stop
+c.dump
+c.class.dumpInterface
