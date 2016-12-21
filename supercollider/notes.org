@@ -238,6 +238,7 @@ logical or: ||
 *** Control Flow
     if ( x, { then }, { else })
     while (testFunc, bodyFunc);
+    while { (a=something) } { use a... }
     for (startVal, endVal, func);
     forBy(start, end, step, func);
     do(collection, function)
@@ -324,6 +325,80 @@ logical or: ||
      //When dealing with latency, wrap messages 
      //to the server with 'makeBundle':
      s.makeBundle(s.latency, {...});
+
+*** Patterns
+    a = Pseq([1,2,3,4,5], 1).asStream
+    while { (m=a.next).notNil } {m.postln };
+
+
+
+    //Patterns can be concatenated with ++
+    //and composed with <>
+    //played,
+    //collected, selected, rejected
+
+    Pseq (list, repeats, offset)
+    Pshuf (list, repeats)
+    Prand (list, repeats)
+    //Exclusive random:
+    Pxrand (list, repeats)
+    //weighted random:
+    Pwrand (list, weights, repeats)
+    //-----
+    Pseries (start, step, length)
+    Pgeom (start, grow, length)
+    Pwhite (lo, hi, length)
+    Pexprand (lo, hi, length)
+
+
+    //---- Filter Patterns
+    //repeat a pattern as many times as necessary:
+    Pn(pattern, repeats)
+    //repeat ind values n times:
+    Pstutter (n, pattern)
+    
+    //can use patterns inside of other patterns:
+    p = Pwhite(0.0, Pseries(0.01,0.01,inf), 100)
+    
+**** Pbind
+     //Pbind combines elements from patterns
+     //into *key-value* events to pass to a synth
+
+
+     //Create an instrument \smooth
+     //and trigger repeatedly
+     p = Pbind(
+     	\instrument, \smooth,
+        \midinote, Pseq([60, 72, 71], 1),
+        \dur, Pseq([2, 2, 1], 1)
+     ).play;
+
+
+*** Events
+    //Key-value pairs:
+    e = (note:26, amp:0.1)
+    //have prototypes for performance:
+    e.play
+    //can also specify synth with \instrument
+
+*** Rests
+    (
+    // first, pitches ascending by 1-3 semitones, until 2 octaves are reached
+    var    pitches = Pseries(0, Pconst(24, Pwhite(1, 3, inf)), inf).asStream.all,
+    // randomly block 1/3 of those
+    mask = pitches.scramble[0 .. pitches.size div: 3];
+
+    p = Pbind(
+    \arpeg, Pseq(pitches[ .. pitches.size - 2] ++ pitches.reverse[ .. pitches.size - 2], inf),
+    // if the note is found in the mask array, replace it with Rest
+    // then that note does not sound
+    \note, Pif(Pfunc { |event| mask.includes(event[\arpeg]) }, Rest, Pkey(\arpeg)),
+    \octave, 4,
+    \dur, 0.125
+    ).play;
+    )
+
+
 
 *** Data Structures
     Array // Fixed Size
