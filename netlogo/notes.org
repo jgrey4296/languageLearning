@@ -1,1 +1,80 @@
 * NetLogo Tutorial Notes
+** Interface Elements
+   Buttons (blue): setup and start/stop model
+   Sliders / Switches (green): alter model settings
+   Monitors and plots (beige): display data
+** Components
+   Patches : the world grid
+   Turtles : The agents
+   Links   : Connect two turtles
+   Observer: Sees all, can effect all
+** Variables
+   globals [var1 var2]
+   turtles-own [var1 var2]
+   patches-own [var1 var2]
+   links-own [var1]
+
+   ;;set them with:
+   set var val
+
+   ;;get them with:
+   [var] of agent ident
+
+   ;;local variables use 'let':
+   let lname [varname] of agent
+
+** Procedures
+Start with 'to', finish with 'end'.
+
+to something [var1 var2]
+	let something 
+end
+
+** Creating agents
+   hatch ;;from an existing turtle
+   sprout ;;from an existing patch
+   
+
+** Asking
+   ;; ask gives commands to all agents of a group
+   ask turtles [ set color red ]
+
+   
+** Agentset
+   ;;excluding current agent:
+   other turtles
+   other turtles-here
+   ;;filtering:
+   turtles with [color = red]
+   ;;on the same patch:
+   turtles-here with [color = red]
+   ;;nearby:
+   turtles in-radius 3
+   neighbors4
+   
+*** Commands on agentsets
+    ask
+    any? ;; is empty?
+    all? ;; check for all satisfying a condition
+    count
+    one-of ;; randomly pick
+    
+
+** Breeds
+   ;;Simple agent type system
+   ;; define agentset and individual
+   breed [wolves wolf]
+   breed [sheep a-sheep] 
+
+   create-<breed>
+   hatch-<breed>
+   sprout-<breed>
+   <breed>-here
+   <breed>-at
+   <breed>-on
+   is-a-<breed>?
+
+   ;;define vars of a breed:
+   <breed>-own
+
+** Links
