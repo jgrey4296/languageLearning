@@ -1,0 +1,47 @@
+* Versu / Prompter Notes
+
+
+
+
+* Setup Notes
+** Compilation notes:
+   Compiling on 64 bit: Versu.Luna.Build Makefile needs -arch set to x86_64
+   Make sure to do clean builds of dylibs
+   Command line build script should copy dylib into ./ not bin/Debug
+
+   To Run, with logging use:
+   /bin/sh -c "cd bin/Debug; MONO_LOG_LEVEL=debug mono Versu.exe"
+   in command line start
+
+
+   In Versu.CommmandLine.csproj:
+   cp commands need to make sure they copy from Versu.Luna.Build, NOT
+   Versu.Luna.Build/ltpsim/, 
+   Possibly use a dll map:
+   <Configuration Condition=" '$(Configuration)' == '' ">
+   <dllmap dll="libltpsim.dynamic.dll" target="libltpsim.dynamic.dylib"/>
+   Debug
+   </Configuration>
+
+   And include the dylib instead of the dll:
+   -- <None Include="libltpsim.dynamic.dll">
+   ++ <None Include="libltpsim.dynamic.dylib">
+
+   And Make sure to clean all compiled files in the content directory
+
+   Change the Simulator/Simulator.cs:
+   ltpsim.dynamic -> ltpsim.dynamic.dylib
+
+** Prompter setup notes:
+   Make sure the relevant modules directories are added to PERL5LIB in bash:
+   export PERL5LIB=....:....:$PERL5LIB
+   and alias prompter to use perl
+
+   In prompter:
+   use File::Basename;
+   my $dirname = dirname(__FILE__) . "/configuration.txt";
+   print($dirname);
+   PPConfigurer::add_configuration_file($dirname);
+
+
+   
