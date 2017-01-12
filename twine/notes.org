@@ -1,0 +1,102 @@
+* Twine notes
+[[https://twine2.neocities.org/2.html][Twine Reference]]
+
+** Basic syntax
+   Links are of the form (\ to escape org mode, not twine)
+   \[\[Description -> segmentName\]\]
+
+   **Bold**
+   *Italics*
+   <u>Underlined</u>
+   ~~strikethrough~~
+   blah^^superscript^^
+   Escape chars with ''
+
+** Macros
+   In parens, of form (macroName: data)
+   Case-, cash-, underscore- insensitive
+
+   Can assign macros to variables:
+   (set $aMacro to (font: "Skia"))
+   
+** Variables
+   $aVar
+   
+   (num:) - make a number, eg: (if: (num: "5") > 2)
+   (a:)   - make an array, eg: (a: 2,3,4), 
+   
+   (set: $aVar to 5)
+   (set: $aVar to 5, $anotherVar to "bob")
+
+   (put: 5 into $aVar)
+
+   (move: $aVar into $anotherVar) // $aVar is deleted
+   (move: $anArr's 1st into $anotherVar)
+
+** Strings
+   String concat works with +
+   
+   
+** Hooks
+   [ This is a hook. ]. Essentially a *text closure*
+
+   *Named hooks*: Syntax <name|
+   [This hook is named.]<opener|
+
+   Macros can operate on hooks:
+   (font: "Courier New")[ this is an anonymous hook.]
+   $aMacro[This is other text.]
+
+   Remotely refer to and alter named hooks:
+   (click:) eg: (click ?opener)[ aweg ]
+   (replace:) 
+   
+
+** Conditionals 
+   
+   (if: $x is 2)[ Print this. ]
+   (else:) [ Blahhh ]
+
+   (unless:)
+   (else-if:)
+   (either:)
+
+** Data Structures:
+
+   (a:) -- an array
+   (datamap:) -- dictionary
+   (dataset:)
+   (count:)
+   (datanames:)
+   (datavalues:)
+   (range:)
+   (rotated:)
+   (shuffled:)
+   (sorted:)
+   (subarray:)
+
+
+** Formatting:
+   Bullet lists using *'s to mark the level of indenting
+   Numbered lists use 0.'s (eg: 0.0.0. is three indents deep)
+
+   Alignment:
+   ==> Right Align
+   <== Left Align
+   <==> Justified
+   =><= centered
+   =><==== ratio indented
+   ====><== another ratio indented
+
+   #Heading level 1
+   ##Heading level2 ....
+
+   ------  : Horizontal line
+
+
+   {
+   	Use braces to collapse whitespace
+   }
+
+   Force a line break\
+
