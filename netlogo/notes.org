@@ -34,12 +34,10 @@ end
    hatch ;;from an existing turtle
    sprout ;;from an existing patch
    
-
 ** Asking
    ;; ask gives commands to all agents of a group
    ask turtles [ set color red ]
 
-   
 ** Agentset
    ;;excluding current agent:
    other turtles
@@ -59,7 +57,6 @@ end
     count
     one-of ;; randomly pick
     
-
 ** Breeds
    ;;Simple agent type system
    ;; define agentset and individual
@@ -78,3 +75,54 @@ end
    <breed>-own
 
 ** Links
+
+* Models
+
+** Aids
+
+*** Recorders
+%infected
+populations - negative, positive, unknown
+
+*** Controls
+initial-people
+average-coupling-tendency
+average-commitment
+average-condom-use
+average-test-frequency
+
+*** Data
+
+**** Globals
+infection-chance   : x/100 of sex -> infection
+symptoms-show      : number of ticks before symtoms show
+
+**** Turtles
+:: turtle infection state
+infected?
+known?
+infection-length
+:: turtle couple state
+coupled?
+couple-length?
+:: individual differences
+commitment
+coupling-tendency
+condom-use
+test-frequency
+partner
+lefty/righty
+
+*** Processes
+
+:: go
+if necessary, stop
+incremement infection and coupling lengths
+if uncoupled, move
+if uncoupled and righty, randomly couple
+
+uncouple
+infect
+test
+update-colourx
+
