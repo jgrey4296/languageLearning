@@ -1,7 +1,530 @@
-* Versu / Prompter Notes
+* Versu / Prompter Notes                                                        :versu:
+  Needs to be in .prompter files
+** Prompter file format:
+   "Story name"
+
+   A {genre} story by {Author}. {Author} {info}.
+
+   {Story description}.
+
+   {Cast Description}
+
+   {Scenes}
+
+** Headings:
+   For the main prompter file, rather than charactes, dealt with below
+   Surrounded by triple *'s
+   *** Cast *** etc.
+   
+   Requires:
+   *Cast*, *Scenario* and *Scene*'s
+
+** Casting
+
+   {*Free* Role} ... {*Defined* Character}
+   
+   Can mark any role as (playable). 
+
+   {Role} ... {a} or {b}
+   
+   Versu can auto fill roles:
+   The Boss ... a middle aged man
+   
+   This uses age, gender, sex orientation, wealth, social class, and genre.
+
+** New Characters
+
+   New characters are marked: 
+   Manager (unique to this story) ... Bob
+
+   And are associated with a file:
+   character_bob.prompter 
+   in the story directory.
+
+   Format:
+   Name: {name}
+
+   "{Descriptive Paragraph}"
+
+   {Personality}.
+
+   Where personality can be:
+   
+*** Age
+    adolescent, young, middle-aged, older, old
+
+*** Gender
+    male, female, man, woman.
+    Can be unspecified.
+
+*** Orientation
+    straight, gay,
+    attracted to women, attracted to men, 
+    attracted to people of ambiguous gender
+
+*** Wealth
+    poor, independently wealthy, rich
+
+*** Class
+    servant, upper class
+    Servants speak only when spoken to, or when they must.
+
+*** Traits
+    agreeable, apologetic, assertive,
+    bully,
+    cheerful, closed, clumsy, combative, combative when provoked, conscientious, courteous
+    disagreeable, doormat, 
+    earnest, empathic, extrovert
+    flttering, flirt, forward, 
+    graceful, 
+    health nut, histrionic
+    insouciant
+    honest, host, hypochondiac
+    introvert
+    jaded,
+    lovable rogue, loyal,
+    neurotic, 
+    obsequious, open
+    pacifist, perceptive, politely assertive, prone to fainting/sulking/tantrums
+    rake, repressed, romantic, rude, rude if provoked
+    self-centered, short termpered, slow to intimacy/romance, stressed, stressed-outm
+    tidy, touchy
+    unconscientious, uncouth
+    violent
+
+    Use a comma separated list "An older man, blah, blah, blah and blah."
+
+*** Concerns
+    "He/she is concerned with {} but not {} or {}"
+
+*** Reputation
+    By reputation {} is {} - "[He is known for ...", but not {} - "{}".
+
+*** Back Story
+    Optional memories on subjects.
+    designate with the *** Back story *** heading
+    
+    Format:
+    On {}: {}
+    >> {}
+
+*** Personal Dialogue
+    On particular topics: 
+
+    About {}: {}
+
+** Speeches
+   *Limitation*: No single or double quotes in text.
+
+   {name} : {Text}
+   -- {Player Option}
+   -- {Player Option}
+
+   {name} {emotion} : {text}
+
+   {Name} : {Text}
+   >> {Text after paragraph}
+
+   *Variants*
+   {Name} : {Text}
+   [...] {Alt}
+   [...] {Alt}
+   -- {Option}
+
+   *Replies*
+   {Name} (to {Name}) : {Text}
+   {Name} (replying) : {Text}
+
+   *Gestures*
+   {Name} (without speaking): {Gesture}
+   {Name} ("{gesture}") : {text}
+
+   *Character variability and specificity*
+   {Name} or {Name} : {text}
+   Anyone : {Text}
+   Anyone but {Name} : {Text}
+   Anyone {genre} : {Text}
+
+*** Expansions
+    *limitation*: Can't be used in variant texts
+    [I] - Speaker, as subject
+    [me] - Speaker, as object
+    [my] - speaker, as possessive adjective "his"/"her"
+    [myself] - speaker as him/her self.
+
+    Also [he], [him], [his], [himself] and related female
+    and gender neutral pronouns.
+
+    
+*** Manners of Speaking
+    {Name} ({MoS, MoS...}) : {Text}
+
+    Changing mind:
+    {Name} (adopting {MoS}) : {Text}
+
+    {Name} (advancing the plot) : {Text}
+
+**** Manners of speaking base 
+
+     assertively, agreeably, aloof, avoiding leadership, acting unhealthy, acting healthy
+     airing family laundry, acting feminine, acting masculine
+
+     backing down, boringly, being intentionally difficult, bragging, being businesslike
+     being overly honest, being obviously insincere, being intentionally weird,
+     betraying age, betraying youth,
+
+     cynically, confidently, competently, 
+
+     dominantly, disloyally
+
+     grumbling, gossiping
+
+     helpfully, humorlessly, harmlessly
+
+     inappropriately, insensitively, impolitely, incompetently, impiously
+
+     joking
+     lying, loyally, 
+     menacingly
+     naively
+     pompously, properly, pleasantly, politely, piously
+     rudely,
+     self-deprecatingly, self-consciously, sensitively, stupidly, showing leadership
+     stylishly, submissively, showing fear,
+     tactfully, telling a dirty story, telling a sad story
+     unpleasantly, unstylishly, uncharitably
+     very rudely, very stupidly, very cleverly, virtuously
+
+
+**** Adopting MoS
+
+     adopting...
+     friendship, sensitivity, leadership, confidence, judgment, accomplishments, constitution, style,
+     status, intelligence, funny, manners, propriety, virtue, attractive, 
+     faithful, piety, menace, wordliness
+
+**** Manners of directed speaking
+
+     making fun of X
+     insulting X
+     confronting X
+     apologising to X
+	 disagreeing with X
+     with a sexy look at X
+     as a romantic gesture to X
+	 trying to make an enemy of X
+     correcting X for being inappropriate
+	 rejecting a romantic relationship with X
+     rejecting a friendly relationship with X
+     acussing X of lying
+     deciding to pursue a friendly relationship with X
+     deciding to flirt with X
+     deciding to make an enemy of X
+     deciding to marray X
+     deciding to kill X
+     deciding to be loyal to X
+     deciding to protect X
+     proposing to X
+     accepting the proposal of X
+     refusing the proposal of X
+     physically attack X
+     threatening X
+     requesting a romantic relationship with X
+     accepting a romantic relationship with X
+     accepting a friendly relationship with X
+     teasing X
+     kissing X
+     suggesting sex with X
+     agreeing to sex with X
+     refusing sex with X
+     correcting X for being impious
+     correcting X for being insensitive
+     correcting X for being rude
+     correcting X for being unstylish
+     asking about the relationships of X
+     explaining feelings to X
+     confiding in X
+     refusing to confide in X
+     discouraging confidences from X
+     encouraing confidences from X
+     testing the loyalty of X
+     testing the will of X
+
+     
+     
 
 
 
+*** Emotion
+     
+    {Name} : {Text}
+    ([he]/it/they become(s) {Emotion} - {Text})
+
+    *Eg:*
+    ([he] becomes visibly embarressed - "That dreadful man is calling")
+
+**** Emotion list
+     amused, angry, annoyed, devastated
+     embarrassed, frightened, happy, 
+     humiliated, pleased, sad, surprised, worried
+
+** Conversations
+
+   (About {} and {})
+
+   {Speech}
+   {Speech}...
+
+   (Going on to {} and {})
+
+   ...
+
+   (Later, about {} and {})
+
+*** Branching
+    //For branching diagrams: prompter -i
+
+    (a) {Name} : {Text}
+    (b) {Name} : {Text}
+    {Name} : {Text}
+    //Then rejoin:
+    (>) {Name} : {Text}
+
+    Can Subdivide:
+    (a) {Name} : {Text}
+    (b) {Name} : {Text}
+    (ba) {Name} : {Text}
+    (bb) {Name} : {Text}
+    (>) : {Name} : {Text}
+
+*** Conditional Speech
+    
+    (a) (if {name} is {emotion}) {name} : {text}
+    
+    (b) (if {name} is {emotion}) {name} : {text}
+    
+    (c) {name} : {text}
+
+
+    (a) Anybody except {name} : {Text}
+    //or
+    (a) (if he is {emotion}) Anybody except {Name} : {Text}
+
+*** Topics of conversation
+    //before a conversation
+    (About the {object})
+    (Going on to {topic} and {name})
+    (Later, about {name} and the {object})
+
+    //After:
+    (More about the {topic} will follow.)
+
+    //Conditionally on the topic already being active:
+    (Continuing on the {topic})
+    
+** Scenes
+   Expected structure:
+   1) Scenes
+   2) made up of conversations
+   3) conversations have speeches and topics
+
+   Scenes are headed by "*** Scene - {Unique Name} ***
+
+   //Special Scene: *Throughout* containing general conversations
+
+   *Narration* can provide intro text, and also initiate speech:
+
+   Narration: Alice and Dave walk into the room.
+   >> [Dave] says 'Good news, Alice.'
+   >> [Alice] says 'Oh?'
+
+   Can also *restrict* scenes from using character quips and smalltalk:
+   (Conversation is restricted.)
+
+*** Chapter headings
+    *** Scene - Blah ***
+    (A chapter called "Bloo" begins.)
+
+*** Ending Scenes
+    *(End...)* stage directions:
+    (End if {CONDITION}.)
+    (End if {condition} and go to {scene}.)
+    (End story if {condition}.)
+
+
+    (End if "If you must go, Lizzy" has been reached.)
+    (End after 100 ticks. "Catherine coughs and the group breaks up.")
+    (End if "{x}" and go to {scene name}.)
+
+    *Implicit scene end:*
+    (End after 10000 ticks. "Time passes.")
+
+**** Player Ending a scene:
+     (End on option "{LoD}" and go to {scene}. {Text})
+     
+     (End on option "{LoD}" if 50 ticks have passed and
+     go to {scene}. "{Text}")
+
+** Choices
+   
+   {Scene declaration}
+
+   Choice ({choiceOpt}): {Text}
+   -- {Text}
+
+   Choice ({choiceOpt}): {Text}
+   -- {Text}
+
+   (if {condition}) Choice ({choiceOpt}) : {Text}
+   -- {Text}
+
+
+** *Conditions*
+   Types:
+   {n} ticks have passed.
+   {name} is in {location}.
+   {x} is {relation} of/to {y}
+   {x} is {emotion}
+   *lull*: where noone wants to say anything:
+   There is a lull in {location}. 
+   There is a lull where {name} is.
+   *lines of dialogue*:
+   "{LoD}" has been reached.
+   {name} is being played.
+   {name} is alone.
+   {name} is present.
+   {name} is among friends.
+   {name} is {restraint}. 
+
+   if {name} rates {name}'s {quality} as {level}
+
+*** *Restraints*:
+    insane, socially outcast, unconscious, 
+    asleep, furious, sulking, weeping
+
+
+
+** Locations
+   Uses "*** Scenario ***" prompt.
+   Only stage directions, no speech.
+   Locations an be indoors or outdoors.
+   
+   The main office is indoors. "Its the center of cubicle land."
+   Dave's office and Patrick's desk are next to the main office.
+
+** Props
+   The {object} and the {object} are props in {location}.
+   The {object} is a portable prop in {location}.
+   The {object} is a prop carried by {name}.
+
+   The {location} is hosted by {name}.
+   The {location} is hosted by {name} and {name}.
+
+** Movement
+   Enable movement between rooms:
+   (Characters can walk around.)
+
+   Enable leaving the scene (at the beginning):
+   ({name} can walk out.)
+
+   (If {condition} then {name} is in the {location}.)
+   
+   {name} : {speech}
+   ({name} carries the {object}.)
+
+** Relationships
+   	A is a relative of B
+	A is an estranged relative of B
+	A is a close relative of B
+	A is an acquaintance of B
+	A is a friend of B
+	A is a close friend of B
+	A flirts with B
+	A has been rejected by B
+	A has rejected B
+	A has an understanding with B
+	A is engaged to B
+	A is married to B
+	A is a foe of B
+	A is an enemy of B
+	A is a duelist of B
+	A is a protector of B
+	A is a protege of B
+	A is the boss of B
+	A is an employee of B
+
+** Views on others qualities
+    Speech annotations will modify assessments:
+    Stage directions can set assessments:
+    {name} rates {name}'s {quality} as {level}.
+    *display to others an assessment*:
+    {name} openly rates his own {quality} as {level}
+
+*** Qualities:
+	 quality as a parent
+	 quality as a child
+	 quality as a sibling
+	 quality as a spouse
+	 quality as a fiancee
+	 trustworthiness
+	 distinction
+	 friendship
+	 leadership
+	 accomplishment
+	 attractiveness
+	 style
+	 manners
+	 propriety
+	 intelligence
+	 confidence
+	 health
+	 sense of fun
+	 virtue
+	 sensitivity
+	 faithfulness
+	 romantic appeal
+	 compatibility
+	 authority
+	 presentability
+	 morality
+	 piety [Ancient Roman only]
+	 menace [Ancient Roman only]
+
+
+
+*** Levels
+    terrible, very bad, bad, fairly bad,
+    neutral
+    fairly good, good, very good, excellent
+
+    worse than bad
+    worse than neutral
+    at best neutral
+    at worst neutral
+    better than neutral
+    better than good
+
+    *percentages*
+
+** Beliefs
+   it is important to be {quality} 
+   *three states*:
+   do, don't neutral.
+
+   People can think {thing}.
+
+   (Linus thinks it is important to be intelligent.)
+
+** Activities
+
+** Pictures
+
+   (Display "characters/jenkins/img/jenkins_goes_finishing.png".)
+   
+** Objectives and achievements
+   (The objective "{Text}" for {name} will be achieved when {condition})
+
+   (This is the achievment "{Text}". "Text}")
 
 * Setup Notes
 ** Compilation notes:
