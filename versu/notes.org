@@ -310,6 +310,9 @@
     //or
     (a) (if he is {emotion}) Anybody except {Name} : {Text}
 
+
+    after talk about X.
+
 *** Topics of conversation
     //before a conversation
     (About the {object})
@@ -516,6 +519,77 @@
    (Linus thinks it is important to be intelligent.)
 
 ** Activities
+   Similar to scenes. Of the Form:
+
+   *** Activity - {Instruction} ("{Text}", {conditions})
+   Narration : {Text}
+   
+*** Physical Activities
+    Observe X, Observe X closely,
+    Listen to X in the distance, Observe X at a distance,
+    Read X
+    Search X
+
+    Walk, Climb, Arrive
+
+    Activate X, Deactivate X, Repair X
+
+    Take X, Weak X
+
+    Consume X, Refill X, Use up X
+    Tidy away X, Clean X
+    Chop up X, Set X on fire
+
+    Dead, eliminated, drunk
+    
+    insane, socially outcast, unconscious, 
+    asleep, furious, sulking, weeping
+
+    X may leave.
+    X may die.
+    X may have sex.
+
+** Events
+   
+   *** Event - {Action} ({condition}) ***
+   ({consequences})
+   Narration : {Text}
+   
+   
+*** Background events
+    *** Event - {Name} (background, {details}, near {location}/in {location} only) ***
+    ...
+
+    
+*** Choice events
+    An event with a Choice.
+    The choice can be another event:
+    
+    *** Event - Letter arrives ***
+    Choice (Letter accepted): ...
+
+
+    *** Event - Letter accepted ***
+    ...
+
+
+** Sequels
+   Annotate after title:
+   "Big Women" by Louisa May Alcott.
+   The sequel to "littlewomen".
+
+   Can store certain information using tokens:
+   (Create token "{Something}".)
+
+   Then as a condition:
+   (if the token "{Something}" has been created)
+
+
+** Imports / Includes
+   Include Modern Furniture.
+   import "core/modern_furniture.data"
+
+   Include "wherever/i/like.whatsoever".
 
 ** Pictures
 
@@ -556,6 +630,8 @@
    ltpsim.dynamic -> ltpsim.dynamic.dylib
 
 ** Prompter setup notes:
+
+
    Make sure the relevant modules directories are added to PERL5LIB in bash:
    export PERL5LIB=....:....:$PERL5LIB
    and alias prompter to use perl
@@ -567,4 +643,28 @@
    PPConfigurer::add_configuration_file($dirname);
 
 
+   
+** Prompter command line Switches
+   -index : print an index of characters, actions and topics
+   -configure FILE
+   -to FILE
+   -verbose
+
+   
+** Prompter Config Files
+   action: A (Pattern, Category)
+   emotion : E
+   genre : G
+   relationship : R
+   relationship : R (singular, plural)
+   topic : T
+   VARIABLE = value
+
+** Praxis
+   Prompter converts to lower_case 
+   Can specify names:
+   (Praxis name: awkward_visit)
+
+   Can insert raw praxis code:
+   ++ constitutes_action.child_gambit_high
    
