@@ -1,0 +1,4 @@
+* CSharp Notes
+** Building
+   mcs for compiling,
+   mono for running the compiled executable
