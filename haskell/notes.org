@@ -5,6 +5,7 @@ Real World Haskell
    1) ghc    -   compiles programs
    2) runghc -   allows running of hs programs without compiling
    3) ghci   -   REPL interpreter
+   3) cabal  -   package manager
 ** useful command line options:
 -Wall
 -Werror
@@ -52,6 +53,13 @@ FlexibleInstances goes beyond haskell98 typechecking, allowing eg: Functors on E
 gen newtype deriving to allow derivations of Monads
 
 possible *MultiParamTypeClasses*
+
+*** Monads
+    >>= , >>, return
+    do notation: do { x <- func; return $ x + 2 }
+
+    data that are instances of Monad are typically instances of Functor. 
+    So instances need to implement >>, >>=, return, fail?, and fmap
 
 *** STATE MONAD
 import Control.Monad.State
@@ -127,6 +135,18 @@ concat filepaths using </>
 *** qualified imports 
 import qualified Data.ByteString.Lazy as L
 
+import Mod -- imports everything, qualified and unqualified
+import Mod () -- imports nothing
+import Mod (x,y) -- imports only x and y, unqualified
+import qualified Mod -- import everything qualified Mod.x...
+import qualified Mod (x,y) -- qual only x and y
+import Mod as Foo --everything unqual and as Foo.x..
+import Mod as Foo (x,y) -- x,y, Foo.x Foo.y
+import qualified Mod as Foo (x,y) -- only Foo.x Foo.y
+
+
+
+
 *** type and newtype and data
 data     : creation of new types.
 type     : synonyms of types *that are interchangeable*
@@ -165,6 +185,9 @@ instance BasicEq Bool where
     isEqual False False = True
     isEqual _     _     = False
 
+instance (Typeclass) (DataType) where
+	(functions)
+
 **** Automatic derivation:
 can occur for Read, Show, Bounded, Enum, Eq, Ord
 
@@ -172,3 +195,51 @@ can occur for Read, Show, Bounded, Enum, Eq, Ord
 data Test = Something Int Int
 let a = Test 5 3
 let myFunc = \x -> case x of Something a b -> a + b
+
+** Parsec Notes
+   parsers as variables requires the flag -XFlexibleContexts
+   use Text.Parsec, Text.Parsec.String, Text.Parsec.Char
+   Text.Parsec.Char and Text.Parsec.String simplify types   
+
+   General Parse Call:
+   parse $PARSER "$ERROR" "$INPUT"
+   
+   Satisfy performs tests of chars to accept
+   satisfy :: (Char -> Bool) -> Parser Char
+   
+   Standard Parsers:
+   anyChar, space, newline, tab,
+   upper, lower, alphaNum, letter, digit, hexDigit, octDigit
+   string
+
+   oneOf, noneOf, many, skipMany
+   
+   to convert to numbers:
+   read "1234" :: Integer 
+
+   to ignore a parse:
+   void $ parser  
+
+   ignore the second parser:
+   x <- p <* whitespace
+
+   Options (to backtrack, wrap with 'try' )
+   p <|> p2
+
+   Apply a function to a parse result:
+   ctor <$> p
+
+   Write new parsers, use type declaration to hint:
+#+begin_src haskell
+  var :: Parser (Char, String)
+  var = do
+    fc <- firstChar
+    rest <- many nonFirstChar
+    return (fc, rest)
+    where
+      firstChar = satisfy ( \a -> isLetter a || a == '_' )
+      nonFirstChar = satisfy ( \a -> isDigit a || isLetter a || a == '_' )
+#+end_src
+
+
+
