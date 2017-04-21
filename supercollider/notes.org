@@ -182,7 +182,7 @@ rect | rect : union of rectangles
     {: [x,y], x <- 2, y <- (1..5), (x+y).isprime }
     
     //use 'all' to get the values out:
-    all {:x, x <- (1..5)
+    all {:x, x <- (1..5) }
 
     //generator clauses: v <- e
     //var clauses: var v = e

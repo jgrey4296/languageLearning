@@ -100,3 +100,12 @@ q.stop
 c.dump
 c.class.dumpInterface
 
+//Events:
+SynthDef.new(\EventTest,{ |freq|
+	Out.ar(0,SinOsc.ar(freq,0,0.2) * EnvGen.kr(Env.perc(0.01,0.2), doneAction: 2));
+}).add;
+f = Synth.new(\EventTest,[\freq,440])
+
+e = (note:40,\instrument:\EventTest)
+e.play
+
