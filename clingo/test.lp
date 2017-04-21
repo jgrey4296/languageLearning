@@ -1,6 +1,6 @@
 0 { rain;sprinkler;summer } 1.
 
-:- rain, sprinkler,summer.
+%:- rain, sprinkler,summer.
 
 wet(rain) :- rain.
 wet(sprinkler) :- sprinkler.
