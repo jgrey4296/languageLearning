@@ -17,6 +17,11 @@ class Hello{
     
     static void Main(){
         Console.WriteLine("hello world :" + a.testAdd(2));
+        Func<int, int, bool> myLam = (x,y) => {
+            return x == y;
+        };
+        Console.WriteLine("Lambda Test: " + myLam(2,3));
+
     }
     
 }

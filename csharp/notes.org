@@ -2,3 +2,9 @@
 ** Building
    mcs for compiling,
    mono for running the compiled executable
+** Unity
+   Typical base class: Monobehaviour
+   using UnityEngine;
+** Lambdas
+   Func<int, int, bool> a = (x,y) => x == y;
+   
