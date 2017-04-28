@@ -1,2 +1,6 @@
 *~
 *.meta
+*.pyc
+*__pycache__
+*.o
+*.exe
