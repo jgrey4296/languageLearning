@@ -1,0 +1,129 @@
+* Blender Python API notes
+  [[https://docs.blender.org/api/blender_python_api_2_76b_release/info_quickstart.html][API]]
+** CLI Usage
+   use blender --python script_name.py from CLI.
+   Only need to import bpy and other top level modules, *not* bpy.data/context etc.
+   
+   Alt: use blender --python-console to have an interactive console 
+
+** Registering
+   TODO
+
+** Modules
+*** bpy
+*** bpy.data
+    Creation:
+    bpy.data.objects.new('objName', meshData)
+
+
+**** Contains:
+     actions, armatures,
+     bl_rna, brushes,
+     cameras, curves, 
+     filepath, fonts, 
+     grease_pencil, groups, 
+     images, is_dirty, is_saved,
+     lamps, lattices, libraries, linestyles, 
+     masks, materials, meshses, metaballs, moveiclips, 
+     node_groups, 
+     objects,
+     palettes, particles,
+     rna_type, 
+     scenes, screens, scripts, shape_keys, sounds, speakers, 
+     texts, textures, 
+     use_autopack, 
+     window_managers, worlds
+
+
+*** bpy.context
+    bpy.context.scene.objects.active = obj
+    bpy.context.object.location = [1,2,3]
+    bpy.context.object.scale = [1,2,1]
+
+    Call bpy.context.scene.update() to make sure values are fresh
+
+**** To Delete:
+     scene.unlink, ie: bpy.context.scene.objects.unlink(obj)
+     Then remove from object list:
+     bpy.data.objects.remove(obj)
+
+**** To add an object:
+     obj = bpy.objects.new(name='name', object_data=None)
+     scene.link, ie: bpy.context.scene.objects.link(obj)
+
+**** To Select an object as part of a group:
+     obj.select = True
+     bpy.context.select_objects
+
+*** bmesh
+    *IMPORTANT*: BMesh classes are *different* from bpy_types.Mesh,
+    and need conversion between
+
+    import bmesh
+    aMesh = bmesh.new()
+    bmesh.ops.translate
+    bmesh.ops.rotate
+    bmesh.ops.scale
+    aMesh.to_mesh(mesh)
+    aMesh.free()
+
+*** bpy.ops
+**** IO
+     bpy.ops.wm.save_as_mainfile(filepath="./test.bl")
+     bpy.ops.wm.open_mainfile(filepath="./test.bl")
+
+**** Creation
+     bpy.ops.object.empty_add(type='CUBE')
+     bmesh.ops.create_cube(aMesh,size=1) #on a given mesh 'aMesh'
+
+
+**** Groups
+     [[https://docs.blender.org/api/blender_python_api_2_76_0/bpy.ops.group.html][reference]]
+     obj.select = True
+     obj2.select = True
+     bpy.ops.group.create(name="aGroup")
+     group.objects
+     #Add:
+     bpy.ops.object.group_link(group="aGroup")
+
+     #remove:
+     bpy.ops.group.objects.remove(group="aGroup")
+     bpy.ops.object.group_unlink()
+
+**** Creating a new Operator
+     Subclass bpy.types.Operator,
+     must have bl_idname and bl_label class attributes.
+     Eg: bl_idname = "mesh.make_tetrahedron"
+     Must def invoke(self, context, event),
+     which must return a set of strings: { "FINISHED" }
+
+
+
+*** bpy.props
+*** bpy.types
+    action, anim, armature,
+    boid, brush, buttons
+    camera, clip, cloth, console, constraint, curve, cycles,
+    dpaint,
+    ed, export_anim, export_mesh, export_scene,
+    file, fluid, font,
+    gpencil, graph, group,
+    image, import_anim, import_curve, import_mesh, import_scene, info,
+    lamp, lattice, logic,
+    marker, mask, material, mball, mesh,
+    nla, node, 
+    object, outliner, 
+    paint, paintcurve, palette, particle, pose, poselib, ptcache,
+    render, rigidbody, 
+    safe_areas, scene, screen, script, sculpt, sequencer, sketch, sound, surface,
+    text, texture ,time, transform,
+    ui, uv, view2d, view3d, 
+    wm, world
+*** bpy.utils
+*** bgl
+    OpenGL interface
+*** blf
+*** mathutils
+    Color, Euler, Matrix, Quaternion, Vector, bvhtree, 
+    geometry, interpolate, kdtree, noise
+
