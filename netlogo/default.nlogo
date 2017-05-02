@@ -1,97 +1,12 @@
-;; Sections:
-;; <1> Variable Setup
-;; <2> Initialization
-;; <3> Running
-;; <4> Reporters
-;; <5> Utility
-
-
-;; <1> Variable Setup
-
-turtles-own [energy]
-
-
-;; <2> Initialization
-to setup
-  clear-all
-  setup-patches
-  setup-turtles
-  reset-ticks
-end
-
-
-to setup-turtles
-  create-turtles number-of-turtles [setxy random-xcor random-ycor set energy 100]
-end
-
-to setup-patches
-  ask patches [ set pcolor green ]
-end
-
-
-;; <3> Running
-to go
-  if ticks >= 500 [ stop ]
-  move-turtles
-  eat-grass
-  reproduce
-  check-death
-  regrow-grass
-  tick
-end
-
-;; <4> Utility
-to reproduce
-  ask turtles [
-    if energy > birth-energy [
-      set energy energy - birth-energy
-      hatch 1 [ set energy birth-energy ]
-    ]
-  ]
-end
-
-to check-death
-  ask turtles [
-    if energy <= 0 [die]
-  ]
-end
-
-to regrow-grass
-  ask patches [
-    if random 100 < grass-regrowth [ set pcolor green ]
-  ]
-end
-
-to move-turtles
-  ask turtles [
-  right random 360
-  forward 1
-  set energy energy - hunger
-  ]
-end
-
-to eat-grass
-  ask turtles [
-   if pcolor = green [
-    set pcolor black
-    set energy energy + energy-from-grass
-   ]
-   ifelse show-energy?
-   [ set label energy ]
-   [ set label "" ]
-  ]
-end
-
-
 
 @#$#@#$#@
 GRAPHICS-WINDOW
-362
+210
 10
-801
-470
-16
-16
+647
+448
+-1
+-1
 13.0
 1
 10
@@ -106,172 +21,11 @@ GRAPHICS-WINDOW
 16
 -16
 16
-1
-1
+0
+0
 1
 ticks
 30.0
-
-BUTTON
-11
-10
-77
-43
-NIL
-setup
-NIL
-1
-T
-OBSERVER
-NIL
-NIL
-NIL
-NIL
-1
-
-BUTTON
-93
-10
-156
-43
-NIL
-go
-T
-1
-T
-OBSERVER
-NIL
-NIL
-NIL
-NIL
-0
-
-MONITOR
-10
-50
-103
-95
-NIL
-count turtles
-17
-1
-11
-
-MONITOR
-10
-100
-252
-145
-NIL
-count patches with [ pcolor = green ]
-17
-1
-11
-
-SWITCH
-11
-154
-155
-187
-show-energy?
-show-energy?
-0
-1
--1000
-
-PLOT
-10
-231
-210
-381
-Totals
-time
-totals
-0.0
-10.0
-0.0
-10.0
-true
-true
-"" ""
-PENS
-"turtles" 1.0 0 -2674135 true "" "plot count turtles"
-"grass" 1.0 0 -13840069 true "" "plot count patches with [pcolor = green]"
-
-SLIDER
-10
-439
-182
-472
-number-of-turtles
-number-of-turtles
-0
-1000
-146
-1
-1
-NIL
-HORIZONTAL
-
-SLIDER
-10
-476
-184
-509
-energy-from-grass
-energy-from-grass
-0
-100
-22
-1
-1
-NIL
-HORIZONTAL
-
-SLIDER
-10
-513
-182
-546
-birth-energy
-birth-energy
-0
-100
-50
-1
-1
-NIL
-HORIZONTAL
-
-SLIDER
-10
-553
-182
-586
-hunger
-hunger
-0
-100
-3
-1
-1
-NIL
-HORIZONTAL
-
-SLIDER
-188
-476
-360
-509
-grass-regrowth
-grass-regrowth
-0
-100
-3
-1
-1
-NIL
-HORIZONTAL
 
 @#$#@#$#@
 ## WHAT IS IT?
@@ -614,9 +368,8 @@ false
 0
 Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
-
 @#$#@#$#@
-NetLogo 5.3.1
+NetLogo 6.0.1
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
@@ -632,7 +385,6 @@ true
 0
 Line -7500403 true 150 150 90 180
 Line -7500403 true 150 150 210 180
-
 @#$#@#$#@
 0
 @#$#@#$#@

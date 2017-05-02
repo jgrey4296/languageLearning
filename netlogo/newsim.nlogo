@@ -4,94 +4,133 @@
 ;; <3> Running
 ;; <4> Reporters
 ;; <5> Utility
+;; ... Netlogo generated code at the end
 
 
 ;; <1> Variable Setup
-
-turtles-own [energy]
-
+;;Breeds
+;;Variables:
+globals [ MAXTICKS litter_color agent_num rand_litter_size]
+turtles-own [ total_littered times_littered times_observed_litter times_littering_observed mem_decay_rate angle_mod angle_decay heading_right litter_weights]
+;;links-own [ strength ]
+;;patches-own [ food ]
 
 ;; <2> Initialization
 to setup
+  print "Setting up"
   clear-all
+  ;;CONSTANTS
+  set MAXTICKS 1000
+  set litter_color brown
+  set agent_num 40
+  set rand_litter_size 2
+  ;;set littering_threshold 400
+
   setup-patches
   setup-turtles
   reset-ticks
 end
 
 
-to setup-turtles
-  create-turtles number-of-turtles [setxy random-xcor random-ycor set energy 100]
-end
-
-to setup-patches
-  ask patches [ set pcolor green ]
-end
-
-
 ;; <3> Running
 to go
-  if ticks >= 500 [ stop ]
-  move-turtles
-  eat-grass
-  reproduce
-  check-death
-  regrow-grass
+  if ticks = 0 [ print "Starting" ]
+  if ticks >= MAXTICKS [ stop ]
+  ;;move
+  move
+  ;;observe and maybe litter
+  foreach [self] of turtles [ [x]-> count_litter x  maybe-litter x]
+  decay_memory_all
   tick
 end
 
 ;; <4> Utility
-to reproduce
-  ask turtles [
-    if energy > birth-energy [
-      set energy energy - birth-energy
-      hatch 1 [ set energy birth-energy ]
-    ]
-  ]
+to setup-patches [  ]
+   ask patches [ set pcolor black ]
 end
 
-to check-death
-  ask turtles [
-    if energy <= 0 [die]
-  ]
+to-report rand_offset
+   ifelse random 10 > 5 [report 0] [report 180]
 end
 
-to regrow-grass
-  ask patches [
-    if random 100 < grass-regrowth [ set pcolor green ]
-  ]
+to-report rand_weights
+   report (list random-float 1 random-float 1 random-float 1)
 end
 
-to move-turtles
-  ask turtles [
-  right random 360
-  forward 1
-  set energy energy - hunger
-  ]
+to setup-turtles [ ]
+  create-turtles agent_num [ set size 3 set shape "circle" set heading 90 + rand_offset set litter_weights rand_weights set mem_decay_rate (random 4)]
+  ask turtles [ ifelse heading = 90 [ set heading_right true ] [ set heading_right false ] ]
 end
 
-to eat-grass
-  ask turtles [
-   if pcolor = green [
-    set pcolor black
-    set energy energy + energy-from-grass
-   ]
-   ifelse show-energy?
-   [ set label energy ]
-   [ set label "" ]
-  ]
+to move
+   ask turtles with [ angle_mod > 0 ] [ set heading heading + angle_mod set angle_mod 0 ]
+   ask turtles with [ angle_decay > 0 ] [ set angle_decay angle_decay - 1 ]
+   ask turtles with [ angle_decay = 0 ] [ ifelse heading_right = true [set heading 90 ] [ set heading 270 ] ]
+
+   ask turtles [ fd 1 ]
+
+   if random 100 < 3 [ ask n-of 5 turtles [ set angle_mod (random 90) - 45 set angle_decay random 10] ]
 end
 
 
+to update_times_littered [ x ]
+   ask x [ set times_littered times_littered + 1 ]
+end
 
+to update_littering_observed [ x ]
+   ask x [ set times_littering_observed times_littering_observed + 1 ]
+end
+
+to update_litter_observed [ x amnt ]
+   ask x [ set times_observed_litter amnt ]
+end
+
+to decay_memory_all
+   ask turtles [ set total_littered (total_littered + times_littered + times_observed_litter + times_littering_observed)
+                 set times_littered times_littered - mem_decay_rate
+                 set times_observed_litter times_observed_litter - mem_decay_rate
+                 set times_littering_observed times_littering_observed - mem_decay_rate ]
+end
+
+to count_litter [ agent ]
+   let near_patches [neighbors] of [patch-here] of agent
+   let littered_patches count near_patches with [ pcolor = litter_color ]
+   update_litter_observed agent littered_patches
+end
+
+
+to maybe-litter [agent]
+   let weights [litter_weights] of agent
+   let w_littered item 0 weights * [times_littered] of agent
+   let w_litter item 1 weights * [times_observed_litter] of agent
+   let w_others_littering item 2 weights * [times_littering_observed ] of agent
+   let w_total_littered (random-float 1) * [total_littered] of agent
+   if w_littered + w_litter + w_others_littering + w_total_littered > littering_threshold [ litter agent ]
+
+end
+
+to litter [agent]
+   ask agent [ ask patch-here [ set pcolor  litter_color ] ]
+   ;;trigger updates in near by agents
+   ask agent [ ask other turtles in-radius OBSERVE_RADIUS [ update_littering_observed self ] ]
+end
+
+
+;;Trigger
+to random_litter
+   ask n-of rand_litter_size turtles [ litter self ]
+end
+
+
+;; Generated Code:
 @#$#@#$#@
 GRAPHICS-WINDOW
-362
+210
 10
-801
-470
-16
-16
+647
+448
+-1
+-1
 13.0
 1
 10
@@ -106,17 +145,17 @@ GRAPHICS-WINDOW
 16
 -16
 16
-1
-1
+0
+0
 1
 ticks
 30.0
 
 BUTTON
-11
-10
-77
 43
+10
+191
+73
 NIL
 setup
 NIL
@@ -124,16 +163,16 @@ NIL
 T
 OBSERVER
 NIL
-NIL
+S
 NIL
 NIL
 1
 
 BUTTON
-93
-10
-156
 43
+95
+185
+180
 NIL
 go
 T
@@ -141,133 +180,53 @@ T
 T
 OBSERVER
 NIL
+G
 NIL
 NIL
-NIL
-0
-
-MONITOR
-10
-50
-103
-95
-NIL
-count turtles
-17
 1
-11
-
-MONITOR
-10
-100
-252
-145
-NIL
-count patches with [ pcolor = green ]
-17
-1
-11
-
-SWITCH
-11
-154
-155
-187
-show-energy?
-show-energy?
-0
-1
--1000
-
-PLOT
-10
-231
-210
-381
-Totals
-time
-totals
-0.0
-10.0
-0.0
-10.0
-true
-true
-"" ""
-PENS
-"turtles" 1.0 0 -2674135 true "" "plot count turtles"
-"grass" 1.0 0 -13840069 true "" "plot count patches with [pcolor = green]"
 
 SLIDER
-10
-439
-182
-472
-number-of-turtles
-number-of-turtles
+690
+14
+1272
+47
+littering_threshold
+littering_threshold
 0
 1000
-146
+41.0
 1
 1
 NIL
 HORIZONTAL
 
+BUTTON
+703
+89
+796
+122
+One Litter
+random_litter
+NIL
+1
+T
+OBSERVER
+NIL
+L
+NIL
+NIL
+1
+
 SLIDER
-10
-476
+692
+151
+1266
 184
-509
-energy-from-grass
-energy-from-grass
-0
+OBSERVE_RADIUS
+OBSERVE_RADIUS
+1
 100
-22
-1
-1
-NIL
-HORIZONTAL
-
-SLIDER
-10
-513
-182
-546
-birth-energy
-birth-energy
-0
-100
-50
-1
-1
-NIL
-HORIZONTAL
-
-SLIDER
-10
-553
-182
-586
-hunger
-hunger
-0
-100
-3
-1
-1
-NIL
-HORIZONTAL
-
-SLIDER
-188
-476
-360
-509
-grass-regrowth
-grass-regrowth
-0
-100
-3
+54.0
 1
 1
 NIL
@@ -614,9 +573,8 @@ false
 0
 Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
-
 @#$#@#$#@
-NetLogo 5.3.1
+NetLogo 6.0.1
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
@@ -632,7 +590,6 @@ true
 0
 Line -7500403 true 150 150 90 180
 Line -7500403 true 150 150 210 180
-
 @#$#@#$#@
 0
 @#$#@#$#@
