@@ -1,0 +1,65 @@
+* Answer Set Programming
+** CLI Usage:
+   clingo -Wall -n 1 --rand-freq=0.5 --verbose=3 test_map.lp 
+
+** Facts
+   Simple values:
+   a. b. c.
+   Compound:
+   a(1). something(else).
+   Ranges:
+   a(1..3).
+** Constraints
+   lowNum { fact } highNum.
+
+   %Generate only one from a selection
+   { facts } = 1 :- facts.
+
+   %Create n variations of 'test(x, Y).' to fill with all values of Y
+   %results in size(y) * n facts
+   { test(X, Y) : a(X) } = n :- b(Y).
+
+   x(1..3).
+   y(1..3).
+   loc(X,Y) :- x(X), y(Y).
+   time(5).
+   % for each T, create a single move, fill with X,Y where x > Y
+   { move(X,Y,T) : x(X), y(Y), X > Y } = 1 :- time(Q), T=1..Q.
+
+
+
+** Rules
+   head :- body.
+   then : if.
+
+   Conjunctions:
+   head :- body, body, body.
+   Disjunctions:
+   head :- body; body.
+
+   Exclusions:
+   :- body.
+
+** Aggregates:
+   %count all a's. As between the {} is a set, make sure each entry is unique
+   a(1..4).
+   count(X) :- X = #count { Y : a(Y) }.
+
+   a(3).
+   b(X,Y) :- a(S), X = 1..S, Y= 1..S.
+   count(X) :- X = #count { temp(Q,R) : b(Q,R) }.
+
+** Display
+   use (specifying fact type and size).
+   #show something/2.
+   
+
+** Examples
+n(4).
+sizes((rows;columns), N) :- n(N).
+board(X,Y) :- sizes(rows,A), sizes(columns,B), X=1..A, Y=1..4.
+%boardSize(S) :- n(Q), NS=Q*Q, S=#count { board(X,Y) : board(X,Y) }, S=NS.
+boardSize(S) :- S= #count { board(X,Y) : board(X,Y) }.
+:- not boardSize(_).
+:- boardSize(S), n(N), NS=N*N, S!=NS.
+#show boardSize/1.
