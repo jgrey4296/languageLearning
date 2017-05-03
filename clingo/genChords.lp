@@ -1,27 +1,49 @@
-%%reminder: clingo -n 5 --rand-freq 0.5 --verbose=0 simpleMelody.lp
+% Generate sequences of chords
+% Output format: chord(root, inversion, time).
+% implicit in the program that consumes: root, scale, time, instrumentation
+
+% Inputs: numSteps, numCadences, finalCadence, maxChordRepeats
+
+%Generate: A Sequence of chord roots
+%Generate: A Sequence of chord inversions
+
+%combine: roots + inversions
+
+% Test: Start on root, Number of Cadences, Final Cadence.
+% Test: Number of chord repeats
+
+%%----------Inputs
+#const numSteps = 8. 
+#const numCadences = 1.
+#const finalCadence = 5.
+#const maxChordRepeats = 2.
 
 %%----------initial declarations
 %%Pitches - Chromatic
-notePitch(1;2;3;4;5;6;7;8;9;10;11;12;13).
-%%Melody Options:
-numOfBars(4).
-interval(0,4,8).
+notePitch(1..12).
+inversion(1..5).
+timeStep(1..numSteps).
+
+allowableCadences(1;4).
 
 %%----------generate
 %%select a chord for each bar
-1 { chord(A+B,A+C,A+D,T) : notePitch(A), interval(B,C,D) } 1 :- numOfBars(W), T=1..W.
+{ chordRootAtT(T, X) : notePitch(X) } = 1 :- timeStep(T).
+{ inversionAtT(T, X) : inversion(X) } = 1 :- timeStep(T).
 
-%%modulo it to keep it in range:
-modChord(X,Y,Z,T) :- chord(A,B,C,T), X= A\12, Y= B\12, Z= C\12.
-
-%%----------define
-root(N,T) :- modChord(N,_,_,T).
-
-
-%%----------test:
-:- not root(0,1).
-:- not root(0,M), numOfBars(M).
-:- not root(5,M-1), numOfBars(M).
+% possible: generate cadences
+final_cadence(X,Y) :- chordRootAtT(numSteps-1,X), chordRootAtT(numSteps,Y).
+correctStart :- chordRootAtT(1,1). %start at tonic
+correctFinish :- chordRootAtT(numSteps, finalCadence). %end on dominant
 
 
-#show modChord/4.
+%Constrain
+:- not correctStart.
+:- not correctFinish.
+:- { final_cadence(X,_) : allowableCadences(X) } = 0.
+
+%%----------Output
+
+#show chordRootAtT/2.
+%#show inversionAtT/2.
+#show final_cadence/2.
