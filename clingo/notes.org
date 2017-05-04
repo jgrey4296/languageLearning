@@ -2,6 +2,9 @@
 ** CLI Usage:
    clingo -Wall -n 1 --rand-freq=0.5 --verbose=3 test_map.lp 
    clingo -n 100 --restart-on-model --heu=vsids --rand-freq=0.01
+   clingo --time-limit=10 ...
+*** CLI JSON
+    clingo -outf=2 -n5 * > *.out
 ** Facts
    Simple values:
    a. b. c.
