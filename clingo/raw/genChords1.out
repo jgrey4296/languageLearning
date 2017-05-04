@@ -1,0 +1,50 @@
+{
+  "Solver": "clingo version 5.1.0",
+  "Input": [
+    "genChords.lp"
+  ],
+  "Call": [
+    {
+      "Witnesses": [
+        {
+          "Value": [
+            "chordRootAtT(7,4)", "chordRootAtT(8,5)", "final_cadence(4,5)", "chordRootAtT(1,1)", "chordRootAtT(2,7)", "chordRootAtT(3,1)", "chordRootAtT(4,11)", "chordRootAtT(5,8)", "chordRootAtT(6,2)"
+          ]
+        },
+        {
+          "Value": [
+            "chordRootAtT(7,4)", "chordRootAtT(8,5)", "final_cadence(4,5)", "chordRootAtT(1,1)", "chordRootAtT(2,7)", "chordRootAtT(3,1)", "chordRootAtT(4,3)", "chordRootAtT(5,8)", "chordRootAtT(6,2)"
+          ]
+        },
+        {
+          "Value": [
+            "chordRootAtT(7,4)", "chordRootAtT(8,5)", "final_cadence(4,5)", "chordRootAtT(1,1)", "chordRootAtT(2,7)", "chordRootAtT(3,1)", "chordRootAtT(4,11)", "chordRootAtT(5,8)", "chordRootAtT(6,5)"
+          ]
+        },
+        {
+          "Value": [
+            "chordRootAtT(7,4)", "chordRootAtT(8,5)", "final_cadence(4,5)", "chordRootAtT(1,1)", "chordRootAtT(2,7)", "chordRootAtT(3,1)", "chordRootAtT(4,3)", "chordRootAtT(5,8)", "chordRootAtT(6,5)"
+          ]
+        },
+        {
+          "Value": [
+            "chordRootAtT(7,4)", "chordRootAtT(8,5)", "final_cadence(4,5)", "chordRootAtT(1,1)", "chordRootAtT(2,7)", "chordRootAtT(3,1)", "chordRootAtT(4,11)", "chordRootAtT(5,8)", "chordRootAtT(6,3)"
+          ]
+        }
+      ]
+    }
+  ],
+  "Result": "SATISFIABLE",
+  "Models": {
+    "Number": 5,
+    "More": "yes"
+  },
+  "Calls": 1,
+  "Time": {
+    "Total": 0.006,
+    "Solve": 0.000,
+    "Model": 0.000,
+    "Unsat": 0.000,
+    "CPU": 0.000
+  }
+}
