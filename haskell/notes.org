@@ -42,8 +42,6 @@ Real World Haskell
    :showi language             show language flags for interactive evaluation
    
 ** language
-
-
 *** Pragmas
 {-# LANGUAGE TypeSynonymInstances, OverlappingInstances, FlexibleInstances, GeneralizedNewtypeDeriving #-}
 type synonyms allows useful for typeclass instances for Strings (as strings are [Char],
@@ -86,7 +84,6 @@ implicitly, to be modified with 'get' and 'put'
 -- State >>= 
 theMonad >>=  theFunction = \s -> (theFunction value) s'
 								 where (value,s') = theMonad s
-
 
 *** Association Lists and maps
 let a = [(1,"blah"),(2,"bloo"),(3,"blee")]
@@ -195,6 +192,165 @@ can occur for Read, Show, Bounded, Enum, Eq, Ord
 data Test = Something Int Int
 let a = Test 5 3
 let myFunc = \x -> case x of Something a b -> a + b
+
+*** Pattern Guards
+    guardTest :: Int -> Int
+    guardTest x 
+	  | x < 5 = 10
+	  | x > 5 = 5
+	  | otherwise = 0
+
+*** Random Numbers
+    import System.Random
+    getRandomList :: Float -> Float -> Int -> [Float]
+    getRandomList min max seed = randList
+      where baseList = randoms (mkStdGen seed) :: [Float]
+        range = max - min
+        randList = [ min + (x * range) | x <- baseList ]
+
+*** Switch Statement
+    recTest :: [Float] -> [Float] -> [Float]
+    recTest base vals = case vals of
+	  [] -> base
+	  x:xs -> recTest (x*2 : base) xs
+
+*** Modules
+    Data.Map 
+    Data.Text -- More efficient than string
+    Data.Maybe -- has isJust, isNothing...
+    Control.Monad (forM, liftM)
+    Control.Monad.Trans
+    Control.Monad.Writer
+    Control.Monad.State
+    Control.Monad.Reader
+
+
+*** Monad Transformers
+    import Control.Monad.Identity
+    import Control.Monad.Trans
+    import Control.Monad.Trans.Identity
+    import Control.Monad.Trans.State
+    import Control.Monad.IO.Class
+
+**** Example State Monads
+
+     test1 :: State Int Int
+     test1 = do
+     a <- get
+     modify (+1)
+     b <- get
+     return a
+
+     test2 :: State Int String
+     test2 = do
+     a <- get
+     modify (+1)
+     b <- get
+     return "blah"
+
+**** State Monads combined:
+     test3 :: StateT Integer (StateT String Identity) (Integer, String)
+     test3 = do
+     modify (+1)
+     lift $ modify ( ++ "1")
+     a <- get
+     b <- lift get
+     return (a,b)
+    
+     go3 = runIdentity $ evalStateT (evalStateT test3 0) "0"
+    
+**** State with IO
+     test4 :: StateT String IO Integer
+     test4 = do
+     modify (++ "1")
+     let a = 5
+     lift $ print a
+     modify (++ "1")
+     let b = 10
+     lift (print b)
+     return $ a + b
+    
+     go4 = evalStateT test4 "0"
+
+**** State with data
+     data TestState = TestState { num :: Int, name :: String }
+    
+     test5 :: StateT TestState IO (String, Int)
+     test5 = do
+     theState <- get;
+     lift $ print $ name theState
+     put $ theState { name = "blah" }
+     lift $ print $ num theState
+     upState <- get;
+     put $ upState { num = 1 + num upState }
+     finalState <- get
+     return (name finalState, num finalState)
+    
+     go5 = evalStateT test5 $ TestState 5 "awef"
+
+**** Reader Monad
+
+     -- Reader
+     test6 :: Int -> StateT Int (ReaderT Int IO) Int
+     test6 y = do
+     val <- get
+     x <- lift $ ask
+     put $ val + x
+     return $ x + y
+     
+     test7 :: ReaderT Int (StateT Int IO) Int
+     test7 = do
+     val <- ask
+     x <- lift get;
+     liftIO $ print val
+     liftIO $ print x
+     lift $ put $ val + x
+     newVal <- lift get
+     liftIO $ print newVal
+     return newVal
+     
+     go7 = evalStateT (runReaderT test7 10) 2
+     
+     
+     test8 :: ReaderT [Int] (StateT Int IO) Int
+     test8 = do
+     otherVal <- test9
+     liftIO $ print otherVal
+     val <- ask
+     liftIO $ print val
+     lift $ put $ (val !! 2) + 2
+     upVal <- lift $ get
+     liftIO $ print upVal
+     return $ upVal
+     
+     test9 = do
+     val <- ask
+     return $ val !! 3
+     
+     go8 = evalStateT (runReaderT test8 [1,2,3,4]) 2
+     
+**** Writer Monad
+     test10 :: ReaderT [Int] (WriterT String IO) String
+     test10 = do
+     v <- ask
+     lift $ tell "blah"
+     liftIO $ print "----"
+     lift $ tell "bloo"
+     liftIO $ print v
+     liftIO $ print "----"
+     lift $ tell "blee"
+     lift $ tell "awef"
+     return "final"
+
+     go10 = runWriterT (runReaderT test10 [1,2,3,4])
+     
+     go11 = do
+     result <- go10
+     print $ snd result
+     return $ fst result
+
+
+
 
 ** Parsec Notes
    parsers as variables requires the flag -XFlexibleContexts
