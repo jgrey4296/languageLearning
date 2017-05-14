@@ -1,0 +1,8 @@
+* Python notes
+** Spacy
+   Currently loaded en_core_web_sm
+   Might use:
+   en_core_web_md
+   Using:
+   python -m spacy download en_core..
+
