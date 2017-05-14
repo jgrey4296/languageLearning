@@ -1,0 +1,31 @@
+* GLSL notes
+  From going through [[thebookofshaders.com][The Book of Shaders]].
+** Reserved Words
+   gl_FragColor   - final output pixel color
+   gl_FragCoord
+   uniform - for input, parallel, read-only data.
+** input variables:
+   uniform vec2 u_resolution; 
+   u vec2 u_mouse;
+   u float u_time;
+   gl_FragCoord - where on the scren the pixel is.
+** Functions
+   sin, cos, tan, asin, acos, atan, pow, exp, log, sqrt, abs, sign, floor, ceil, fract, mod, min, max, clamp;
+
+** Macros
+   #define,
+   #iddef, #endif
+** Types
+   vec2, vec3, vec4.
+   vec4 ( red, green, blue, alpha )  - normalized.
+   
+** Structure
+   #iddef GL_ES
+   precision mediump float;
+   #endif
+
+   void main() { gl_FragColor = vec4(1,1,1,1); }
+
+** Warnings:
+   No automatic casting. Put the decimal in floats.
+   Single pass, needs forward declarations.
