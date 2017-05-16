@@ -1,3 +1,4 @@
+-- Can't run in ghci, compile it with ghc
 import Graphics.UI.GLUT
 
 myPoints :: [(GLfloat, GLfloat, GLfloat)]
@@ -14,6 +15,6 @@ main = do
 display :: DisplayCallback
 display = do
   clear [ ColorBuffer ]
-  renderPrimitive Triangles $
+  renderPrimitive TriangleFan $
     mapM_ (\(x,y,z)-> vertex $ Vertex3 x y z) myPoints
   flush
