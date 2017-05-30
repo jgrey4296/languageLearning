@@ -52,3 +52,341 @@
    |*| multiplies them
 
    
+** Basic Tidal Setup
+
+** Midi
+   import Sound.Tidal.MIDI.Context
+   displayOutputDevices >>= putStrLn
+   devices <- midiDevices
+   m1 <- midiStream devices "USB MIDI Device" 1 synthController
+   the "1" is the channel. 
+   "USB MIDI Device" is the name reported in displayOutputDevices
+
+** Misc Notes
+   Polyrhythm: "[bd bd bd, sd cp sd cp]"
+   Polymetre : "{bd bd bd, sd cp sd cp]"
+** useful definitions and definitions
+   #+begin_src haskell
+     -- Convert beats per minute in bars to cycles per second
+     bpmToCps n b = n/60/b
+   #+end_src
+   
+   use `realToFrac` fmapped to [int] -> [double]
+   use toScale to fit to a scale
+   
+   #+begin_src haskell
+     chordPattern chds = realToFrac `fmap` (Chords.enchord [chd] 0 0)
+
+     --applying a run to a scale
+     sound "pluck*6" # up (realToFrac `fmap` (toScale Scales.harmonicMinor "0 1 2 3 4 5"))
+     --applying a chord to 
+     sound "pluck*5" # up "2" |+| up (realToFrac `fmap` Chords.enchord [Chords.five] 0 0)
+     -- up $ chordPattern [Chords.five] # sound "pluck"
+   #+end_src
+
+** Sample names
+   [[file:~/Library/Application%20Support/SuperCollider/downloaded-quarks/Dirt-Samples][Sample Folder]]
+.git
+808
+808bd
+808cy
+808hc
+808ht
+808lc
+808lt
+808mc
+808mt
+808oh
+808sd
+909
+Dirt-Samples.quark
+README.md
+ab
+ade
+ades2
+ades3
+ades4
+alex
+alphabet
+amencutup
+armora
+arp
+arpy
+auto
+baa
+baa2
+bass
+bass0
+bass1
+bass2
+bass3
+bassdm
+bassfoo
+battles
+bd
+bend
+bev
+bin
+birds3
+bleep
+blip
+blue
+bottle
+breaks125
+breaks152
+breaks157
+breaks165
+breath
+bubble
+can
+casio
+cb
+cc
+chin
+chink
+circus
+clak
+click
+co
+cosmicg
+cp
+cr
+crow
+d
+db
+diphone
+diphone2
+dist
+dork2
+dorkbot
+dr
+dr2
+dr55
+dr_few
+drum
+drumtraks
+e
+east
+electro1
+erk
+f
+feel
+feelfx
+fest
+fire
+flick
+foo
+future
+gab
+gabba
+gabbaloud
+gabbalouder
+glasstap
+glitch
+glitch2
+gretsch
+h
+hand
+hardcore
+haw
+hc
+hh
+hh27
+hit
+hmm
+ho
+house
+ht
+if
+ifdrums
+incoming
+industrial
+insect
+invaders
+jazz
+jungbass
+jungle
+jvbass
+koy
+kurt
+latibro
+led
+less
+lighter
+lt
+made
+made2
+mash
+mash2
+metal
+miniyeah
+moan
+monsterb
+moog
+mouth
+mp3
+msg
+mt
+mute
+newnotes
+noise
+noise2
+notes
+numbers
+oc
+odx
+off
+pad
+padlong
+pebbles
+perc
+peri
+pluck
+print
+proc
+procshort
+psr
+rave
+rave2
+ravemono
+rm
+rs
+sax
+sd
+seawolf
+sequential
+sf
+sheffield
+short
+sid
+sine
+sitar
+sn
+space
+speech
+speechless
+speedupdown
+stab
+stomp
+subroc3d
+sugar
+sundance
+tabla
+tabla2
+tablex
+tacscan
+tech
+techno
+tink
+tok
+toys
+trump
+ul
+ulgab
+uxay
+v
+voodoo
+wind
+wobble
+world
+xmas
+yeah
+
+** Rhythms
+   (2,5) : A thirteenth century Persian rhythm called Khafif-e-ramal.
+   (3,4) : The archetypal pattern of the Cumbia from Colombia, as well as a Calypso rhythm from Trinidad.
+   (3,5,2) : Another thirteenth century Persian rhythm by the name of Khafif-e-ramal, as well as a Rumanian folk-dance rhythm.
+   (3,7) : A Ruchenitza rhythm used in a Bulgarian folk-dance.
+   (3,8) : The Cuban tresillo pattern.
+   (4,7) : Another Ruchenitza Bulgarian folk-dance rhythm.
+   (4,9) : The Aksak rhythm of Turkey.
+   (4,11) : The metric pattern used by Frank Zappa in his piece titled Outside Now.
+   (5,6) : Yields the York-Samai pattern, a popular Arab rhythm.
+   (5,7) : The Nawakhat pattern, another popular Arab rhythm.
+   (5,8) : The Cuban cinquillo pattern.
+   (5,9) : A popular Arab rhythm called Agsag-Samai.
+   (5,11) : The metric pattern used by Moussorgsky in Pictures at an Exhibition.
+   (5,12) : The Venda clapping pattern of a South African children’s song.
+   (5,16) : The Bossa-Nova rhythm necklace of Brazil.
+   (7,8) : A typical rhythm played on the Bendir (frame drum).
+   (7,12) : A common West African bell pattern.
+   (7,16,14) : A Samba rhythm necklace from Brazil.
+   (9,16) : A rhythm necklace used in the Central African Republic.
+   (11,24,14) : A rhythm necklace of the Aka Pygmies of Central Africa.
+   (13,24,5) : Another rhythm necklace of the Aka Pygmies of the upper Sangha.
+
+
+** Patterns
+   "[hh hh hh, [bd bd:4]*0.5, [~ sn:4]*0.75]"
+   d1 $  (sound "{pluck ~, pluck ~ pluck ~ ~}") |*| (up (realToFrac `fmap` toScale Scales.harmonicMajor "[0 4 5 8 7 3 2]*0.2"))
+   d1 $ sound "[pluck(11,24, 14)]*0.25" # up (realToFrac `fmap` toScale Scales.melodicMinor "[2 0 0 3 0 2]")
+   d1 $ sound "bd*16" # gain (slow 8 $ sine)
+   d1 $ sound "moog*4" # cutoff (scale 300 1000 $ slow 4 $ sine) # sustain 0.3 # release sine
+
+   conditional logic example:
+   d1 $ every 5 (|+| speed 0.5) $ every 4 (0.25 <~) $ every 3 (rev) $ sound "bd sn arpy*2 cp"
+
+
+** Pattern transformation
+   |+| |*| |-| |/|  (|=| or #)
+   rev p
+   every n func p
+   slow p   |   fast p
+   gain, pan, shape, vowel, speed, crush,  (Sound.Tidal.Params)
+   n (sample select)
+
+   scale
+   sine (continuous)
+   saw, tri, square
+   density
+
+   <~ and ~> : shift in time
+
+   Randomness: rand and irand. Can be scaled etc
+   
+   ? in a pattern marks it as degradable. function: degrade.
+   degradeBy n $ - controllable possibility degrade
+
+
+   sometimesBy n func $
+   sometimes = sometimesBy 0.5
+   often = sometimesBy 0.75
+   rarely = sometimesBy 0.25
+   almostNever = sometimesBy 0.1
+   almostAlways = sometimesBy 0.9
+
+   conditional logic:
+   every n (func) $
+   whenmod
+
+   use *const* to replace a pattern:
+   d1 $ whenmod 8 6 (const $ sound "arpy(3,8) bd*4") $ sound "bd sn bass2 sn"
+
+   sequence patterns with:
+   *fastcat* (all into one measure) 
+   *cat* (multiple measures)
+   *randcat* (choose from available patterns)
+
+   *stack* plays at the same time
+
+   force mono using *cut*
+
+   *transitions*:
+   use the associated transition channels (d1-dn : t1-tn)
+   send functions like anticipate
+
+** Combining with (#):
+   The rule is, for each value in the pattern on
+   the left, values from the right are matched where the start (or
+   onset) of the left value, fall within the timespan of the value on
+   the right. For example, the second pan value of 1 starts one third
+   into its pattern, and the second sound value of sn starts one
+   quarter into its pattern, and ends at the halfway point. Because
+   the former onset (one third) falls inside the timespan of the
+   latter timespan (from one quarter until one half), they are
+   matched. The timespan of arpy doesn’t contain any onsets from the
+   pan pattern, and so it doesn’t match with anything, and isn’t
+   played.
+
+* Supercollider patterns
+
