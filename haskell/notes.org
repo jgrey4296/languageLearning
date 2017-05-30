@@ -1,6 +1,5 @@
 * Haskell Notes
-QReal World Haskell
-
+  [[http://book.realworldhaskell.org/][Real World Haskell]]
 ** CLI programs
    1) ghc    -   compiles programs
    2) runghc -   allows running of hs programs without compiling
@@ -41,6 +40,10 @@ QReal World Haskell
     [args, prog, prompt, editor, stop]
     :showi language             show language flags for interactive evaluation
 
+    Use ghc-paths: docdir, ghc, ghc_pkg, libdir
+    
+
+
 *** Gotchas
     
 **** Let in Ghci Do block
@@ -50,7 +53,6 @@ QReal World Haskell
 #+end_src
 
 
-   
 ** language
 *** Pragmas
     {-# LANGUAGE TypeSynonymInstances, OverlappingInstances, FlexibleInstances, GeneralizedNewtypeDeriving #-}
@@ -222,6 +224,14 @@ let a = Test 5 3
 let myFunc = \x -> case x of Something a b -> a + b
 #+end_src
 
+#+RESULTS:
+: <interactive>:19:11: error:
+:     parse error (possibly incorrect indentation or mismatched brackets)
+: <interactive>:20:7: error: parse error on input ‘|’
+: <interactive>:21:7: error: parse error on input ‘|’
+
+
+
 
 *** Pattern Guards
 #+begin_src haskell
@@ -242,7 +252,6 @@ let myFunc = \x -> case x of Something a b -> a + b
         range = max - min
         randList = [ min + (x * range) | x <- baseList ]
 #+end_src
-
 
 
 *** Switch Statement
@@ -481,50 +490,155 @@ aShuffle = do
 *** Arguments
     import System.Environment
 
+
+*** Applicative
+    Used with Maybe:
+    #+begin_src haskell :results output
+      Just (+3) <*> Just 9 -- unwrap and combine 
+      Just (+3) *> Just 9  -- unwrap and discard left
+      Just 7 <* Just 8     -- unwrap and discard right
+      (+3) <$> Just 9      -- unwrap right, combine
+      3 <$ Just 9          -- Unwrap right, only wrap left
+    #+end_src
+
+    #+RESULTS:
+    : Just 12
+    : Just 9
+    : Just 7
+    : Just 12
+
+
+
+
 ** Parsec Notes
    parsers as variables requires the flag -XFlexibleContexts
    use Text.Parsec, Text.Parsec.String, Text.Parsec.Char
    Text.Parsec.Char and Text.Parsec.String simplify types   
 
-   General Parse Call:
-   parse $PARSER "$ERROR" "$INPUT"
+   *Simplest Parser*:
+   #+begin_src haskell :results value
+     import Text.Parsec as P
+     let a = do { a <- P.many P.alphaNum; P.space; b <- P.many P.alphaNum; return [a,b] }
+     let textToParse = "blah blee"
+     let result = parse a "" textToParse
+     putStrLn $ show result
+    #+end_src
+
+    #+RESULTS:
+    : Right ["blah","blee"]
+    spaces = many space
+    word = many1 alphaNum <* spaces
+    words = many1 word <* spaces
+    num = do { a <- many digit <* spaces; return $ (read a :: Int) }
+
+   Alternatives: 
+   let dogOrCat = (string "dog") <|> (string "cat")
+
+   <|> consumes input without backtracking, so
+   let altFail = (string "abc") <|> (string "abd")
+   Will fail as when the first attempt fails
+   To fix, use *try*
+   let altSucceed = try (string "abc") <|> (string "abd")
+
+
+
+*** Other notes
+    Satisfy performs tests of chars to accept
+    satisfy :: (Char -> Bool) -> Parser Char
    
-   Satisfy performs tests of chars to accept
-   satisfy :: (Char -> Bool) -> Parser Char
+    Standard Parsers:
+    anyChar, space, newline, tab,
+    upper, lower, alphaNum, letter, digit, hexDigit, octDigit
+    string
+
+    oneOf, noneOf, many, skipMany
    
-   Standard Parsers:
-   anyChar, space, newline, tab,
-   upper, lower, alphaNum, letter, digit, hexDigit, octDigit
-   string
+    to convert to numbers:
+    read "1234" :: Integer 
 
-   oneOf, noneOf, many, skipMany
+    to ignore a parse:
+    void $ parser  
+
+    ignore the second parser:
+    x <- p <* whitespace
+
+    Options (to backtrack, wrap with 'try' )
+    p <|> p2
+
+    Apply a function to a parse result:
+    ctor <$> p
+
+    Write new parsers, use type declaration to hint:
+ #+begin_src haskell
+   var :: Parser (Char, String)
+   var = do
+     fc <- firstChar
+     rest <- many nonFirstChar
+     return (fc, rest)
+     where
+       firstChar = satisfy ( \a -> isLetter a || a == '_' )
+       nonFirstChar = satisfy ( \a -> isDigit a || isLetter a || a == '_' )
+ #+end_src
+
+
+
+** Profiling
+   Three step process:
+   1) compile with -prof-auto option. 
+      1a) possibly reinstall packages with profiling support. (install -p package --reinstall)
+   2) run with '+RTS -p -RTS' flags (-p -P -pa -V -xc, for time; -h for heap)
+
+** Lens
+   Control.Lens
+   Allows for improved access to records.
+   Typically creates the getters and setters using template haskell
    
-   to convert to numbers:
-   read "1234" :: Integer 
+   #+begin_src haskell
+     import Control.Lens
 
-   to ignore a parse:
-   void $ parser  
+     data MyTest = MyTest { _first :: String
+                          , _second :: Int } deriving (Show)
+     makeLenses ''MyTest
+     a = MyTest "blah" 2
+     --Getters use 'view'
+     x :: String = view first a
+     --Modify using 'over'
+     a' = over second (+ 2) a
+     --Setters use 'set'
+     a'' = set second 10 a
+   #+end_src
 
-   ignore the second parser:
-   x <- p <* whitespace
+   If not using template haskell, create lens manually:
+   #+begin_src haskell
+     import Control.Lens
 
-   Options (to backtrack, wrap with 'try' )
-   p <|> p2
+     data MyTest = MyTest { _first :: String
+                          , _second :: Int } deriving (Show)
 
-   Apply a function to a parse result:
-   ctor <$> p
+     -- Manual Lens
+     first :: Lens' MyTest String
+     first = lens _first (\aTest newFirst -> aTest { _first = newFirst })
 
-   Write new parsers, use type declaration to hint:
-#+begin_src haskell
-  var :: Parser (Char, String)
-  var = do
-    fc <- firstChar
-    rest <- many nonFirstChar
-    return (fc, rest)
-    where
-      firstChar = satisfy ( \a -> isLetter a || a == '_' )
-      nonFirstChar = satisfy ( \a -> isDigit a || isLetter a || a == '_' )
-#+end_src
+     second :: Lens' MyTest Int
+     second = lens _second (\aTest newSecond -> aTest { _second = newSecond })
+   #+end_src
 
+
+   #+begin_src haskell
+     import Control.Lens
+     data MyRoot = MyRoot { _theTest :: MyTest } deriving (Show)
+     data MyTest = MyTest { _first :: Int
+                          , _second :: Int
+                          , _third :: Int } deriving (Show)
+     makeLenses ''MyRoot
+     makeLenses ''MyTest
+
+     a = MyRoot $ MyTest 2 3 4
+     --To Update all of the variables
+     allAccessors = fmap (theTest .) [first, second, third]
+     allMods xs = fmap (\x -> over x (+ 1)) xs
+     a' = foldl (\memo func -> func memo) a allMods
+     -- theTest a == [3, 4, 5]
+   #+end_src
 
 
