@@ -1,3 +1,4 @@
+-- originally from http://www.muitovar.com/gtk2hs/app1.html but that is outdated
 import Graphics.UI.Gtk
 import Graphics.Rendering.Cairo
 import Data.Text
