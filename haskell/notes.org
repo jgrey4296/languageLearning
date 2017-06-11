@@ -642,3 +642,20 @@ aShuffle = do
    #+end_src
 
 
+** Continuation monad
+   #+begin_src haskell
+     import Control.Monad.Cont
+
+     square :: Int -> Cont r Int
+     square x = cont $ \k -> k (x^2)
+     -- square = fmap (^2)
+
+
+     add :: Int -> Int -> Cont r Int
+     add x y = cont $ \x -> k (x+y)
+
+
+     result = square 2 `runCont` id
+     result2 = add (square 2) (square 3) `runCont` id
+   #+end_src
+
