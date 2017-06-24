@@ -39,12 +39,13 @@ type TransitionPredicate = FloatMap -> StringMap -> Transition -> Bool
 -- States of the FSM - to be loaded from a text file
 data FSM_State = FSMState String deriving (Show, Eq, Ord)
 
-
+-- info to lookup, doesnt change
 data FSM_Environment = FSMEnv { fsmE_transitions :: Transitions
                               , fsmE_incrementables :: [String]
                               , fsmE_utilityCalc :: UtilityCalc
                               , fsmE_transitionPredicate :: TransitionPredicate }
 
+-- the description of states and their connections
 data Transition = Transition { transEffects :: EntityState -> EntityState
                              , transTarget :: FSM_State }
                   
