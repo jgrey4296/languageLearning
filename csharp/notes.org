@@ -2,9 +2,16 @@
 ** Building
    mcs for compiling,
    mono for running the compiled executable
+   xbuild on linux instead of msbuild, using .sln and .csproj files
+   xbuild /t:Target
+   xbuild /p:Configuration=Release
 ** Unity
    Typical base class: Monobehaviour
    using UnityEngine;
 ** Lambdas
    Func<int, int, bool> a = (x,y) => x == y;
-   
+** Sorting
+   List<Order> SortedList = objListOrder.OrderBy(o => o.OrderDate).ToList();
+
+   Alt:
+   var x = from x in list orderBy x.val select x
