@@ -659,3 +659,6 @@ aShuffle = do
      result2 = add (square 2) (square 3) `runCont` id
    #+end_src
 
+** Timing
+   in ghci, for timing info:
+   :set +s 
