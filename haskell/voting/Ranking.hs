@@ -32,3 +32,13 @@ ci_lower_bound positive total confidence = result
         result = (phat + (z*z / (2*n)) - z * sqrt((phat*(1-phat)+(z*z/(4*n)))/n)) / dividor
 
 cilb = ci_lower_bound
+
+
+-- Exponential decay
+exp_decay :: Int -> Int -> Int -> Float -> Float
+exp_decay positive total ticks scale = result
+  where score = ci_lower_bound positive total 0.95
+        mod = 1 + min 0.0 (- log (fromIntegral ticks * scale))
+        result = score * mod
+
+
