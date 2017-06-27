@@ -102,7 +102,31 @@ approvalVote numVoters numReps vectorSize approvalDistance = do
   tallyApprovals reps approved
   voteTallies <- get
   return voteTallies
-  
+
+scoreVote :: Int -> Int -> Int -> ElectionM VoteAggregation
+scoreVote numVoters numReps vectorSize = do
+  (reps, voters) <- electionSetup numVoters numReps vectorSize
+  let dists :: [[(Position, Float)]] = fmap (\x -> zip reps $ allDistances x reps) voters
+      maxDistance = vectorSize*2*2
+      scores :: [[(Position, Int)]] = fmap (\x -> scaleScore x maxDistance numReps) dists
+  tallyVoteTuples reps scores
+  voteTallies <- get
+  return voteTallies
+
+scaleScore :: Integral a => [(Position, Float)] -> Int -> Int -> [(Position, a)]
+scaleScore dists maxDistance numReps = result
+  where f_maxDistance = fromIntegral maxDistance
+        f_numReps = fromIntegral numReps
+        result = fmap (\(p,fl) -> (p, round $ linearScale fl 0.0 f_maxDistance f_numReps 0.0)) dists 
+
+
+linearScale :: Fractional a => a -> a -> a -> a-> a -> a
+linearScale x inMin inMax outMin outMax = result
+  where outRange = outMax - outMin
+        inRange = inMax - inMin
+        xFloor = x - inMin
+        reduced = xFloor / inRange
+        result = outMin + (reduced * outRange)
 
 -- Utilities:
 
@@ -179,6 +203,6 @@ runFPTP = runElection 1000 20 10 23512122 (firstPastThePost 1000 20 10)
 runIRO = runElection 1000 20 10 23512122 (instantRunoff 4 1000 20 10) 
 runBorda = runElection 1000 20 10 23512122 (bordaCount 1000 20 10)
 runApproval x = runElection 1000 20 10 23512122 (approvalVote 1000 20 10 x)
-
+runScore = runElection 1000 20 10 2351222 (scoreVote 1000 20 10)
 
 main = runFPTP
