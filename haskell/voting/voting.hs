@@ -26,8 +26,12 @@ distance x = sqrt . cDistance x
 -- returns a sorted low->high ranking of positions
 rankDistances :: Position -> [Position] -> [Position]
 rankDistances pos options = result
-  where distances = fmap (\x -> cDistance pos x) options
+  where distances = allDistances pos options
         result = fmap snd $ L.sort $ zip distances options
+
+allDistances :: Position -> [Position] -> [Float]
+allDistances pos options = distances
+  where distances = fmap (\x -> cDistance pos x) options
 
 
 -- ##############################
@@ -89,8 +93,18 @@ bordaCount numVoters numReps vectorSize = do
     voteTallies <- get
     return voteTallies
 
--- Utilities:
 
+approvalVote :: Int -> Int -> Int -> Float -> ElectionM VoteAggregation
+approvalVote numVoters numReps vectorSize approvalDistance = do
+  (reps, voters) <- electionSetup numVoters numReps vectorSize
+  let dists :: [[(Position, Float)]] = fmap (\x -> zip reps $ allDistances x reps) voters
+      approved  = fmap (fmap fst) $ fmap (filter (\(v,d) -> d < (approvalDistance ** 2))) dists
+  tallyApprovals reps approved
+  voteTallies <- get
+  return voteTallies
+  
+
+-- Utilities:
 
 --Init the reps, voters for an election
 electionSetup :: Int -> Int -> Int -> ElectionM ([Position], [Position])
@@ -109,6 +123,11 @@ tallyVoteTuples :: [Position] -> [[(Position, Int)]] -> ElectionM ()
 tallyVoteTuples reps votes = do
   put $ M.fromList $ zip reps $ repeat 0
   mapM_ (\rankings -> mapM_ (\(pos, amnt) -> incVote pos amnt) rankings) votes
+
+tallyApprovals :: [Position] -> [[Position]] -> ElectionM ()
+tallyApprovals reps votes = do
+  put $ M.fromList $ zip reps $ repeat 0
+  mapM_ (\approved -> mapM_ (\x -> incVote x 1) approved) votes
 
 incVote :: Position -> Int -> ElectionM ()
 incVote vote amnt  = do
@@ -153,10 +172,13 @@ runElection numVoters numReps vecSize seed m = do
   printResults result
   print "Finished"
 
+
+
+--Examples
 runFPTP = runElection 1000 20 10 23512122 (firstPastThePost 1000 20 10)
-
 runIRO = runElection 1000 20 10 23512122 (instantRunoff 4 1000 20 10) 
-
 runBorda = runElection 1000 20 10 23512122 (bordaCount 1000 20 10)
+runApproval x = runElection 1000 20 10 23512122 (approvalVote 1000 20 10 x)
+
 
 main = runFPTP
