@@ -10,7 +10,7 @@ import qualified Data.Text as T
 import qualified Data.Map as M
 
 type Position = [Float]
-type Tally = (Position, Int) -- todo: switch from int count to [Int] to allow for preferences
+type Tally = (Position, Int)
 type Rank = (Position, [Int])
 type VoteAggregation = M.Map Position Int
 type RandMonad = StateT StdGen IO
