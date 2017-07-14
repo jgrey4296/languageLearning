@@ -314,3 +314,536 @@
 
    Alt:
    var x = from x in list orderBy x.val select x
+* Shader Notes 
+  Notes based on [[http://www.alanzucconi.com/2015/06/10/a-gentle-introduction-to-shaders-in-unity3d/][Alan Zucconi's tutorials]]
+  [[https://digitalerr0r.wordpress.com/2015/09/02/unity-5-shader-programming-1-an-introduction-to-shaders/][secondary tutorial]]
+  [[http://catlikecoding.com/unity/tutorials/][tertiary tutorial]]
+  [[https://en.wikibooks.org/wiki/Cg_Programming/Vertex_Transformations][cg wikibook]]
+  [[http://www.catalinzima.com/xna/tutorials/crash-course-in-hlsl/][hlsl]]
+  Types: 32 bit *float* is rarely needed,
+  16 bit *half* preferred
+  10 bit *fixed* goes from -2 to +2
+
+** Basic layout:
+   #+begin_src shader
+     Shader "MyShader"
+     {
+  	   Properties
+  	   {
+  		   // The properties of your shaders
+  		   // - textures
+  		   // - colours
+  		   // - parameters
+  		   // ...
+  	   }
+
+  	   SubShader
+  	   {
+  		   // The code of your shaders
+  		   // - surface shader
+  		   //    OR
+  		   // - vertex and fragment shader
+  		   //    OR
+  		   // - fixed function shader
+  	   }	
+     }
+   #+end_src
+** Properties
+   Provides unity inspector access to variables
+   #+begin_src shader
+     Properties
+     {
+     // Type "2D" indicates texture parameters
+     // the subshader type corresponding to "2D" == "sampler2D"
+   	  _MyTexture ("My texture", 2D) = "white" {}
+      //bump to indicate a normal map
+   	  _MyNormalMap ("My normal map", 2D) = "bump" {}	// Grey
+
+   	  _MyInt ("My integer", Int) = 2
+   	  _MyFloat ("My float", Float) = 1.5
+   	  _MyRange ("My range", Range(0.0, 1.0)) = 0.5
+
+      //Colours are RGBA, 
+      //subshader corresponding type: "float4" or "half4"
+   	  _MyColor ("My colour", Color) = (1, 0, 0, 1)	// (R, G, B, A)
+   	  _MyVector ("My Vector4", Vector) = (0, 0, 0, 0)	// (x, y, z, w)
+     }
+   #+end_src
+** Shader Body
+
+   #+begin_src shader
+     SubShader
+     {
+         Tags
+         {
+             "Queue" = "Geometry"
+             "RenderType" = "Opaque"
+         }
+         CGPROGRAM
+         // Cg / HLSL code of the shader
+         // ...
+         ENDCG
+     }
+    #+end_src
+*** Tags
+    [[https://docs.unity3d.com/Manual/SL-PassTags.html][Tags]] define properties of the shader to unity.
+
+    *Queue* : The order to render the shader
+    *Rendertype* : How to render the shader
+    *LightMode* : ForwardBase rendering.
+
+    Queue Values are an int:
+    Background: 1000,
+    Geometry : 2000,
+    Transparent : 3000,
+    Overlay : 4000
+    
+    Can also specify offsets: Background+2
+*** Imports
+    To access global variables:
+    #include "UnityCG.cginc"
+
+    
+
+** Surface Shaders
+   uses #pragma surface [functionName] [params]
+   #+begin_src shader
+     CGPROGRAM
+     // Uses the Labertian lighting model
+     #pragma surface surf Lambert
+     sampler2D _MainTex;	// The input texture
+     struct Input {
+   	  float2 uv_MainTex;
+     };
+
+     void surf (Input IN, inout SurfaceOutput o) {
+   	  o.Albedo = tex2D (_MainTex, IN.uv_MainTex).rgb;
+     }
+     ENDCG
+   #+end_src
+
+   #+begin_src shader
+     Shader "Example/Diffuse Simple" {
+         SubShader {
+           Tags { "RenderType" = "Opaque" }
+           CGPROGRAM
+           #pragma surface surf Lambert
+           struct Input {
+               float4 color : COLOR;
+           };
+           void surf (Input IN, inout SurfaceOutput o) {
+               o.Albedo = 1; // 1 = (1,1,1,1) = white
+           }
+           ENDCG
+         }
+         Fallback "Diffuse"
+       }
+   #+end_src
+
+
+   #+begin_src shader
+       Shader "Example/Diffuse Texture" {
+         Properties {
+           _MainTex ("Texture", 2D) = "white" {}
+         }
+         SubShader {
+           Tags { "RenderType" = "Opaque" }
+           CGPROGRAM
+           #pragma surface surf Lambert
+           struct Input {
+               float2 uv_MainTex;
+           };
+           sampler2D _MainTex;
+           void surf (Input IN, inout SurfaceOutput o) {
+               o.Albedo = tex2D (_MainTex, IN.uv_MainTex).rgb;
+           }
+           ENDCG
+         } 
+         Fallback "Diffuse"
+       }
+   #+end_src
+
+
+
+*** Struct SurfaceOutput:
+    fixed3 Albedo
+    fixed3 Normal
+    fixed3 Emission
+    half Specular
+    fixed Glass
+    fixed Alpha
+   
+
+
+
+   
+** Vertex Shaders
+   uses #pragma vertex [funcName]
+   Where function has the form: *vertOutput vert(vertInput)*
+
+   #+begin_src shader
+     Pass {
+     CGPROGRAM
+
+     #pragma vertex vert             
+     #pragma fragment frag
+
+     struct vertInput {
+   	  float4 pos : POSITION;
+     };  
+
+     struct vertOutput {
+   	  float4 pos : SV_POSITION;
+     };
+
+     vertOutput vert(vertInput input) {
+   	  vertOutput o;
+   	  o.pos = mul(UNITY_MATRIX_MVP, input.pos);
+   	  return o;
+     }
+
+     half4 frag(vertOutput output) : COLOR {
+   	  return half4(1.0, 0.0, 0.0, 1.0); 
+     }
+     ENDCG
+     }
+   #+end_src
+
+
+
+** Fragment Shaders
+   uses #pragma fragment [functionName]
+   Where the function has form: *half4 frag(vertOutput)*
+
+** Functions and Values
+   [[https://msdn.microsoft.com/en-us/library/windows/desktop/ff471376(v=vs.85).aspx][functions in hlsl]]
+   [[https://docs.unity3d.com/Manual/SL-UnityShaderVariables.html][built in variables]]
+   [[https://docs.unity3d.com/Manual/SL-VertexProgramInputs.html][vertex data]]
+
+   UNITY_MATRIX_MVP : A Matrix multiplier to convert 3d space to 2d screen position
+   mul : Multiplies two matrices
+
+   tex2D : takes a texture and uv coordinate, returns RGBA
+   
+
+   _Time, _SinTime, _CosTime : Floats.
+
+** Examples
+
+*** Debug shaders
+   
+**** DebugUVs:
+     #+begin_src shader
+       Shader "Custom/DebugUVs" {
+   	    Properties {
+   		    _Amnt ("Amount", float) = 1.0
+   	    }
+
+   	    SubShader {
+   		    Pass {
+   			    CGPROGRAM
+   			    #include "UnityCG.cginc"
+   			    #pragma target 2.0
+   			    #pragma vertex vert
+   			    #pragma fragment frag
+
+   			    float4 _LightColor0;
+   			    float _Amnt;
+
+   			    struct vsIn {
+   				    float4 position : POSITION;
+   				    float3 normal : NORMAL;
+   				    float2 uv : TEXCOORD0;
+   			    };
+
+   			    struct vsOut {
+   				    float4 position : SV_POSITION;
+   				    float3 normal : NORMAL;
+   				    float4 uv : TEXCOORD0;
+   			    };
+
+   			    vsOut vert(vsIn v){
+   				    vsOut o;
+   				    o.position = UnityObjectToClipPos(v.position);
+   				    o.uv = float4 ( v.uv.xy, 0, 0);
+   				    return o;
+   			    }
+
+   			    float4 frag(vsOut psIn) : SV_TARGET {
+   				    half4 c = frac( psIn.uv );
+   				    if (any(saturate(psIn.uv) - psIn.uv)){
+   					    c.b = 0.5;
+   				    }
+   				    return c;
+   			    }
+   			    ENDCG
+   		    }
+   	    }
+       }
+     
+     #+end_src
+
+
+
+**** DebugVerts
+     #+begin_src shader
+       Shader "Custom/DebugVerts" {
+    	   Properties {
+    		   _Amnt ("Amount", float) = 1.0
+    	   }
+
+    	   SubShader {
+    		   Pass {
+    			   CGPROGRAM
+    			   #include "UnityCG.cginc"
+    			   #pragma target 2.0
+    			   #pragma vertex vert
+    			   #pragma fragment frag
+
+    			   float4 _LightColor0;
+    			   float _Amnt;
+
+    			   struct vsIn {
+    				   float4 position : POSITION;
+    				   float4 color : COLOR;
+    				   float2 uv : TEXCOORD0;
+    			   };
+
+    			   struct vsOut {
+    				   float4 position : SV_POSITION;
+    				   float4 color : COLOR;
+    			   };
+
+    			   vsOut vert(vsIn v){
+    				   vsOut o;
+    				   o.position = UnityObjectToClipPos(v.position);
+    				   o.color = v.color;
+    				   return o;
+    			   }
+
+    			   float4 frag(vsOut psIn) : SV_TARGET {
+    				   return psIn.color;
+    			   }
+    			   ENDCG
+    		   }
+    	   }
+       }
+     #+end_src
+
+**** DebugNormals
+     #+begin_src shader
+       Shader "Custom/DebugNormals" {
+    	   Properties {
+    		   _Amnt ("Amount", float) = 1.0
+    	   }
+
+    	   SubShader {
+    		   Pass {
+    			   CGPROGRAM
+    			   #include "UnityCG.cginc"
+    			   #pragma target 2.0
+    			   #pragma vertex vert
+    			   #pragma fragment frag
+
+    			   float4 _LightColor0;
+    			   float _Amnt;
+
+    			   struct vsIn {
+    				   float4 position : POSITION;
+    				   float3 normal : NORMAL;
+    			   };
+
+    			   struct vsOut {
+    				   float4 position : SV_POSITION;
+    				   fixed4 color : COLOR;
+    			   };
+
+    			   vsOut vert(vsIn v){
+    				   vsOut o;
+    				   o.position = UnityObjectToClipPos(v.position);
+    				   o.color.xyz = v.normal * 0.5 + 0.5;
+    				   o.color.w = 1.0;
+    				   return o;
+    			   }
+
+    			   float4 frag(vsOut psIn) : SV_TARGET {
+    				   return psIn.color;
+    			   }
+    			   ENDCG
+    		   }
+    	   }
+       }
+
+     #+end_src
+
+
+*** Simple lighting
+    #+begin_src shader
+      Shader "Custom/DiffuseSimpleWGlobals" {
+    	  SubShader {
+    		  Tags { "LightMode" = "ForwardBase" }
+    		  Pass {
+    			  CGPROGRAM
+    			  #include "UnityCG.cginc"
+    			  #pragma target 2.0
+    			  #pragma vertex vert
+    			  #pragma fragment frag
+
+    			  float4 _LightColor0;
+
+    			  struct vsIn {
+    				  float4 position : POSITION;
+    				  float3 normal : NORMAL;
+    			  };
+
+    			  struct vsOut {
+    				  float4 position : SV_POSITION;
+    				  float3 normal : NORMAL;
+    			  };
+
+    			  vsOut vert(vsIn v){
+    				  vsOut o;
+    				  o.position = UnityObjectToClipPos(v.position);
+    				  o.normal = normalize(mul(float4(v.normal, 0.0), unity_WorldToObject));
+    				  return o;
+    			  }
+
+    			  float4 frag(vsOut psIn) : SV_TARGET {
+    				  float4 ambientLight = UNITY_LIGHTMODEL_AMBIENT;
+
+    				  float4 LightDirection = normalize(_WorldSpaceLightPos0);
+    				  float4 diffuseTerm = saturate(dot(LightDirection, psIn.normal));
+    				  float4 diffuseLight = diffuseTerm * _LightColor0;
+
+    				  return ambientLight + diffuseLight;
+    			  }
+    			  ENDCG
+    		  }
+    	  }
+      }
+    #+end_src
+
+*** Simple textured
+    #+begin_src shader
+      // Upgrade NOTE: replaced '_World2Object' with 'unity_WorldToObject'
+
+      Shader "Custom/TextureSimple" {
+    	  Properties {
+    		  _MainTexture ("Main Texture", 2D) = "white" {}
+    		  _TexChange ("Tex Change", float) = 0
+    	  }
+
+    	  SubShader {
+    		  Tags { "LightMode" = "ForwardBase" }
+    		  Pass {
+    			  CGPROGRAM
+    			  #include "UnityCG.cginc"
+    			  #pragma target 2.0
+    			  #pragma vertex vert
+    			  #pragma fragment frag
+
+    			  sampler2D _MainTexture;
+    			  float4 _LightColor0;
+    			  float _TexChange;
+
+    			  struct vsIn {
+    				  float4 position : POSITION;
+    				  float3 normal : NORMAL;
+    				  float2 uv : TEXCOORD0;
+    			  };
+
+    			  struct vsOut {
+    				  float4 position : SV_POSITION;
+    				  float3 normal : NORMAL;
+    				  float2 uv : TEXCOORD0;
+    			  };
+
+    			  vsOut vert(vsIn v){
+    				  vsOut o;
+    				  o.position = UnityObjectToClipPos(v.position);
+    				  o.normal = normalize(mul(float4(v.normal, 0.0), unity_WorldToObject));
+    				  o.uv = v.uv;
+    				  return o;
+    			  }
+
+    			  float4 frag(vsOut psIn) : SV_TARGET {
+    				  float4 ambientLight = UNITY_LIGHTMODEL_AMBIENT;
+
+    				  float4 LightDirection = normalize(_WorldSpaceLightPos0);
+    				  float4 diffuseTerm = saturate(dot(LightDirection, psIn.normal));
+    				  float4 diffuseLight = diffuseTerm * _LightColor0;
+
+    				  float csin = _SinTime[0] + _SinTime[1] + _SinTime[2];
+
+    				  //float4 tex = tex2D(_MainTexture, sin(20*(psIn.uv + csin)));
+    				  float4 tex = tex2D(_MainTexture, psIn.uv);
+    				  return ambientLight + diffuseLight + tex;
+    			  }
+    			  ENDCG
+    		  }
+    	  }
+      }
+
+    #+end_src
+
+
+
+
+*** Simple vertex shader
+    #+begin_src shader
+      Shader "Custom/VertMovement" {
+    	  Properties {
+    		  _Amnt ("Amount", float) = 1.0
+    	  }
+
+    	  SubShader {
+    		  Pass {
+    			  CGPROGRAM
+    			  #include "UnityCG.cginc"
+    			  #pragma target 2.0
+    			  #pragma vertex vert
+    			  #pragma fragment frag
+
+    			  float4 _LightColor0;
+    			  float _Amnt;
+
+    			  struct vsIn {
+    				  float4 position : POSITION;
+    				  float3 normal : NORMAL;
+    				  float2 uv : TEXCOORD0;
+    			  };
+
+    			  struct vsOut {
+    				  float4 position : SV_POSITION;
+    				  float3 normal : NORMAL;
+    				  float2 uv : TEXCOORD0;
+    			  };
+
+    			  vsOut vert(vsIn v){
+    				  vsOut o;
+    				  o.normal = normalize(mul(float4(v.normal, 0.0), unity_WorldToObject));
+    				  o.uv = v.uv;
+    				  o.position = UnityObjectToClipPos(v.position);
+    				  o.position += float4(o.normal * ((1 + _SinTime[1]) * _Amnt),0);
+    				  return o;
+    			  }
+
+    			  float4 frag(vsOut psIn) : SV_TARGET {
+    				  float4 ambientLight = UNITY_LIGHTMODEL_AMBIENT;
+
+    				  float4 LightDirection = normalize(_WorldSpaceLightPos0);
+    				  float4 diffuseTerm = saturate(dot(LightDirection, psIn.normal));
+    				  float4 diffuseLight = diffuseTerm * _LightColor0;
+
+    				  float csin = _SinTime[0] + _SinTime[1] + _SinTime[2];
+
+    				  //float4 tex = tex2D(_MainTexture, sin(20*(psIn.uv + csin)));
+    				  return ambientLight + diffuseLight;
+    			  }
+    			  ENDCG
+    		  }
+    	  }
+      }
+
+    #+end_src
+
