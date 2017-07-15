@@ -124,7 +124,10 @@
 can copy and modify a record datatype:
 #+begin_src haskell
 data Test = Test { theInt :: Int, theString :: String }
+aVal = Test 2 "blah"
 chng x y = x { theInt = y }
+
+chng aVal 4
 #+end_src
 
 see state monad for use case
