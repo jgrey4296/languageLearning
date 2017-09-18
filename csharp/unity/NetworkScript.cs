@@ -19,6 +19,7 @@ public class MyData {
 
 }
 
+
 public class NetworkScript : MonoBehaviour
 {
 	public String host = "localhost";
@@ -36,6 +37,7 @@ public class NetworkScript : MonoBehaviour
 
 	//Data Object for sending and receiving
 	MyData theData = new MyData();
+	MyData returnData = new MyData();
     string dataAsJson = "";
     string receivedData = "";
     
@@ -86,9 +88,9 @@ public class NetworkScript : MonoBehaviour
 		}
 
 		Debug.Log ("Received data: " + receivedData);
-        
+		JsonUtility.FromJsonOverwrite (receivedData, returnData);
         //Handle the data:        
-		switch (receivedData) {
+		switch (returnData.name) {
 		case "blah":
 			theData.name = "ping";
 			writeSocket(theData);

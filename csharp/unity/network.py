@@ -13,7 +13,6 @@ console.setLevel(root_logger.INFO)
 root_logger.getLogger('').addHandler(console)
 logging = root_logger.getLogger(__name__)
 
-#NOTE: TO CLOSE A SOCKET, in BASH:
 #Constants:
 host = 'localhost' 
 port = 50000
@@ -77,12 +76,13 @@ def handleJson(data):
         logging.warning("Data lacks a name")
         cont = False
         return (cont, response)
-        
     if data['name'] == "Handshake":
         logging.info('Startup')
-        response = "blah"
+        response = data.copy()
+        response['name'] = "blah"
     elif data['name'] == "ping":
-        response = "blah"
+        response = data.copy()
+        response['name'] = "blah"
     elif data['name'] == "end":
         cont = False
     else:
