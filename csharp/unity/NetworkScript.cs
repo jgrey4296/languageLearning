@@ -7,14 +7,24 @@ using System;
 using System.IO;
 using System.Net.Sockets;
 using System.Threading;
+using UnityEngine.Serialization;
+using System.Text;
 
+//Data Class used to serialze to json
+[Serializable]
+public class MyData {
 
+	public int age;
+	public string name;
+
+}
 
 public class NetworkScript : MonoBehaviour
 {
 	public String host = "localhost";
 	public Int32 port = 50000;
 
+	Boolean connected = false;
 	internal Boolean socket_ready = false;
 	internal String input_buffer = "";
 
@@ -24,100 +34,111 @@ public class NetworkScript : MonoBehaviour
 	StreamWriter socket_writer;
 	StreamReader socket_reader;
 
-	private void Start()
-	{
+	//Data Object for sending and receiving
+	MyData theData = new MyData();
+    string dataAsJson = "";
+    string receivedData = "";
+    
+	private void Start() {
 		Debug.Log ("Starting server");
-		setupSocket();		
-		writeSocket ("Handshake");
-	}
-
-		
-	void Update()
-	{
-		//string received_data = readSocket();
-		string received_data = readSocket();
-		Debug.Log ("Received data: " + received_data);
-		switch (received_data)
-		{
-		case "pong":
-			Debug.Log("Python controller sent: " + (string)received_data);
-			writeSocket("ping");
-			break;
-		default:
-			Debug.Log ("Nothing received");
-			writeSocket ("Handshake");
-			break;
-		}
-	}
-
-	void OnApplicationQuit()
-	{
-		closeSocket();
-	}
-
-	// Helper methods for:
-	//...setting up the communication
-	public void setupSocket()
-	{
-		try
-		{
+        try	{
 			tcp_socket = new TcpClient(host, port);
 			net_stream = tcp_socket.GetStream();
 			socket_writer = new StreamWriter(net_stream);
 			socket_reader = new StreamReader(net_stream);
 			socket_ready = true;
 			socket_writer.AutoFlush = true;
-			
+			connected = true;
+            //Send an initial bit of data:
+			theData.age = 10;
+			theData.name = "Handshake";
+			writeSocket (theData);
 		}
-		catch (Exception e)
-		{
+		catch (Exception e)	{
 			// Something went wrong
 			Debug.Log("Socket error: " + e);
-		}
+		} 
+
 	}
 
 	//... writing to a socket...
-	public void writeSocket(string line)
-	{
+	public void writeSocket(MyData d) {
 		if (!socket_ready) {
-			Debug.Log ("Early Exit in writeSocket: " + line);
+			Debug.Log ("Early Exit in writeSocket");
+			return;
+		}
+		if (!net_stream.CanWrite) {
+			Debug.Log ("Can't Write");
+			return;
+		}
+        dataAsJson = JsonUtility.ToJson (d);		
+		socket_writer.Write(dataAsJson);
+	}
+		
+	void Update() {
+		if (!connected) {
 			return;
 		}
 
-		//line = line + "\r\n";
-		Debug.Log("Writing to socket: " + line);
-		socket_writer.Write(line);
+		receivedData = readSocket();
+		if (receivedData == "") {
+			return;
+		}
+
+		Debug.Log ("Received data: " + receivedData);
+        
+        //Handle the data:        
+		switch (receivedData) {
+		case "blah":
+			theData.name = "ping";
+			writeSocket(theData);
+			break;
+
+		case "bloo":
+			theData.name = "end";
+			writeSocket (theData);
+			break;
+
+		default:
+			closeSocket ();
+			break;
+		}
 	}
 
 	//... reading from a socket...
-	public String readSocket()
-	{
+	public String readSocket() {
 		if (!socket_ready) {
-			Debug.Log ("Early Read exit");
 			return "";
 		}
 
-		Debug.Log (" Data Available: " + net_stream.DataAvailable.ToString ());
-		if (net_stream.DataAvailable) {
-			string read = socket_reader.ReadLine();
-			Debug.Log("Data Read: " + read);
-			return read;
+		if (!net_stream.CanRead) {
+			return "";
 		}
+			
+		if (!net_stream.DataAvailable) {
+            return "";
+        }
+        string read = socket_reader.ReadLine ();
+        Debug.Log ("Data Read: " + read);
+        return read;
+	}
 
-		Debug.Log ("Skipped Read");
-		return "";
+	void OnApplicationQuit() {
+		closeSocket();
 	}
 
 	//... closing a socket...
-	public void closeSocket()
-	{
+	public void closeSocket() {
 		Debug.Log ("Closing Socket");
 		if (!socket_ready)
 			return;
-
+        //Send a final message before closing the socket
+		theData.name = "end";
+		writeSocket (theData);
 		socket_writer.Close();
 		socket_reader.Close();
 		tcp_socket.Close();
 		socket_ready = false;
+		connected = false;
 	}
 }
