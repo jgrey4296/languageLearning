@@ -306,7 +306,6 @@
 
     #+end_src
 
-
 ** Lambdas
    Func<int, int, bool> a = (x,y) => x == y;
 ** Sorting
@@ -314,6 +313,50 @@
 
    Alt:
    var x = from x in list orderBy x.val select x
+** Networking
+   On the C# side, breaks down to using System.Net.Sockets,
+   and System for [Serializable] flag for data classes.
+
+   #+begin_src csharp
+     using System;
+     using System.Net.Sockets;
+
+     [Serializable]
+     public class MyData {
+         public int age;
+         public string name;
+     }
+   
+     public String host = "localhost";
+     public Int32 port = 50000;
+
+     TcpClient tcp_socket = new TcpClient(host, port);
+     NetworkStream net_stream = tcp_socket.GetStream();
+     StreamWriter socket_writer = new StreamWriter(net_stream);
+     StreamReader socket_reader = new StreamReader(net_stream);
+     socket_writer.AutoFlush = true;
+   #+end_src
+
+   With Actual Transmission being:
+   #+begin_src csharp
+     MyData example = new MyData(23, "Bob");
+     string data = JsonUtility.ToJson(example);
+     socket_writer.Writer(dataAsJson);
+   #+end_src
+
+   And Reading being:
+   #+begin_src csharp
+   string readString = socket_reader.ReadLine();
+   JsonUtility.FromJsonOverwrite(example, readString);
+   #+end_src
+
+   Closing:
+   #+begin_src csharp
+     socket_writer.Close();
+     socket_reader.Close();
+     tcp_socket.Close();
+   #+end_src
+
 * Shader Notes 
   Notes based on [[http://www.alanzucconi.com/2015/06/10/a-gentle-introduction-to-shaders-in-unity3d/][Alan Zucconi's tutorials]]
   [[https://digitalerr0r.wordpress.com/2015/09/02/unity-5-shader-programming-1-an-introduction-to-shaders/][secondary tutorial]]
