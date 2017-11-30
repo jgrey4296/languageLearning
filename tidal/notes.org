@@ -36,7 +36,7 @@
    
    fast n, slow n - slow by the amount. slow 0.25 == fast 4
 
-   a # b - apply b to pattern a
+   a # b - apply b to pattern a.
    
    a # crush "4" - apply the crush effect to a
    
@@ -86,7 +86,6 @@
 
 ** Sample names
    [[file:~/Library/Application%20Support/SuperCollider/downloaded-quarks/Dirt-Samples][Sample Folder]]
-.git
 808
 808bd
 808cy
