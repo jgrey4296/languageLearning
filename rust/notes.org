@@ -1,0 +1,30 @@
+* Rust Notes
+** Hello world
+   #+begin_src rust
+     fn main(){
+         //a print macro, denoted by !
+         println!("Hello world");
+     }
+   #+end_src
+
+** Cargo
+   Project creation, bin for program, nothing for lib:
+   #+begin_src shell
+     cargo new hello_cargo --bin
+   #+end_src
+
+   Creates a toml file for config:
+   #+begin_src toml
+     [package]
+     name = "test"
+     version = "0.1.0"
+     authors = ["John Grey <jgrey@ucsc.edu>"]
+
+     [dependencies]
+   #+end_src
+   
+   Run with *cargo build*, *cargo run*
+   With optimizations: *cargo build --release*
+
+
+
