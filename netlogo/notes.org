@@ -132,6 +132,22 @@ end
 
 * Models
 
+** Simple Norms
+   Create N Groups of M Agents, distributed randomly.
+
+   Each Agent has variables { Shape, Colour (RGB), distance to group centre }
+
+   Model Norms of Colour and distance
+
+   Variants: 
+   Group based norm calculation,
+   Distance based norms
+   Distance-less based norms
+   similarity norms
+
+   Norms as averaged values of applicable agents.
+
+
 ** newsim
    Modelling Bicchieri's account of littering
    
