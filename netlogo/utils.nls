@@ -1,0 +1,112 @@
+;; Utilities for general use in netlogo
+
+;;Move a colour c1 towards c2 by delta amount
+to-report move_toward_color_by_delta [c1 c2 delta]
+  let dR 0
+  let dG 0
+  let dB 0
+  ifelse ((item 0 c1 - item 0 c2) > 0) [set dR -1 * delta] [set dR delta]
+  ifelse ((item 1 c1 - item 1 c2) > 0) [set dG -1 * delta] [set dG delta]
+  ifelse ((item 2 c1 - item 2 c2) > 0) [set dB -1 * delta] [set dB delta]
+  if ((item 0 c1 - item 0 c2) = 0) [set dR 0]
+  if ((item 1 c1 - item 1 c2) = 0) [set dG 0]
+  if ((item 2 c1 - item 2 c2) = 0) [set dB 0]
+
+  report ( rgb (item 0 c1 + dR) (item 1 c1 + dG) (item 2 c1 + dB ))
+end
+
+to-report add_color [c1 c2]
+  let paired fput (list) zip c1 c2
+  report reduce [[a b] -> lput (item 0 b + item 1 b) a] paired
+end
+
+;;divide a color by an integer
+to-report div_color [c1 d]
+  if d = 0 [ report c1 ]
+
+  let dR (item 0 c1 / d)
+  let dG (item 1 c1 / d)
+  let dB (item 2 c1 / d)
+
+  report rgb dR dG dB
+end
+
+to-report weighted_avg_colors [cols weights]
+  if (reduce + weights) != 1 [
+    error "weights don't sum to 1"
+  ]
+  let z zip cols weights
+  let w map [x -> item 0 x * item 1 x] z
+  let a reduce + w
+  report a
+end
+
+to-report constrain_color [ curr lower upper]
+  let bounds zip lower upper
+  let constrained map [ x -> clamp (item 0 x) (item 0 (item 1 x)) (item 1 (item 1 x))] (zip curr bounds)
+  report constrained
+end
+
+to-report cmpColor [c cmp]
+  let newColor rgb 0 0 0
+  let paired zip color c
+  set newColor replace-item 0 newColor (runresult cmp item 0 paired)
+  set newColor replace-item 1 newColor (runresult cmp item 1 paired)
+  set newColor replace-item 2 newColor (runresult cmp item 2 paired)
+  report newColor
+end
+
+to-report min_max_color
+  let mi rgb 255 255 255
+  let ma rgb 0 0 0
+  ask turtles [
+    set mi cmpColor mi [[a] -> min a]
+    set ma cmpColor ma [[a] -> max a]
+  ]
+  report list mi ma
+end
+
+;;Combine to lists into a list of tuples
+to-report zip [a b]
+  if length a != length b [ error "Zip: lists are of different lengths" ]
+  let index 0
+  let len length a
+  let zipped (list)
+  while [ index < len ] [
+    set zipped lput (list (item index a) (item index b)) zipped
+    set index index + 1
+  ]
+  report zipped
+end
+
+;;Get the non-sqrt distance of two n-dimensional lists
+to-report list_distance [a b]
+  let zipped zip a b
+  let deltas map [ x -> ((item 0 x) - (item 1 x)) ^ 2 ] zipped
+  let dist reduce + deltas
+  report dist
+end
+
+to-report clamp [a l u]
+  if a < l [
+   report l 
+  ]
+  if u < a [
+   report u 
+  ]
+  report a
+end
+
+
+to-report randColorLimit [ minAmnt maxAmnt ]
+  let amntRange (maxAmnt - minAmnt)
+  let col (list)
+  foreach range 3 [
+    let value amntRange
+    let rc (random-float amntRange)
+    set col lput (minAmnt + rc) col
+  ]
+  report col
+end
+
+
