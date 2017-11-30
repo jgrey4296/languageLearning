@@ -1,0 +1,15 @@
+;; This buffer is for text that is not saved, and for Lisp evaluation.
+;; To create a file, visit it with C-x C-f and enter text in its buffer.
+
+
+d1 $ sound "<bd [bd bd]> <sn [sn sn]>" # gain 0.5
+d2 $ sound "ho" # gain 0.7
+d3 $ sound "house world" # gain 0.5
+d4 $ sound "v v < v [v v]> v" # up "-12 -12 0" # gain 0.8
+d5 $ sound "pluck*4 [pluck pluck]" # up "0*2 4 5 -8"
+p
+d1 $ silence
+d2 $ silence
+d3 $ silence
+d4 $ silence
+d5 $ silence
