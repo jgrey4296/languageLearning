@@ -1,0 +1,25 @@
+start : a.
+
+a : b c d e
+b : d e
+d : a
+e : a
+
+floats:
+"a" : 2.0
+"b" : 1.2
+end
+
+strings:
+"awef" : "awgg"
+"awhh" : "hrth"
+end
+
+increment:
+"a" : 0.01
+"b" : 0.5
+end
+
+utility:
+
+end
