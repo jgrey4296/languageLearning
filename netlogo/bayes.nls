@@ -1,0 +1,44 @@
+
+to-report bayes [ likelihood prior normalizing]
+  let top (likelihood * prior)
+  let posterior (top / normalizing)
+  report posterior
+end
+
+to-report bayes_odds [ prior1 prior2 like1 like2 ]
+  let p1 prior1 + 0.01
+  let p2 prior2 + 0.01
+  let l1 like1 + 0.01
+  let l2 like2 + 0.01
+  let odds (p1 / p2)
+  let likelihood (l1 / l2)
+  report (odds * likelihood)
+end
+
+to-report log_bayes_odds [ prior1 prior2 like1 like2 ]
+  let logBase 10
+  let p1 log (prior1 + 0.01) logBase
+  let p2 log (prior2 + 0.01) logBase
+  let l1 log (like1 + 0.01) logBase
+  let l2 log (like2 + 0.01) logBase
+  let odds (p1 - p2)
+  let likelihood (l1 - l2)
+  report logBase ^ (odds + likelihood)
+end
+
+to-report log_bayes [likelihood prior normalizing]
+  let logBase 10
+  let logLikelihood (log likelihood logBase)
+  let logPrior (log prior logBase)
+  let logNormal (log normalizing logBase)
+  let top (logLikelihood + logPrior)
+  let posterior (top - logNormal)
+  report logBase ^ posterior  
+end
+
+
+to-report log_bayes_raw [likelihood prior normalizing]
+  let top (likelihood + prior)
+  let posterior (top - normalizing)
+  report posterior  
+end
