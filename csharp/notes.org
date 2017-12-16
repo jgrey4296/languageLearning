@@ -305,7 +305,10 @@
       }
 
     #+end_src
-
+*** Blender Import
+    Unity loads blender files natively.
+    Set 'Material Naming' in the imported prefabs to 'From Model's Material'
+    To use Sprytile tilesets, import the texture and add them to the albedo of the shader for the object.
 ** Lambdas
    Func<int, int, bool> a = (x,y) => x == y;
 ** Sorting
