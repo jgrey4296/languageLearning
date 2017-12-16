@@ -11,7 +11,7 @@ import qualified Prelude (fst, snd)
 import Data.Foldable (foldl')
 import qualified Data.Map as Map
 import qualified Data.Set as Set
-import qualified KahnSort as KS
+import qualified KahnSortM as KS
 
 --A Variable is, at heart, a name:
 type BaseVar = String
