@@ -16,7 +16,10 @@
 -- else 
 --     return L (a topologically sorted order)
 
-module KahnSort where
+module KahnSort (
+  kahnSort,
+  AdjList,
+                ) where
 
 import qualified Data.Map as Map
 import qualified Data.Set as Set
@@ -45,7 +48,7 @@ kahnSortRec :: AdjList Node  --Graph
             -> Set.Set Node  --Active
             -> Either (Map.Map Node Int) (Node, Node) --Sorted or BackEdge
 kahnSortRec adj adjPure orderMap frontier discovered
-  | Set.null frontier && Set.null discovered = Left $ orderMap
+  | Set.null frontier && Set.null discovered = Left orderMap
   | Set.null frontier = Right $ detectConflict adj discovered
   | otherwise = result
   where result = kahnSortRec adj' adjPure orderMap' frontier'' discovered''
@@ -93,5 +96,8 @@ hasOnlyParentN targetParent adj current = result
   where ancestors = snd $ Map.findWithDefault defaultEmptyEntry current adj
         result = Set.size ancestors == 1 && Set.member targetParent ancestors
 
+-- There is a cycle in the graph adj.
+-- Nodes are discovered but still active in disc
+-- return a backedge
 detectConflict :: AdjList Node -> Set.Set Node -> (Node, Node)
-detectConflict adj disc = ("a", "b")
+detectConflict adj disc = ("a" ,"b")
