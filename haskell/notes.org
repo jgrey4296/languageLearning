@@ -227,14 +227,6 @@ let a = Test 5 3
 let myFunc = \x -> case x of Something a b -> a + b
 #+end_src
 
-#+RESULTS:
-: <interactive>:19:11: error:
-:     parse error (possibly incorrect indentation or mismatched brackets)
-: <interactive>:20:7: error: parse error on input ‘|’
-: <interactive>:21:7: error: parse error on input ‘|’
-
-
-
 
 *** Pattern Guards
 #+begin_src haskell
