@@ -20,6 +20,7 @@
 
 module KahnSortM (
   AdjList,
+  KahnResult,
   runKahnSortM
                 ) where
 
@@ -30,32 +31,30 @@ import Control.Monad.Trans
 import Control.Monad.Trans.State
 import Control.Monad.Identity
 import Control.Monad.Trans.Reader
+import Control.Monad.Trans.Maybe
 
+-------------------------------- TYPES
 type Node = String
 
 --Adjacency List of:  Node -> [Descendents, Ancestors]
 type AdjList a = Map.Map a (Set.Set a, Set.Set a)
 type NodeOrder = (Node, Int)
-
-defaultEmptyEntry :: (Set.Set Node, Set.Set Node)
-defaultEmptyEntry = (Set.empty, Set.empty)
-
 data KahnData = KahnState { adj :: AdjList Node,
                             sorted :: Map.Map Node Int,
                             frontier :: Set.Set Node,
                             discovered :: Set.Set Node }
-type KahnM a = StateT KahnData (ReaderT (AdjList Node) IO) a
 type KahnResult = Either (Map.Map Node Int) (Node, Node)
+-- CORE MONAD TRANSFORMER:                
+type KahnM a = StateT KahnData (ReaderT (AdjList Node) Identity) a
 
---User entry to Kahn Sorting:
-runKahnSortM :: AdjList Node -> [Node] -> IO KahnResult
-runKahnSortM adj initial = runReaderT (evalStateT (kahnSortM_init initial) d) adj
+-------------------------------- MONAD ENTRY:
+runKahnSortM :: AdjList Node -> [Node] -> KahnResult
+runKahnSortM adj initial = runIdentity $ runReaderT (evalStateT (kahnSortM_init initial) d) adj
   where d = KahnState adj (Map.empty) (Set.fromList initial) (Set.empty)
 
 --iniialise the initial list orders:
 kahnSortM_init :: [Node] -> KahnM KahnResult
 kahnSortM_init initial = do
-  liftIO $ print "Initialising"
   sortList <- gets sorted
   let sortList' = DFold.foldl' (\m k -> Map.insert k 1 m) sortList initial
   modify (\x -> x { sorted = sortList' })
@@ -64,7 +63,6 @@ kahnSortM_init initial = do
 --Base Case
 kahnSortM :: KahnM KahnResult
 kahnSortM = do
-  liftIO $ print "Top Level"
   (front, disc, sortList) <- gets getFrontDiscSort
   if Set.null front && Set.null disc
     then return $ Left sortList
@@ -75,24 +73,46 @@ kahnSortM = do
 --Recursion Step
 kahnSortM_Step :: KahnM KahnResult
 kahnSortM_Step = do
-  liftIO $ print "Stepping"
   currentNode <- popFrontier
-  liftIO $ print currentNode
   newActiveNodes <- removeEdges currentNode
   updateActiveOrders newActiveNodes currentNode
   exhausted <- addToFrontier newActiveNodes
   let unexhausted = Set.difference newActiveNodes exhausted
-  liftIO $ print $ "Exhausted: " ++ show exhausted
-  liftIO $ print $ "Unexhausted: " ++ show unexhausted
   updateDiscovered exhausted unexhausted
   kahnSortM
 
---To Fail out
+
+--To Fail out, detect a cycle
 detectConflictM :: KahnM KahnResult
 detectConflictM = do
-  return $ Right ("q", "r")
+  --Get the smallest ordered active node
+  orders <- gets sorted
+  disco <- gets discovered
+  let discoOrders = fmap (createOrderPair orders) $ Set.toList disco
+  let (minNode, minOrder)  = DFold.foldl1 (getXPair (<)) discoOrders
+  --get its remaining ancestors
+  adjList <- gets adj
+  let ancestors = getAncestors adjList (minNode, minOrder)  
+  --get the largest ordered ancestor | an ancestor of 0 order
+  let ancestorOrders = fmap (\x -> createOrderPair orders x) $ Set.toList ancestors
+  let (maxAncestor, _) = DFold.foldl1 (getXPair (>)) ancestorOrders
+  return $ Right (maxAncestor, minNode)
               
 --Utilities
+getXPair :: Ord a => (a -> a -> Bool) -> (Node, a) -> (Node, a) -> (Node, a)
+getXPair cmp (c, cc) (n, nc)
+  | cc `cmp` nc = (c, cc)
+  | otherwise = (n, nc)
+
+getAncestors :: AdjList Node -> (Node, Int) -> (Set.Set Node)
+getAncestors m (n, i) = ancestors
+  where result :: Maybe (Set.Set Node, Set.Set Node) = Map.lookup n m
+        ancestors = maybe Set.empty (snd) result
+
+createOrderPair :: Map.Map Node Int -> Node -> (Node, Int)
+createOrderPair m n = result
+  where result = (n, Map.findWithDefault 0 n m)
+
 getFrontDiscSort :: KahnData -> (Set.Set Node, Set.Set Node, Map.Map Node Int)
 getFrontDiscSort d = (front, disc, sortList)
   where 
@@ -113,7 +133,6 @@ removeEdges n = do
   let emptyResult = (Set.empty, Set.empty)
   adjL <- gets adj
   let descendents =  fst $ (Map.findWithDefault emptyResult n adjL)
-  liftIO $ print $ "Descendents: " ++ show descendents
   --forall $x : delete n.descendent.$x.ancestor.n
   let adjL' = Set.foldl' (\x y -> Map.update (\(i, j) -> Just (i,
                                                                     Set.delete n j ))
@@ -154,4 +173,3 @@ updateDiscovered exhausted unexhausted = do
   let disco' = Set.difference disco exhausted
   let disco'' = Set.union disco' unexhausted
   modify (\x -> x { discovered = disco'' })
-  
