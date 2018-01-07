@@ -1,3 +1,5 @@
+;; Posterior = (Prior * likelihood) / normalizingEvidence
+;;likelihood can be guessed / agent variable?
 
 to-report bayes [ likelihood prior normalizing]
   let top (likelihood * prior)
