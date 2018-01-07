@@ -1,0 +1,49 @@
+observations:
+amount of litter
+amount of bins
+individuals littering
+individuals using a bin
+individuals picking up litter
+individuals sanctioning others
+is Observed or not
+
+--------------------
+clean / littered environments
+dispose of trash / litter
+
+----------------------------------------
+Results:
+litter more in dirty environment
+litter more if observing others litter
+
+some litter whenever
+
+
+----------------------------------------
+P(H|D) = p(H) p(D|H) / p(D)
+
+P(H|X) = p(H) * p(D|H) / ( p(D|H)p(H) + p(D|~H)p(~H) )
+
+O(H1:H2 | D) = p(H1)/p(H2) * p(D|H1)/p(D|H2)
+
+Probabilities
+p(litter) = p(~pickupLitter) ^ p(~useBin)
+
+P(litter | dirtyEnv ^ othersLittering) = p(litter) * p(dirtyEnv ^ othersLittering | litter) 
+                                         / p(dirtyEnv ^ othersLittering)
+
+
+p(dirtyEnv) = seen litter / observations
+p(othersLittering) = seen littering / observations 
+
+P(pickupLitter | othersCleaning) = p(pickupLitter) * p(othersCleaning | pickupLitter)
+                                   / p(othersCleaning)
+
+p(othersCleaning) = seen cleaning / observations
+
+P(useBin | cleanEnvironment ^ othersUsingBin) = p(useBin) * p(cleanEnv ^ othersUseBin | useBin)
+                                                / p(cleanEnv ^ othersUseBin)
+
+p(cleanEnvironment) = seen clean / observations
+p(othersUsingBin) = seen bin usage / observations
+
