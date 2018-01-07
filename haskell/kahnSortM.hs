@@ -2,7 +2,7 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE OverloadedLists #-}
 {-# LANGUAGE  ScopedTypeVariables #-}
-
+-- From Wiki:
 ------- Kahn's Algorithm to Topological sort a graph
 -- L ← Empty list that will contain the sorted elements
 -- S ← Set of all nodes with no incoming edge
@@ -22,7 +22,7 @@ module KahnSortM (
   AdjList,
   KahnResult,
   runKahnSortM
-                ) where
+  ) where
 
 import qualified Data.Map as Map
 import qualified Data.Set as Set
