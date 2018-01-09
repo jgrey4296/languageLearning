@@ -2,8 +2,16 @@
 ** emacs specific:
 C-c C-o         sclang-start
 C-c C-c         sclang-eval-region-or-line
+C-c C-f         Eval file
+
 C-c C-s         stop sounds
+C-c C-p f       Free all
 C-c C-y         open sc help
+
+C-c RET         List Arguments for a method. eg: SinOsc.ar(
+C-c C-n         Complete Symbol
+
+C-c {           Dump Interface
 
 C-c :           find definition
 C-c ;           find references
@@ -19,13 +27,15 @@ C-c ;           find references
    SynthDef... .dumpUGens
    this.dump // get info on the interpreter
    currentEnvironment.clear
+   Env.linen(0.1, 0.2, 0.1, 0.6).test.plot
+   thisProcess.showHelpBrowser
 
-*** Server Commands
-    s.status
-    s.boot
-    s.reboot
-    s.freeAll
-    s.scope
+** Server Commands
+   s.status
+   s.boot
+   s.reboot
+   s.freeAll
+   s.scope
 
 ** sclang
    
@@ -64,42 +74,68 @@ C-c ;           find references
     //for feedback, use InFeedback.ar
     
 *** UGens
-//Oscillators:
-SinOsc.ar/kr (freq, phase, amp, add)
-PinkNoise.ar/kr (mul,add)
-Saw.ar/kr (freq,mul,add)
-Formant.ar (fundfreq,formfreq,bwfreq,mul,add)
-LFSaw.ar/kr (freq,iphase,mul,add)
-VarSaw.ar/kr (freq,iphase,width,mul,add)
-LFPulse.ar/kr (freq,iphase,width,mul,add)
-Impulse.ar/kr (freq,phase,mul,add)
-SyncSaw.ar/kr (syncFreq,sawFreq,mul,add) // careful
 
-//buffer playback:
-PlayBuf.ar(numChannels, buffer, rateOfPlayback) //rate: -n <-> n
-BufRateScale.kr(buffer)
-RecordBuf.ar(source,buffer)
-DiskIn.ar //Streaming
+**** Oscillators:
+     SinOsc.ar/kr (freq, phase, amp, add)
+     PinkNoise.ar/kr (mul,add)
+     Saw.ar/kr (freq,mul,add)
+     Formant.ar (fundfreq,formfreq,bwfreq,mul,add)
+     LFSaw.ar/kr (freq,iphase,mul,add)
+     VarSaw.ar/kr (freq,iphase,width,mul,add)
+     LFPulse.ar/kr (freq,iphase,width,mul,add)
+     Impulse.ar/kr (freq,phase,mul,add)
+     SyncSaw.ar/kr (syncFreq,sawFreq,mul,add) // careful
+     DWGPlucked.ar/kr(freq, amp, gate, pos, c1, c3, inp, release)
+ 
+**** buffer playback:
+     PlayBuf.ar(numChannels, buffer, rateOfPlayback) //rate: -n <-> n
+     BufRateScale.kr(buffer)
+     RecordBuf.ar(source,buffer)
+     DiskIn.ar //Streaming
 
-//Effects:
-Pan2.ar/kr (in, pos,level)
-Mix.ar (array)
-Decay2.ar/kr (in, attackTime, decayTime, mul, add)
-AllpassC.ar/kr (in, maxDelaytime, delaytime, decaytime, mul, add)
+**** Effects:
+     Pan2.ar/kr (in, pos,level)
+     Mix.ar (array)
+     Decay2.ar/kr (in, attackTime, decayTime, mul, add)
+     AllpassC.ar/kr (in, maxDelaytime, delaytime, decaytime, mul, add)
 
-//Envelopes
-EnvGen.ar/kr (envelope, gate, levelScale, levelBias, timeScale, doneAction)
-Env.perc/triangle/sine/linen/xyc/pairs/step/cutoff/dadsr/adsr/asr/circle
+**** Envelopes
+     EnvGen.ar/kr (envelope, gate, levelScale, levelBias, timeScale, doneAction)
+     Env.perc/triangle/sine/xyc/pairs/step/cutoff/dadsr/adsr/asr/circle
+     
+     Env.linen(attackT, sustainT, releaseT, level, curve)
 
-Out.ar/kr (busNum, numChannels)
-In.ar/kr  (busNum, numChannels)
-InFeedback.ar
+**** I/O
+     Out.ar/kr (busNum, numChannels)
+     In.ar/kr  (busNum, numChannels)
+     InFeedback.ar
 
-Rand(low,high)
-White/Brow/PinkNoise
-Crackle
-LFNoise0/1/2
-Dust/Dust2
+**** Noise
+     Rand(low,high)
+     White/Brow/PinkNoise
+     Crackle
+     LFNoise0/1/2
+     Dust/Dust2
+
+**** Math
+     Clip.ar/kr (input, min, max)
+     Fold
+     InRange
+     InRect
+     Integrator
+     LeastChange
+     LinExp
+     LinLin
+     ModDif
+     MostChange
+     MulAdd
+     RunningMax
+     RunningMin
+     Runningsum
+     Schmidt
+     Slope
+     TrigAvg
+     Wrap
 
 *** Busses
     //For Routing audio
@@ -196,6 +232,8 @@ rect | rect : union of rectangles
     ~varName -> create an environment variable
     //Environments allow for stack control of variables?
     (Environment.new.push; currentEnvironment.pop;)
+
+    Globals can only be single letter variables
     
 *** Functions
     a = { arg a; a + 2 }
@@ -203,6 +241,24 @@ rect | rect : union of rectangles
     a.value(2) //4
     //Functions return the last value eval'd.
     //Methods return with ^
+
+*** Functional programming
+    a = {|x| x + 2 };
+    //Map:
+    (1..5).collect(a);
+
+    //Filter:
+    (1..5).select({|x| x > 2 });
+    (1..5).reject({|x| x > 2 });
+
+    //Side effect:
+    (1..5).do({|x| x.postln; });
+
+    //Zip / Laminate
+    (1..5) +++ (1..5)
+
+    //Reduce
+    (1..5).reduce({|x, y| x * y)
 
 *** Operators
 == : Equivalance
@@ -215,7 +271,7 @@ bitwise or: |
 logical or: ||
 
 ++ : concatenation
-+++ : lamination (repeating combination/pairing)
++++ : lamination (repeating combination/pairing). ie: Zip
 
 @ : array indexing (.at)
 @@ : array index with wrapping (.wrapAt)
@@ -327,16 +383,21 @@ logical or: ||
      s.makeBundle(s.latency, {...});
 
 *** Patterns
+    Streams have .next and .reset
+    Patterns create streams
+    Can collect, select, reject on patterns to modify.
+
     a = Pseq([1,2,3,4,5], 1).asStream
     while { (m=a.next).notNil } {m.postln };
 
-
-
+    
     //Patterns can be concatenated with ++
     //and composed with <>
     //played,
     //collected, selected, rejected
 
+    Pfunc(function)
+    Prout(function) //to create routines
     Pseq (list, repeats, offset)
     Pshuf (list, repeats)
     Prand (list, repeats)
@@ -359,6 +420,9 @@ logical or: ||
     
     //can use patterns inside of other patterns:
     p = Pwhite(0.0, Pseries(0.01,0.01,inf), 100)
+
+    //Parallel event patterns, with duration
+    Ppar(list) 
     
 **** Pbind
      //Pbind combines elements from patterns
@@ -398,7 +462,24 @@ logical or: ||
     ).play;
     )
 
+*** Done Actions
 
+Done.ar/kr
+
+pauseSelf
+freeSelf
+freeSelfAndPrev
+freeSelfAndNext
+freeSelfAndFreeAllInPrev
+freeSelfAndFreeAllInNext
+freeSelfToHead
+freeSelfToTail
+freeSelfPausePrev
+freeSelfPauseNext
+freeSelfAndDeepFreePrev
+freeSelfAndDeepFreeNext
+freeAllInGroup
+freeGroup
 
 *** Data Structures
     Array // Fixed Size
