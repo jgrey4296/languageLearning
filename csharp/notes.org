@@ -5,6 +5,7 @@
    xbuild on linux instead of msbuild, using .sln and .csproj files
    xbuild /t:Target
    xbuild /p:Configuration=Release
+   csharp for REPL
 ** Unity
    Typical base class: Monobehaviour
    using UnityEngine;
