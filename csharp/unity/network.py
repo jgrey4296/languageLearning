@@ -10,6 +10,7 @@ logging = root_logger.getLogger(__name__)
 ####################
 DEFAULT_PORT = 50000
 DEFAULT_BLOCKSIZE = 1024
+DEFAULT_HEADERSIZE = 128
 DEFAULT_BACKLOG = 5
 DEFAULT_HOST = "localhost"
 
@@ -18,23 +19,29 @@ class UnityServer:
     """ A Server to connect to unity """
     
     #The types of messages supported
-    MESSAGE_T = Enum("Message Types", "S_HANDSHAKE C_HANDSHAKE INFO ACTION AI_GO AI_COMPLETE QUIT", start=0)
-
+    MESSAGE_T = Enum("Message Types", "HANDSHAKE INFO ACTION AI_GO AI_COMPLETE QUIT PAYLOAD", start=0)
+    MESSAGE_T_LOOKUP = {x.value : x for x in MESSAGE_T}
+    
     def __init__(self,
                  port=DEFAULT_PORT,
                  host=DEFAULT_HOST,
                  backlog=DEFAULT_BACKLOG,
-                 blockSize=DEFAULT_BLOCKSIZE):
+                 blockSize=DEFAULT_BLOCKSIZE,
+                 headerSize=DEFAULT_HEADERSIZE):
         self.theSocket  = None
         self.host = host
         self.port = port
-        self.backlog = backlog 
+        self.backlog = backlog
+        #Static size of all headers, padded with '!'s at end
+        self.headerSize = headerSize
+        #the amount of data to read at a time for payloads
         self.blockSize = blockSize
 
+        #queues of messages to process
         self.fromClientMessages = []
         self.toClientMessages = []
-        self.data_segments = []
-        self.data_size = 0
+        #Unfinished segments of data
+        self.data_segments = ""
 
         self.accepted_client = None
         self.listen_for_clients = True
@@ -57,7 +64,7 @@ class UnityServer:
         self.listen_for_data = False
 
         
-    def listen(self):
+    def listen_for_headers(self):
         logging.info("Listening")
         if self.theSocket is None:
             raise Exception("Socket is not setup")
@@ -72,22 +79,18 @@ class UnityServer:
                     #loop to actually recieve data
                     logging.info("--------------------")
                     logging.info('Waiting for data')
-                    data = self.accepted_client.recv(self.blockSize).decode()
-                    if not bool(data):
-                        logging.info("Nothing Received")
-                        IPython.embed(simple_prompt=True)
-                        continue
-                    logging.info('Data: {}'.format(str(data)))
-                    try:
-                        self.consume_data_segment(data)
-                    except JSONDecodeError:
-                        logging.info("Problem Decoding")
-                    except TypeError as e:
-                        logging.warning("Problem Encoding")
-                        logging.warning("{}".format(str(e)))
-                    #Data has been recieved and added, now do something with it
-                    if not bool(self.data_size):
-                        self.consume_data()
+                    #RECEIVE HEADER:
+                    header = ""
+                    if bool(self.data_segments):
+                        header += self.data_segments[:self.headerSize]
+                        self.data_segments = self.data_segments[self.headerSize:]
+                    while len(header) < self.headerSize:
+                        #loop until enough data for a header has been received
+                        header += self.accepted_client.recv(self.headerSize - len(header)).decode()
+                    logging.info('Header: {}'.format(str(header)))
+                    #Consume the header, either do something,
+                    #or consume the payload afterwards
+                    self.consume_header(header)
                         
             #Finished looping with this client:
             logging.info("Closing Client")
@@ -95,47 +98,44 @@ class UnityServer:
         finally:
             #finished listening entirely
             logging.info("Finishing Listening")
-            self.theSocket.close()
-            self.theSocket = None
-
-    def consume_data_segment(self, data):
-        """ consume and add a segment of data """
-        self.data_segments.append(data)
-            
-    def consume_data(self):
-        """ Consume and handle an entire message header """
-        data = "".join(self.data_segments)
-        self.data_segments.clear()
-        if not bool(data):
-            return
-        try:
-            decoded = json.loads(data.strip());
-        except json.decoder.JSONDecodeError:
-            IPython.embed(simple_prompt=True)
-        response = self.handleJson(decoded)
-        logging.info("Continue: {}, Response: {}".format(self.listen_for_data, response))
-        if response is not None:
-            self.respond(response)
-
-            
-    def handleJson(self, data):
-        logging.info("Handling Data: {}".format(str(data)))
-        response = None
-        if not all([x in data for x in ["size", "iden", "data"]]):
-            logging.warning("Data is malformed")
-            self.listen_for_data = False
-        elif data['iden'] == UnityServer.MESSAGE_T.C_HANDSHAKE.value:
-            logging.info('Startup')
-            response = data.copy()
-            response['iden'] = UnityServer.MESSAGE_T.S_HANDSHAKE.value
-        elif data['iden'] == UnityServer.MESSAGE_T.QUIT.value:
-            logging.info('Quitting')
             self.close()
-        else:
-            logging.info("Other: {}".format(data['iden']))
-            self.listen_for_data = False
 
-        return response
+    def consume_header(self, data):
+        """ Consume a header, in prep for more data possibly """
+        assert(len(data) == self.headerSize);
+        trimmed = data.strip("! ")
+        decoded = json.loads(trimmed);
+        assert('size' in decoded)
+        assert('iden' in decoded)
+        logging.info("Received a header, Type: {}".format(UnityServer.MESSAGE_T_LOOKUP[decoded['iden']]))
+
+        #if a header only: act
+        if (decoded['iden'] != UnityServer.MESSAGE_T.INFO.value):
+            self.respond_to_header(decoded)
+        else:
+            self.respond_to_info(decoded)
+        
+
+    def respond_to_header(self, data):
+        """ Given a Header that needs no payload, act upon it """
+        if data['iden'] == UnityServer.MESSAGE_T.HANDSHAKE.value:
+            self.respond({"size": 0, "iden": UnityServer.MESSAGE_T.HANDSHAKE.value, "data": ""})
+        elif data['iden'] == UnityServer.MESSAGE_T.QUIT.value:
+            self.close()
+        
+    def respond_to_info(self, data):
+        """ Given an info header, listen for the payload """
+        logging.info("Respond to Info not implemented yet")
+        amount_to_listen_for = data['size']
+        assert(amount_to_listen_for > 0)
+        received = self.data_segments[:amount_to_listen_for]
+        while len(received) < amount_to_listen_for:
+            listenAmount = min(self.blockSize, amount_to_listen_for - len(received))
+            received += self.accepted_client.recv(listenAmount).decode()
+        data = received[:amount_to_listen_for]
+        self.data_segments[amount_to_listen_for:]
+
+        logging.info("Payload was: {}".format(data))
 
     def respond(self, data):
         logging.info("Responding: {}".format(data))
@@ -166,7 +166,7 @@ if __name__ == "__main__":
     sev = UnityServer()
     try:
         sev.setup()
-        sev.listen()
+        sev.listen_for_headers()
     except (KeyboardInterrupt):
         logging.info("Shutting down")
         sev.close()
