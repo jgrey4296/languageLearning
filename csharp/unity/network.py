@@ -4,13 +4,14 @@ import json
 from enum import Enum
 from json.decoder import JSONDecodeError
 import IPython
+from hashlib import md5
 
 import logging as root_logger
 logging = root_logger.getLogger(__name__)
 ####################
 DEFAULT_PORT = 50000
 DEFAULT_BLOCKSIZE = 1024
-DEFAULT_HEADERSIZE = 128
+DEFAULT_HEADERSIZE = 64
 DEFAULT_BACKLOG = 5
 DEFAULT_HOST = "localhost"
 
@@ -27,7 +28,8 @@ class UnityServer:
                  host=DEFAULT_HOST,
                  backlog=DEFAULT_BACKLOG,
                  blockSize=DEFAULT_BLOCKSIZE,
-                 headerSize=DEFAULT_HEADERSIZE):
+                 headerSize=DEFAULT_HEADERSIZE,
+                 linked_engine=None):
         self.theSocket  = None
         self.host = host
         self.port = port
@@ -46,7 +48,10 @@ class UnityServer:
         self.accepted_client = None
         self.listen_for_clients = True
         self.listen_for_data = True
-    
+
+        #The AI engine that the network traffic drives
+        self.linked_engine = linked_engine
+        
     #Methods:
     def setup(self):
         logging.info("Setting up Python Server")
@@ -81,12 +86,9 @@ class UnityServer:
                     logging.info('Waiting for data')
                     #RECEIVE HEADER:
                     header = ""
-                    if bool(self.data_segments):
-                        header += self.data_segments[:self.headerSize]
-                        self.data_segments = self.data_segments[self.headerSize:]
                     while len(header) < self.headerSize:
                         #loop until enough data for a header has been received
-                        header += self.accepted_client.recv(self.headerSize - len(header)).decode()
+                        header += self.accepted_client.recv(self.headerSize).decode()
                     logging.info('Header: {}'.format(str(header)))
                     #Consume the header, either do something,
                     #or consume the payload afterwards
@@ -107,35 +109,49 @@ class UnityServer:
         decoded = json.loads(trimmed);
         assert('size' in decoded)
         assert('iden' in decoded)
-        logging.info("Received a header, Type: {}".format(UnityServer.MESSAGE_T_LOOKUP[decoded['iden']]))
+        assert('hash' in decoded)
+        decoded['iden'] = UnityServer.MESSAGE_T_LOOKUP[decoded['iden']]
+        logging.info("Received a header, Type: {}".format(decoded['iden']))
 
-        #if a header only: act
-        if (decoded['iden'] != UnityServer.MESSAGE_T.INFO.value):
-            self.respond_to_header(decoded)
+        if (decoded['iden'] != UnityServer.MESSAGE_T.INFO):
+            self.process_header(decoded)
         else:
-            self.respond_to_info(decoded)
+            self.process_info(decoded)
         
 
-    def respond_to_header(self, data):
+    def process_header(self, data):
         """ Given a Header that needs no payload, act upon it """
-        if data['iden'] == UnityServer.MESSAGE_T.HANDSHAKE.value:
+        iden = data['iden']
+        if iden == UnityServer.MESSAGE_T.HANDSHAKE:
             self.respond({"size": 0, "iden": UnityServer.MESSAGE_T.HANDSHAKE.value, "data": ""})
-        elif data['iden'] == UnityServer.MESSAGE_T.QUIT.value:
+        elif iden == UnityServer.MESSAGE_T.QUIT:
             self.close()
+        elif iden == UnityServer.MESSAGE_T.AI_GO:
+            logging.info("Starting an AI Tick")
+            #TODO: Start an AI tick here
+        else:
+            raise Exception("Unrecognised header type received")
         
-    def respond_to_info(self, data):
+    def process_info(self, data):
         """ Given an info header, listen for the payload """
-        logging.info("Respond to Info not implemented yet")
         amount_to_listen_for = data['size']
         assert(amount_to_listen_for > 0)
-        received = self.data_segments[:amount_to_listen_for]
+        md5_from_header = data['hash']
+        received = ""
         while len(received) < amount_to_listen_for:
             listenAmount = min(self.blockSize, amount_to_listen_for - len(received))
             received += self.accepted_client.recv(listenAmount).decode()
-        data = received[:amount_to_listen_for]
-        self.data_segments[amount_to_listen_for:]
+        md5_from_data = self.getMD5(received)
+        assert(md5_from_header == md5_from_data)
 
-        logging.info("Payload was: {}".format(data))
+        self.fromClientMessages.append(received)
+        logging.info("Payload was: {}".format(received))
+
+        responseValue = "An Action"
+        responseHash = self.getMD5(responseValue)
+        self.respond({"size":len(responseValue), "iden": UnityServer.MESSAGE_T.ACTION.value,
+                      "hash":responseHash, "data":responseValue})
+                      
 
     def respond(self, data):
         logging.info("Responding: {}".format(data))
@@ -149,6 +165,9 @@ class UnityServer:
             self.accepted_client.sendall(byteData)
 
 
+    def getMD5(self, s):
+        obj = md5(s.encode())
+        return obj.hexdigest().upper()
             
 if __name__ == "__main__":
     # Setup root_logger:

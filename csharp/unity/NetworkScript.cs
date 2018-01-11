@@ -11,20 +11,28 @@ using UnityEngine.Serialization;
 using System.Text;
 using System.Collections.Generic;
 using System.IO;
+using System.Security.Cryptography;
 
 //Network Header Format
 //TODO: Determine final format
 [Serializable]
-public class VaultData {
+class VaultData {
 	public enum NetworkMessageT { HANDSHAKE, INFO, ACTION, AI_GO, AI_COMPLETE, QUIT, PAYLOAD};
 
 	public int size;
 	public NetworkMessageT iden;
 	public string data;
+	public string hash;
 
 	public VaultData(NetworkMessageT t, int s){
+		this.iden = t;
+		this.size = s;
+	}
+
+	public VaultData(NetworkMessageT t, int s, string h){
 		this.size = s;
 		this.iden = t;
+		this.hash = h;
 	}
 
 	public VaultData(NetworkMessageT t, string d){
@@ -39,7 +47,7 @@ public class NetworkScript : MonoBehaviour
 	public String host = "localhost";
 	public Int32 port = 50000;
 	public int blockSize = 1024;
-	public int headerSize = 128;
+	public int headerSize = 64;
 
 	//Internal Management
 	Boolean connected = false;
@@ -59,6 +67,9 @@ public class NetworkScript : MonoBehaviour
     string dataAsJson = "";
     string receivedJson = "";
     
+	//MD5 Hasher
+	MD5 md5 = MD5.Create();
+
 	/*
 	 * Upon Creation of the network script,
 	 * setup the network.
@@ -76,7 +87,6 @@ public class NetworkScript : MonoBehaviour
 			connected = true;
             //SETUP HANDSHAKE:
 			toServerQueue.Enqueue(new VaultData(VaultData.NetworkMessageT.HANDSHAKE, 0));
-			this.createMessage("blaaaaaah");
 			flushQueue ();
 		}
 		catch (Exception e)	{
@@ -87,8 +97,9 @@ public class NetworkScript : MonoBehaviour
 	}
 
 	public void createMessage(string data){
+		string hash = CalculateHash (data);
 		VaultData payload = new VaultData (VaultData.NetworkMessageT.PAYLOAD, data);
-		VaultData header = new VaultData (VaultData.NetworkMessageT.INFO, data.Length);
+		VaultData header = new VaultData (VaultData.NetworkMessageT.INFO, data.Length, hash);
 		toServerQueue.Enqueue (header);
 		toServerQueue.Enqueue (payload);
 	}
@@ -136,6 +147,8 @@ public class NetworkScript : MonoBehaviour
 	 * split it, send a size header, then send the data
 	 */
 	void send_data_segments(string data){
+		//todo: store payloads in a dict by their hash,
+		//to resend if there is corruption
 		socket_writer.Write (data);
 	}
 
@@ -159,8 +172,13 @@ public class NetworkScript : MonoBehaviour
 		switch (fromNetworkData.iden) {
 		case VaultData.NetworkMessageT.HANDSHAKE:
 			Debug.Log ("Network Handshake Complete");
+			this.createMessage ("some information");
+			//TODO: Send setup information here
+			this.flushQueue ();
 			break;
 		case VaultData.NetworkMessageT.ACTION:
+			Debug.Log ("Received Action");
+			Debug.Log (fromNetworkData);
 			this.fromServerQueue.Enqueue (fromNetworkData);
 			break;
 		case VaultData.NetworkMessageT.AI_COMPLETE:
@@ -222,4 +240,16 @@ public class NetworkScript : MonoBehaviour
 		socket_ready = false;
 		connected = false;
 	}
+
+	private string CalculateHash(string input){
+		//From https://blogs.msdn.microsoft.com/csharpfaq/2006/10/09/how-do-i-calculate-a-md5-hash-from-a-string/
+		byte[] inputBytes = System.Text.Encoding.ASCII.GetBytes (input);
+		byte[] hash = md5.ComputeHash (inputBytes);
+		StringBuilder sb = new StringBuilder ();
+		for (int i = 0; i < hash.Length; i++) {
+			sb.Append (hash [i].ToString ("X2"));
+		}
+		return sb.ToString ();
+	}
+
 }
