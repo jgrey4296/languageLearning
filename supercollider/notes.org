@@ -281,15 +281,40 @@ logical or: ||
 <> : function composition (going RIGHT to LEFT)
 
 *** GUI
-    w = Window.new("GUI Introduction", Rect(200,200,255,100));
-    b = Button.new(w,Rect(10,0,80,30)).states_([["Hide"],["Show"]]);
-    s = Slider.new(w,Rect(95,0,150,30));
-    c = CompositeView.new(w,Rect(20,35,100,60));
-    StaticText.new(c,Rect(0,0,80,30)).string_("Hello");
-    StaticText.new(c,Rect(20,30,80,30)).string_("World!");
-    b.action = { c.visible = b.value.asBoolean.not };
-    s.action = { c.bounds = Rect( s.value * 150 + 20, 35, 100, 100 ) };
-    w.front;
+    #+begin_src sclang
+      w = Window.new("GUI Introduction", Rect(200,200,255,100));
+      b = Button.new(w,Rect(10,0,80,30)).states_([["Hide"],["Show"]]);
+      s = Slider.new(w,Rect(95,0,150,30));
+      c = CompositeView.new(w,Rect(20,35,100,60));
+      StaticText.new(c,Rect(0,0,80,30)).string_("Hello");
+      StaticText.new(c,Rect(20,30,80,30)).string_("World!");
+      b.action = { c.visible = b.value.asBoolean.not };
+      s.action = { c.bounds = Rect( s.value * 150 + 20, 35, 100, 100 ) };
+      w.front;
+    #+end_src
+    
+    Rect and Point.
+
+**** Window
+     Window.screenBounds
+     Display with window.front;
+    
+     Window display can be automated with:
+     window.view.decorator = FlowLayout(window.view.bounds);
+
+     Windows can also have layouts:
+	 wind.layout_(HLayout(button, VLayout(button2, Button())));
+    
+    
+**** Button
+     b = Button.new(parent, Rect(0,0,100,100).states([["One"], ["Two"]]);
+     b.action_( "test".postln;)
+    
+
+*** IO
+    File.use(File.getcwd +/+ "aFile.sc", "r", {});
+
+    
 
 *** Control Flow
     if ( x, { then }, { else })
@@ -485,6 +510,16 @@ freeGroup
     Array // Fixed Size
     List // Variable Size. Uses 'add','pop','addFirst', insert,removeAt
     Dictionary //uses [ ] access, can take strings, symbols, objects...
+
+    PriorityQueue  //.put(time, item), .pop, .topPriority, .clear    
+    Set, Bag, IdentityBag
+    MultiLevelIdentityDictionary.new
+    m.treeDo(
+    {|x| ("Branch: " + x).postln}, 
+    {|x| ("Leaf: " + x).postln; },
+    {|x| ("Arg: " + x).postln; },
+    {|x| ("Post Branch: " + x).postln})
+
 **** Sets
 Set.new
 set.add
@@ -494,6 +529,9 @@ set - set : difference
 set -- set : symmetric different
 
 
+*** Scales
+    a = Scale.major, minor etc
+    List using Scale.directory
 *** Useful Examples
 8.rand //generate random number from 0-8
 #[1,2,3] //literal, constant array
