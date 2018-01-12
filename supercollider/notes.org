@@ -198,6 +198,17 @@ C-c ;           find references
 
 
 *** Syntax Shortcuts
+
+*** Dereferencing / List expansion
+    use *(1..5) -> 1,2,3,4,5
+
+    #+begin_src sclang
+      a = (1..3)
+      {|x, y, z| (x + y + z) }.value(*a);
+    #+end_src
+
+
+
 **** Multiple assignment
 #a,b,c = [1,2,3]
 #[a,b,c] = [1,2,3]
