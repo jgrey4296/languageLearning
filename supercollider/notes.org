@@ -41,6 +41,21 @@ C-c ;           find references
    Env.linen(0.1, 0.2, 0.1, 0.6).test.plot
    //Open up gui help. 
    thisProcess.showHelpBrowser
+   //Show Guis:
+   Stethoscope.new(nil, 1, 0, 4096, 1, \audio, nil, 0);
+   FreqScope.new()
+   //OSC Debugging:
+   OSCFunc.trace(true);
+   //Finer OSC Debugging:
+   f = { |msg, time, addr|
+   if(msg[0] != '/status.reply') {
+   "time: % sender: %\nmessage: %\n".postf(time, addr, msg);
+   }
+   };
+   thisProcess.addOSCRecvFunc(f);
+   thisProcess.removeOSCRecvFunc(f);
+
+
    #+end_src
 ** Server Commands
    #+begin_src 
@@ -259,6 +274,8 @@ C-c ;           find references
      
      rect & rect : intersection of rectangles
      rect | rect : union of rectangles
+     
+     Color.rand
      #+end_src
 
 **** list comprehension
@@ -362,6 +379,7 @@ C-c ;           find references
     
 *** IO
     #+begin_src sclang
+    File.getcwd
     File.use(File.getcwd +/+ "aFile.sc", "r", {});
     #+end_src
 *** Control Flow
@@ -390,6 +408,9 @@ C-c ;           find references
      TempoClock.default.schedAbs(timeNow+5, {..});
      TempoClock.default.schedAbs(TempoClock..default.nextBar, { TempoClock.beatsPerBar = 3; });
      TempoClock.default.tempo = 2;
+     //The length in seconds of a beat
+     //useful for converting to seconds for envelopes
+     TempoClock.default.beatDur
 
      thisThread.clock.beats;
      //returning a number shedules a repeat:
@@ -557,18 +578,34 @@ freeAllInGroup
 freeGroup
 
 *** Data Structures
-    Array // Fixed Size
-    List // Variable Size. Uses 'add','pop','addFirst', insert,removeAt
-    Dictionary //uses [ ] access, can take strings, symbols, objects...
+    
+**** Array 
+     Fixed Size
 
-    PriorityQueue  //.put(time, item), .pop, .topPriority, .clear    
-    Set, Bag, IdentityBag
-    MultiLevelIdentityDictionary.new
-    m.treeDo(
-    {|x| ("Branch: " + x).postln}, 
-    {|x| ("Leaf: " + x).postln; },
-    {|x| ("Arg: " + x).postln; },
-    {|x| ("Post Branch: " + x).postln})
+**** List 
+     Variable Size. Uses 'add','pop','addFirst', insert,removeAt
+     into pairs: .pairsDo(f)
+
+**** Dictionary 
+     uses [ ] and .at access, 
+     can take strings, symbols, objects...
+
+**** PriorityQueue
+     .put(time, item), .pop, .topPriority, .clear
+
+**** Set, Bag, IdentityBag
+
+****  MultiLevelIdentityDictionary.new
+     #+begin_src sclang
+     m = MultiLevelIdentityDictionary.new
+     m.put(\a, \b, \c, "blah")
+
+     m.treeDo(
+     {|x| ("Branch: " + x).postln}, 
+     {|x, y| ("LeafPath: " + x + " Leaf: + y).postln; },
+     {|x| ("Arg: " + x).postln; },
+     {|x| ("Post Branch: " + x).postln})
+     #+end_src
 
 **** Sets
 Set.new
@@ -599,6 +636,7 @@ set -- set : symmetric different
     In:
     #+begin_src sclang
     thisProcess.openUDPPort(7772);
+    thisProcess.openPorts
     n = NetAddr("127.0.0.1", 7772);
     o = OSCFunc({ |msg, time, add, recvPort| msg.postln; }, '/test');
     o.free; n.free;
