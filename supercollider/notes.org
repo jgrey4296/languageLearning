@@ -17,25 +17,39 @@ C-c :           find definition
 C-c ;           find references
 
 ** Useful Debugging / Introspection
-   "test".dump // dumps information about the class/type, 
-   "test".class // get the class type
-   "test".inspect // opens up a detailed inspector
-   "test".class.dumpInterface //prints all methods the class can respond to
-   {...synthdef...}.scope //create a gui scope of the signal
-   Server.instVarNames.dump //all instance variable names of a class
+
+   #+begin_src sclang
+   // dumps information about the class/type, 
+   "test".dump
+   // get the class type
+   "test".class
+   // opens up a detailed inspector
+   "test".inspect
+   //prints all methods the class can respond to
+   "test".class.dumpInterface 
+   //Gui Scope a Synth:
+   SynthDef(\Test, { Out.ar(0, SinOsc.ar(440, 0, 0.5)); })
+   //all instance variable names of a class
+   Server.instVarNames.dump
+   //
    "test".class.findMethod("blah")
    SynthDef... .dumpUGens
-   this.dump // get info on the interpreter
+   // get info on the interpreter
+   this.dump 
    currentEnvironment.clear
+   //Gui Plot an Environment
    Env.linen(0.1, 0.2, 0.1, 0.6).test.plot
+   //Open up gui help. 
    thisProcess.showHelpBrowser
-
+   #+end_src
 ** Server Commands
+   #+begin_src 
    s.status
    s.boot
    s.reboot
    s.freeAll
    s.scope
+   #+end_src
 
 ** sclang
    
@@ -45,37 +59,47 @@ C-c ;           find references
     
     Synthdefs are eval'd *only once*, so changes are through messages,
     initializations, or ugens.
+    #+begin_src sclang
+    //As a Function:
+    { SinOsc.ar(440, 0, 0.2) }.play;
     
-    { SinOsc.ar(440, 0, 0.2) }.play //a Sound Function:
-    
-    aSynthDef = SynthDef.new("tutorial", { Out.ar(0, Sin.ar(440, 0, 0.2)) }); //definition
-    aSynth = aSynthDef.play //start it
-    aSynth.free //stop it
-    anotherSynth = Synth.new("tutorial") //creation by name
+    //SynthDef creation
+    aSynthDef = SynthDef.new("tutorial", { Out.ar(0, Sin.ar(440, 0, 0.2)) }); 
+    //Simple Testing:
+    aSynth = aSynthDef.play;
+    //Stop the Synth
+    aSynth.free;
+    //Create a synth by name, lookup on server
+    anotherSynth = Synth.new("tutorial");
 
     //Must *add* the synth to the server:
     SynthDef.new("Blah",{arg pitch = 440; var outArray;
 	    outArray = [SinOsc.ar(pitch,0,0.2), SinOsc.ar(pitch+2,0,0.2)];
     	Out.ar(0,outArray);
-    }).add
+    }).add;
 
     //then play it: *args can be symbols* eg: \pitch
     b = Synth.new("Blah", [ "pitch", 220 ])
     //combine with busses/groups:
+    //can also use .moveBefore, .moveAfter, .moveToHead, .movetoTail
     c = Synth.after(b,"Blah",["pitch",220]); 
     //Synth.head/tail/before/after/replace
-    b.set("pitch",220) //modification
+    //modification
+    b.set("pitch",220) ;
     //then kill it
-    b.free
-    
-    //can move nodes with:
-    //.moveBefore, .moveAfter, .moveToHead, .moveToTail
+    b.free;
+    #+end_src    
 
-    //for feedback, use InFeedback.ar
+    For feedback, use InFeedback.ar
     
 *** UGens
 
 **** Oscillators:
+     #+begin_src sclang
+     //Eg:
+     { SinOsc.ar(440, 0, 0.5) }.play;
+     #+end_src
+
      SinOsc.ar/kr (freq, phase, amp, add)
      PinkNoise.ar/kr (mul,add)
      Saw.ar/kr (freq,mul,add)
@@ -87,7 +111,13 @@ C-c ;           find references
      SyncSaw.ar/kr (syncFreq,sawFreq,mul,add) // careful
      DWGPlucked.ar/kr(freq, amp, gate, pos, c1, c3, inp, release)
  
-**** buffer playback:
+**** Buffer Playback:
+     #+begin_src sclang
+     //EG:
+     ~buffer = Buffer.read(s, File.getcwd +/+ "aSound.aif");
+     { PlayBuf.ar(1, ~buffer, 1); }.play;
+     #+end_src
+
      PlayBuf.ar(numChannels, buffer, rateOfPlayback) //rate: -n <-> n
      BufRateScale.kr(buffer)
      RecordBuf.ar(source,buffer)
@@ -98,11 +128,10 @@ C-c ;           find references
      Mix.ar (array)
      Decay2.ar/kr (in, attackTime, decayTime, mul, add)
      AllpassC.ar/kr (in, maxDelaytime, delaytime, decaytime, mul, add)
-
+     
 **** Envelopes
      EnvGen.ar/kr (envelope, gate, levelScale, levelBias, timeScale, doneAction)
      Env.perc/triangle/sine/xyc/pairs/step/cutoff/dadsr/adsr/asr/circle
-     
      Env.linen(attackT, sustainT, releaseT, level, curve)
 
 **** I/O
@@ -138,6 +167,7 @@ C-c ;           find references
      Wrap
 
 *** Busses
+    #+begin_src sclang
     //For Routing audio
     b = Bus.control(server, numChannels=1)
     b = Bus.audio(server, numChannels=1)
@@ -155,21 +185,24 @@ C-c ;           find references
     b.set(30)
     // set the synth to a constant value, unmapping from control
     x.set(\freq2, 100)
+    #+end_src
+
 
 *** Groups
+    #+begin_src sclang
     g = Group.new;
     h = Group.before(g);
     g.free; h.free;
-    
     //creating a new synth in a group
     Synth(\tutorial..,[\inBus,b],g)
-   
-    g.set(\amp,0.005) // sends set message to all nodes inside group
-
+    // sends set message to all nodes inside group
+    g.set(\amp,0.005) 
+    #+end_src
 *** Buffers
+    #+begin_src sclang
     b = Buffer.alloc(server,frames,channels)
-
-    b = Buffer.alloc(s,s.sampleRate * 8.0, 2) //8 seconds
+    //8 second long buffer:
+    b = Buffer.alloc(s,s.sampleRate * 8.0, 2) 
     b = Buffer.read(s, "/path/to/file.wav")
 
     //Play the buffer:
@@ -181,61 +214,67 @@ C-c ;           find references
     //Buffers can get and set data, but interleave frames for multichannel.
     //so i: 0=f1-chan1, 1=f1-chan2, 2=f2-chan1...
     //get is asynch
-
+    #+end_src
 *** Classes
     *method = class method
     'this' refers to instance
     *NEEDS TO BE IN ~/github/.super_collider_classes*
     *or Platform.userExtensionDir*
-
+    
+    #+begin_src sclang
     MyClass {
     	var <a,>b,<>c; //get,set,both
         classvar blah;
 
 		*new { ^super.new }
     }
-
-
-
-*** Syntax Shortcuts
-
-*** Dereferencing / List expansion
-    use *(1..5) -> 1,2,3,4,5
-
-    #+begin_src sclang
-      a = (1..3)
-      {|x, y, z| (x + y + z) }.value(*a);
     #+end_src
 
 
 
-**** Multiple assignment
-#a,b,c = [1,2,3]
-#[a,b,c] = [1,2,3]
 
+
+*** Syntax Shortcuts
+**** Dereferencing / List expansion
+     use *(1..5) -> 1,2,3,4,5  in function parameters
+     #+begin_src sclang
+       a = (1..3)
+       {|x, y, z| (x + y + z) }.value(*a);
+     #+end_src
+
+**** Multiple assignment
+     #+begin_src sclang
+     #a,b,c = [1,2,3]
+     #[a,b,c] = [1,2,3]
+     #+end_src
 **** Series assignment
-a = (start,next..end)
+     #+begin_src sclang
+     a = (start,next..end)
+     #+end_src
 
 **** Geometry
-2 @ 3 : Point(2,3)
-point @ point : rectangle, top left -> bottom right
+     #+begin_src sclang
+     2 @ 3 : Point(2,3)
+     point @ point : rectangle, top left -> bottom right
+     
+     rect & rect : intersection of rectangles
+     rect | rect : union of rectangles
+     #+end_src
 
-rect & rect : intersection of rectangles
-rect | rect : union of rectangles
-
-*** list comprehension
-    //defined as routines:
-    {: x, x <- (1..5) }
-    {: [x,y], x <- 2, y <- (1..5), (x+y).isprime }
+**** list comprehension
+     #+begin_src sclang
+     //defined as routines:
+     {: x, x <- (1..5) }
+     {: [x,y], x <- 2, y <- (1..5), (x+y).isprime }
     
-    //use 'all' to get the values out:
-    all {:x, x <- (1..5) }
+     //use 'all' to get the values out:
+     all {:x, x <- (1..5) }
 
-    //generator clauses: v <- e
-    //var clauses: var v = e
-    //expression clauses: :: e
-    //termination clause: :while e
-
+     //generator clauses: v <- e
+     //var clauses: var v = e
+     //expression clauses: :: e
+     //termination clause: :while e
+     #+end_src
 *** Variables
     defined with 'var' after the open curly bracket
     of a function.
@@ -247,13 +286,16 @@ rect | rect : union of rectangles
     Globals can only be single letter variables
     
 *** Functions
+    #+begin_src sclang
     a = { arg a; a + 2 }
     a = {|a| a + 2}
-    a.value(2) //4
+    a.value(2) // 4
     //Functions return the last value eval'd.
     //Methods return with ^
+    #+end_src
 
 *** Functional programming
+    #+begin_src sclang
     a = {|x| x + 2 };
     //Map:
     (1..5).collect(a);
@@ -270,26 +312,26 @@ rect | rect : union of rectangles
 
     //Reduce
     (1..5).reduce({|x, y| x * y)
-
+    #+end_src
 *** Operators
-== : Equivalance
-=== : identity
-& : bitwise and
-bitwise or: |
-<< : bitwise left
->> : bitwise right
-&& : logical and
-logical or: ||
+    == : Equivalance
+    === : identity
+    & : bitwise and
+    bitwise or: |
+    << : bitwise left
+    >> : bitwise right
+    && : logical and
+    logical or: ||
 
-++ : concatenation
-+++ : lamination (repeating combination/pairing). ie: Zip
+    ++ : concatenation
+    +++ : lamination (repeating combination/pairing). ie: Zip
 
-@ : array indexing (.at)
-@@ : array index with wrapping (.wrapAt)
-@|@ : array index with folding (.foldAt)
-|@| : array index with clipping (.clipAt)
+    @ : array indexing (.at)
+    @@ : array index with wrapping (.wrapAt)
+    @|@ : array index with folding (.foldAt)
+    |@| : array index with clipping (.clipAt)
 
-<> : function composition (going RIGHT to LEFT)
+    <> : function composition (going RIGHT to LEFT)
 
 *** GUI
     #+begin_src sclang
@@ -303,8 +345,6 @@ logical or: ||
       s.action = { c.bounds = Rect( s.value * 150 + 20, 35, 100, 100 ) };
       w.front;
     #+end_src
-    
-    Rect and Point.
 
 **** Window
      Window.screenBounds
@@ -316,48 +356,48 @@ logical or: ||
      Windows can also have layouts:
 	 wind.layout_(HLayout(button, VLayout(button2, Button())));
     
-    
 **** Button
      b = Button.new(parent, Rect(0,0,100,100).states([["One"], ["Two"]]);
      b.action_( "test".postln;)
     
-
 *** IO
+    #+begin_src sclang
     File.use(File.getcwd +/+ "aFile.sc", "r", {});
-
-    
-
+    #+end_src
 *** Control Flow
+    -- :results output/value
+    #+begin_src sclang
     if ( x, { then }, { else })
     while (testFunc, bodyFunc);
     while { (a=something) } { use a... }
     for (startVal, endVal, func);
     forBy(start, end, step, func);
     do(collection, function)
-
     switch(val, testVal1, trueFunc1,
 			testValN, trueFuncN,
 			defaultFunc);
-
+    #+end_src
 *** Timing
 **** Clocks
+     #+begin_src sclang
      //Tempo/System/App -Clock
      //System/App are in seconds
      
      SystemClock.sched(5,{"hello".postln;}); 
-     
+
      var timeNow = TempoClock.default.beats;
      TempoClock.default.tempo = 2; // 2 beats / sec
      TempoClock.default.schedAbs(timeNow+5, {..});
-     
+     TempoClock.default.schedAbs(TempoClock..default.nextBar, { TempoClock.beatsPerBar = 3; });
+     TempoClock.default.tempo = 2;
+
      thisThread.clock.beats;
-     
      //returning a number shedules a repeat:
      SystemClock.sched(5,{"hello".postln; 2})
-
+     #+end_src
 **** Scheduling
+     #+begin_src sclang
      //Routines and yield
-
      r = Routine({
      "a".yield;
      "b".yield;
@@ -387,50 +427,49 @@ logical or: ||
       r.play
       r.stop
 
+     #+end_src
 **** Tasks
+     #+begin_src sclang
      //A more controllable routine, pausable
      //can use ".wait" in place of ".yield"
-     
      t = Task({
 	 var i = 0, n = [440,560,880];
 	 loop {
 	 //note the folding at operator:
-	 ({ SinOsc.ar(n@|@i,0,0.2) * EnvGen.kr(Env.perc(0.01,0.2), doneAction: 2);}).play;
+	 ({ SinOsc.ar(n @|@ i,0,0.2) * EnvGen.kr(Env.perc(0.01,0.2), doneAction: 2);}).play;
 	 i = i + 1;
 	 0.5.wait;
 	 }
      });
-
+     #+end_src
 **** Synchronized timing:
+     #+begin_src sclang
      aRoutine.play(clock,quant)
      aRoutine.play(argClock, doReset, quant)
-     
      //Specify a clock, whether to reset to start, 
      //and exact start time. 
-     
      quant = [bar length,phase]
      //where u and v are tasks
      u.play(c,true,2);
      v.play(c,true,[2,0.5]);
-     
-     
      //When dealing with latency, wrap messages 
      //to the server with 'makeBundle':
      s.makeBundle(s.latency, {...});
-
+     #+end_src
 *** Patterns
     Streams have .next and .reset
     Patterns create streams
     Can collect, select, reject on patterns to modify.
-
+    
+    #+begin_src sclang
     a = Pseq([1,2,3,4,5], 1).asStream
     while { (m=a.next).notNil } {m.postln };
-
+    #+end_src
     
-    //Patterns can be concatenated with ++
-    //and composed with <>
-    //played,
-    //collected, selected, rejected
+    Patterns can be concatenated with ++
+    and composed with <>
+    played,
+    collected, selected, rejected
 
     Pfunc(function)
     Prout(function) //to create routines
@@ -446,17 +485,13 @@ logical or: ||
     Pgeom (start, grow, length)
     Pwhite (lo, hi, length)
     Pexprand (lo, hi, length)
-
-
     //---- Filter Patterns
     //repeat a pattern as many times as necessary:
     Pn(pattern, repeats)
     //repeat ind values n times:
     Pstutter (n, pattern)
-    
     //can use patterns inside of other patterns:
     p = Pwhite(0.0, Pseries(0.01,0.01,inf), 100)
-
     //Parallel event patterns, with duration
     Ppar(list) 
     
@@ -467,24 +502,28 @@ logical or: ||
 
      //Create an instrument \smooth
      //and trigger repeatedly
+     #+begin_src sclang
      p = Pbind(
      	\instrument, \smooth,
         \midinote, Pseq([60, 72, 71], 1),
         \dur, Pseq([2, 2, 1], 1)
      ).play;
-
+     #+end_src
 
 *** Events
+    #+begin_src sclang
     //Key-value pairs:
+    //can also specify synth with \instrument
     e = (note:26, amp:0.1)
     //have prototypes for performance:
     e.play
-    //can also specify synth with \instrument
+    #+end_src
 
 *** Rests
+    #+begin_src sclang
     (
     // first, pitches ascending by 1-3 semitones, until 2 octaves are reached
-    var    pitches = Pseries(0, Pconst(24, Pwhite(1, 3, inf)), inf).asStream.all,
+    var pitches = Pseries(0, Pconst(24, Pwhite(1, 3, inf)), inf).asStream.all,
     // randomly block 1/3 of those
     mask = pitches.scramble[0 .. pitches.size div: 3];
 
@@ -497,7 +536,7 @@ logical or: ||
     \dur, 0.125
     ).play;
     )
-
+    #+end_src
 *** Done Actions
 
 Done.ar/kr
@@ -539,17 +578,54 @@ set | set : union
 set - set : difference
 set -- set : symmetric different
 
+*** MIDI Out
+    #+begin_src sclang
+      MIDIClient.init
+      MIDIClient.destinations
+      a = MIDIOut.new(0)
+
+      TempoClock.default.clear
+      TempoClock.default.tempo = 1
+      TempoClock.default.schedAbs(TempoClock.default.nextBar, { TempoClock.default.beatsPerBar = 3; })
+
+      TempoClock.default.schedAbs(TempoClock.default.nextBar, {
+    	  "Playing".postln;
+    	  a.noteOn(1, 60, 60);
+    	  1;
+      });
+    #+end_src
+
+*** OSC
+    In:
+    #+begin_src sclang
+    thisProcess.openUDPPort(7772);
+    n = NetAddr("127.0.0.1", 7772);
+    o = OSCFunc({ |msg, time, add, recvPort| msg.postln; }, '/test');
+    o.free; n.free;
+    #+end_src
+
+
+    Out:
+    #+begin_src sclang
+    n = NetAddr("127.0.0.1", 7771);
+    b.sendMsg("/hello", "there");
+    b.free; n.free;
+    #+end_src
 
 *** Scales
+    #+begin_src sclang
     a = Scale.major, minor etc
+    #+end_src
     List using Scale.directory
 *** Useful Examples
-8.rand //generate random number from 0-8
-#[1,2,3] //literal, constant array
-Ref.new(a) //create a reference to a
-[1,2,3,4].choose // random num from array
-10.do({|x| "hello".postln}) //no returns
-x ! n // create array of x, n times
-
+    #+begin_src sclang
+    8.rand //generate random number from 0-8
+    #[1,2,3] //literal, constant array
+    Ref.new(a) //create a reference to a
+    [1,2,3,4].choose // random num from array
+    10.do({|x| "hello".postln}) //no returns
+    x ! n // create array of x, n times
+    #+end_src
 ** scsynth
+   TODO
    
