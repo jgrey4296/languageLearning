@@ -5,4 +5,5 @@
    en_core_web_md
    Using:
    python -m spacy download en_core..
-
+** OSC
+   use [[https://github.com/attwad/python-osc/tree/master/pythonosc][python-osc]]
