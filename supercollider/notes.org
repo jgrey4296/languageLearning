@@ -9,6 +9,10 @@
    #+end_src
 
 ** sclang
+   Started up as part of emacs sclang mode.
+   has a config file defined in the emacs mode, which includes paths.
+   see ~/.emacs.setup/setup_files/sclang.yaml
+
    
 *** SynthDefs versus Synths
     The point is to abstract concepts from the server to the client.
@@ -783,3 +787,16 @@ set -- set : symmetric different
 
 
    #+end_src
+
+** Building Supercollider
+   From source requires a couple of things:
+   install the dependencies, ensure qt55,
+   temporarily modify the path to point to where brew link qt55 suggests
+   make sure you run:
+   
+   git submodule init
+   git submodule update
+
+   to install yaml-cpp
+   otherwise follow the instructions
+
