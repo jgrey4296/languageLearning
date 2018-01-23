@@ -1,0 +1,6 @@
+* Compiling Aseprite from source
+  Follow the instructions to install google depot_tools, then skia.
+  The missing instruction is to *unset python3 and anaconda in the path* 
+  as depot_tools, and the setup script for skia uses *python 2*.
+  after that, compilation is straight forward, making sure to target the 
+  OSX version you are actually on.
