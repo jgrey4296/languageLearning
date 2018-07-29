@@ -13,6 +13,22 @@
    has a config file defined in the emacs mode, which includes paths.
    see ~/.emacs.setup/setup_files/sclang.yaml
 
+*** Paths
+    LanguageConfig.includePaths
+    LanguageConfig.addIncludePath
+
+    Platform.classLibraryDir
+    Platform.helpDir
+    Platform.systemAppSupportDir
+    Platform.systemExtensionDir
+    Platform.userHomeDir
+    Platform.userAppSupportDir
+    Platform.userConfigDir
+    Platform.userExtensionDir
+    Platform.platformDir
+    Platform.pathSeparator
+    Platform.resourceDir
+    Platform.defaultTempDir
    
 *** SynthDefs versus Synths
     The point is to abstract concepts from the server to the client.
