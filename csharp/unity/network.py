@@ -11,16 +11,15 @@ logging = root_logger.getLogger(__name__)
 ####################
 DEFAULT_PORT = 50000
 DEFAULT_BLOCKSIZE = 1024
-DEFAULT_HEADERSIZE = 64
-DEFAULT_BACKLOG = 5
+DEFAULT_HEADERSIZE = 128
+DEFAULT_BACKLOG = 10
 DEFAULT_HOST = "localhost"
-
 
 class UnityServer:
     """ A Server to connect to unity """
     
     #The types of messages supported
-    MESSAGE_T = Enum("Message Types", "HANDSHAKE INFO ACTION AI_GO AI_COMPLETE QUIT PAYLOAD", start=0)
+    MESSAGE_T = Enum("Message Types", "HANDSHAKE INFO ACTION AI_GO AI_COMPLETE QUIT PAYLOAD RESEND", start=0)
     MESSAGE_T_LOOKUP = {x.value : x for x in MESSAGE_T}
     
     def __init__(self,
@@ -51,14 +50,29 @@ class UnityServer:
 
         #The AI engine that the network traffic drives
         self.linked_engine = linked_engine
-        
+
+    def NET_HEADER(self, m_type, payload_size=0, data="", hash=""):
+        """ Utility to easily create a header to send over the network """
+        assert(m_type in UnityServer.MESSAGE_T)
+        if data is not "":
+            hash = self.getMD5(data)
+        header = { "size" : payload_size, "iden" : m_type.value, "data" : data, "hash" : hash }
+        header_str = json.dumps(header)
+        return header_str
+
+    def NET_ACTION(self, payload):
+        """ Utility to easily create an action command to send over the network """
+        payload_length = len(payload)
+        header = self.NET_HEADER(UnityServer.MESSAGE_T.ACTION, payload_length, data=payload)
+        return header
+    
     #Methods:
     def setup(self):
         logging.info("Setting up Python Server")
         self.theSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.theSocket.bind((self.host, self.port)) 
         self.theSocket.listen(self.backlog)
-
+        
     def close(self):
         logging.info("Closing Socket")
         if self.accepted_client is not None:
@@ -93,6 +107,9 @@ class UnityServer:
                     #Consume the header, either do something,
                     #or consume the payload afterwards
                     self.consume_header(header)
+                    #After consuming the received data, send out any response messages,
+                    #packed into a single string
+                    self.flush_response()
                         
             #Finished looping with this client:
             logging.info("Closing Client")
@@ -117,13 +134,15 @@ class UnityServer:
             self.process_header(decoded)
         else:
             self.process_info(decoded)
+        logging.info("Finished consuming header")
         
 
     def process_header(self, data):
         """ Given a Header that needs no payload, act upon it """
         iden = data['iden']
         if iden == UnityServer.MESSAGE_T.HANDSHAKE:
-            self.respond({"size": 0, "iden": UnityServer.MESSAGE_T.HANDSHAKE.value, "data": ""})
+            self.respond(self.NET_ACTION("testing blahhhh"))
+            self.respond(self.NET_HEADER(UnityServer.MESSAGE_T.HANDSHAKE))
         elif iden == UnityServer.MESSAGE_T.QUIT:
             self.close()
         elif iden == UnityServer.MESSAGE_T.AI_GO:
@@ -131,9 +150,11 @@ class UnityServer:
             #TODO: Start an AI tick here
         else:
             raise Exception("Unrecognised header type received")
+        logging.info("Finished processing header")
         
     def process_info(self, data):
         """ Given an info header, listen for the payload """
+        logging.info("Listening for info payload")
         amount_to_listen_for = data['size']
         assert(amount_to_listen_for > 0)
         md5_from_header = data['hash']
@@ -147,25 +168,23 @@ class UnityServer:
         self.fromClientMessages.append(received)
         logging.info("Payload was: {}".format(received))
 
-        responseValue = "An Action"
-        responseHash = self.getMD5(responseValue)
-        self.respond({"size":len(responseValue), "iden": UnityServer.MESSAGE_T.ACTION.value,
-                      "hash":responseHash, "data":responseValue})
-                      
-
     def respond(self, data):
-        logging.info("Responding: {}".format(data))
-        if data is None:
-            raise Exception("Response Data shouldn't be None")
-        
-        if not isinstance(data, str):
-            data = json.dumps(data)
-            #todo: change this to use the same byte array each time, without creating a new object
-            byteData = bytearray(data + "\n", 'utf-8')
-            self.accepted_client.sendall(byteData)
+        """ Adds data to the queue to send """
+        self.toClientMessages.append(data)
 
+    def flush_response(self):
+        """ Actually sends all queued messages out as a single string """
+        logging.info("Flushing Response")
+        if not bool(self.toClientMessages):
+            return
+
+        packed = bytearray("|".join(self.toClientMessages) + "\n", "utf-8")
+        self.accepted_client.sendall(packed)
+        self.toClientMessages.clear()
+        logging.info("Sent data")
 
     def getMD5(self, s):
+        """ Craete the md5 hash of a string for error checking """
         obj = md5(s.encode())
         return obj.hexdigest().upper()
             
