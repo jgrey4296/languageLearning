@@ -1,5 +1,5 @@
 from os.path import join, isfile, exists, isdir, splitext, expanduser, split
-from os import listdir
+from os import listdir, mkdir
 from hashlib import sha256
 from shutil import copyfile
 import IPython
@@ -18,15 +18,26 @@ root_logger.getLogger('').addHandler(console)
 logging = root_logger.getLogger(__name__)
 ##############################
 
-MENDELEY = "/Volumes/DOCUMENTS/mendeley"
+#SOURCE_ADDED = "/Volumes/DOCUMENTS/mendeley"
+SOURCE_ADDED = "/Users/jgrey/Desktop/IPAD_MAIN"
+
 UNSORTED = [
     "/Volumes/DOCUMENTS/Old/missingpapers",
     "/Volumes/DOCUMENTS/Old/research",
+    "/Users/jgrey/Desktop/feb_2018_pdfs",
+    "/Users/jgrey/Desktop/feb_12_2018_pdfs"
     ]
 
-DEPTHSEARCH = "/Volumes/DOCUMENTS/Papers"
+DEPTHSEARCH = [
+    "/Volumes/DOCUMENTS/Papers",
+    "/Volumes/DOCUMENTS/Old",
+    "/Volumes/DOCUMENTS/mendeley"
+]
 TARGET = "/Users/jgrey/Desktop/unused"
 
+if not isdir(TARGET):
+    logging.info("Making Target Dir: {}".format(TARGET))
+    mkdir(TARGET)
 
 def getAllPdfs_deep(loc):
     """ Get the full paths of all pdfs in the location """
@@ -62,21 +73,22 @@ def fileToHash(filename):
         return sha256(f.read()).hexdigest()
 
 
-#Get all mendeley file hashes
+#Get all Added file hashes
 logging.info("Starting")
-mendeley_pdfs = getAllPdfs_deep(MENDELEY)
-logging.info("Num of Mendeley pdfs: {}".format(len(mendeley_pdfs)))
-mendeley_hashmap = {fileToHash(x) : x for x in mendeley_pdfs}
-mendeley_set = set(mendeley_hashmap.keys())
+source_pdfs = getAllPdfs_deep(SOURCE_ADDED)
+logging.info("Num of Source pdfs: {}".format(len(source_pdfs)))
+source_hashmap = {fileToHash(x) : x for x in source_pdfs}
+source_set = set(source_hashmap.keys())
 
 other_pdfs = [y for x in UNSORTED for y in getAllPdfs(x)]
-other_pdfs += getAllPdfs_deep(DEPTHSEARCH)
+for x in DEPTHSEARCH:
+    other_pdfs += getAllPdfs_deep(x)
 
 logging.info("Num of other pdfs: {}".format(len(other_pdfs)))
 other_hashmap = {fileToHash(x) : x for x in other_pdfs}
 other_set = set(other_hashmap.keys())
 
-unused_other = other_set.difference(mendeley_set)
+unused_other = other_set.difference(source_set)
 logging.info("Files found: {}".format(len(unused_other)))
 for x in unused_other:
     name = other_hashmap[x]
