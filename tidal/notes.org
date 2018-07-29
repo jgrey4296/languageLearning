@@ -6,7 +6,7 @@
    sounds are in ~/Library/Application Support/Supercollider/downloaded-quarks
    Tidal mode for haskell, sclang mode for supercollider
    Make sure to have the SuperDirt quark in the search paths of the yaml config for sc.
-   Start Supercollider with sclang-start, then run SuperDirt.Start
+   Start Supercollider with sclang-start, then run SuperDirt.start
    Start tidal with C-c C-s, 
    Run lines of tidal with C-c C-c
 ** Simple sounds
@@ -64,7 +64,8 @@
 
 ** Misc Notes
    Polyrhythm: "[bd bd bd, sd cp sd cp]"
-   Polymetre : "{bd bd bd, sd cp sd cp]"
+   Polymetre : "{bd bd bd, sd cp sd cp}"
+
 ** useful definitions and definitions
    #+begin_src haskell
      -- Convert beats per minute in bars to cycles per second
