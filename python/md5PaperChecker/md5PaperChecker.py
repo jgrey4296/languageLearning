@@ -3,9 +3,6 @@ from os import listdir, mkdir
 from hashlib import sha256
 from shutil import copyfile
 import IPython
-#https://ipython.readthedocs.io/en/stable/config/options/terminal.html
-#IPython.embed(simple_prompt=True)
-#in shell: ipython --simple-prompty --matplotlib
 # Setup root_logger:
 import logging as root_logger
 LOGLEVEL = root_logger.DEBUG
@@ -19,21 +16,26 @@ logging = root_logger.getLogger(__name__)
 ##############################
 
 #SOURCE_ADDED = "/Volumes/DOCUMENTS/mendeley"
-SOURCE_ADDED = "/Users/jgrey/Desktop/IPAD_MAIN"
+#SOURCE_ADDED = "/Users/jgrey/Desktop/IPAD_MAIN"
+SOURCE_ADDED = "/Users/johngrey/Documents/mendeley"
 
 UNSORTED = [
-    "/Volumes/DOCUMENTS/Old/missingpapers",
-    "/Volumes/DOCUMENTS/Old/research",
-    "/Users/jgrey/Desktop/feb_2018_pdfs",
-    "/Users/jgrey/Desktop/feb_12_2018_pdfs"
+    # "/Volumes/DOCUMENTS/Old/missingpapers",
+    # "/Volumes/DOCUMENTS/Old/research",
+    # "/Users/jgrey/Desktop/feb_2018_pdfs",
+    # "/Users/jgrey/Desktop/feb_12_2018_pdfs"
+    "/Users/johngrey/Desktop/downloadedPdfs",
+    "/Users/johngrey/Desktop/papers"
     ]
 
 DEPTHSEARCH = [
-    "/Volumes/DOCUMENTS/Papers",
-    "/Volumes/DOCUMENTS/Old",
-    "/Volumes/DOCUMENTS/mendeley"
+    # "/Volumes/DOCUMENTS/Papers",
+    # "/Volumes/DOCUMENTS/Old",
+    # "/Volumes/DOCUMENTS/mendeley"
+    "/Users/johngrey/Desktop/CheckAreAdded",
+    "/Users/johngrey/Desktop/pdfs_to_check"    
 ]
-TARGET = "/Users/jgrey/Desktop/unused"
+TARGET = "/Users/johngrey/Desktop/unused"
 
 if not isdir(TARGET):
     logging.info("Making Target Dir: {}".format(TARGET))
@@ -80,8 +82,11 @@ logging.info("Num of Source pdfs: {}".format(len(source_pdfs)))
 source_hashmap = {fileToHash(x) : x for x in source_pdfs}
 source_set = set(source_hashmap.keys())
 
+#Get pdfs that haven't been added
+logging.info("Checking: {}".format(UNSORTED))
 other_pdfs = [y for x in UNSORTED for y in getAllPdfs(x)]
 for x in DEPTHSEARCH:
+    logging.info("DepthSearching: {}".format(x))
     other_pdfs += getAllPdfs_deep(x)
 
 logging.info("Num of other pdfs: {}".format(len(other_pdfs)))
