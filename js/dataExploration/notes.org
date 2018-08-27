@@ -1,0 +1,29 @@
+* Data Exploration Notes
+** Cif Jsons
+*** Structure:
+CifLibraries -> {MicroTheories, SocialGameLibrary},
+Microtheories -> {MicroTheory : [] },
+SocialGameLibrary -> {SocialGame : [] },
+-------
+MicroTheory - > {
+Definition, InitiatorInfluenceRuleSet, Name, ResponderInfluenceRuleSet
+},
+Definition -> {Rule},
+Rule -> {Predicate : {}/[], id, name},
+Predicate -> {....},
+Name -> { $t : String },
+----
+InitiatorInfluenceRuleSet -> { InfluenceRule : [] },
+InfluenceRule -> { Predicate*, id, name, weight },
+-------
+SocialGame -> {
+Effects, InitiatorInfluenceRuleSet,
+Instantiations, Intents, Preconditions, ResponderInfluenceRuleSet, 
+name  
+},
+Effects -> { Effect : [] },
+Effect -> {
+ChangeRule, ConditionRule, PerformanceRealisation, accept, id,
+instantiationId
+},
+

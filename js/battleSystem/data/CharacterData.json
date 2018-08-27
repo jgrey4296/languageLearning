@@ -1,0 +1,34 @@
+[
+    {
+        "name" : "Bob",
+        "stats" : {
+            "health" : 100,
+            "speed" : 5,
+            "attack" : 5,
+            "defense" : 5,
+            "exp" : 0,
+            "lvl" : 1,
+            "type1" : "normal",
+            "type2" : null            
+        },
+        "actions" : [
+            "simpleAttack","slowAttack"
+        ]
+    },
+    {
+        "name" : "Bill",
+        "stats" : {
+            "health" : 90,
+            "speed" : 6,
+            "attack" : 5,
+            "defense" : 6,
+            "exp" : 20,
+            "lvl" : 1,
+            "type1" : "normal",
+            "type2" : "flying"
+        },
+        "actions" : [
+            "simpleAttack","poisonAttack"
+        ]
+    }
+]

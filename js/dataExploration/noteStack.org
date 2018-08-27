@@ -1,0 +1,29 @@
+* SocialGame
+** DONE Name
+** DONE Effects
+*** DONE ChangeRule
+*** DONE ConditionRule
+*** DONE Performance
+*** DONE Accept
+*** DONE Id
+*** DONE InstanceId
+** DONE InitiatorRules -> empty
+** DONE ResponderRules -> empty
+** DONE Preconditions
+** DONE Instantiations
+*** DONE ConditionalRules
+*** DONE LineOfDialogue
+*** DONE ToC1
+*** DONE ToC2
+*** DONE ToC3
+*** DONE id
+*** DONE name
+** DONE Intents
+* Loading Data:
+** DONE demo library
+** DONE bully game
+** TODO doug
+** TODO social network
+** TODO play state
+** DONE triggers
+

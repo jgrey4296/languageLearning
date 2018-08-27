@@ -1,0 +1,68 @@
+
+* Democracy 3 / Africa notes
+
+Policies -> Policy Groups
+         -> voters
+         -> simStates
+    <-> Sliders
+
+Voters -> Voters
+
+SimState -> policy groups
+         -> emotion
+         -> SimState
+         -> Voters
+** Scripts
+*** csv_loading
+    defines utility functions for loading csv files, 
+    while converting data from raw csv data to specified data types
+*** d3_data_classes
+    Classes for each of the main democracy 3 types
+
+*** d3_parsers
+    utilities to transform raw datatypes into cleaned datatypes
+*** load_all_data
+    loads, cleans data, and creates a graph.
+*** simple_analysis
+    just loads raw, then does some simple aggregates
+*** statGen
+    simple aggregates/stats, and some info functions for the graph
+** TODO 
+*** Policy Stats
+    capital, cost, implementation costs vs policygroup
+    slider types: continuous vs discrete by policygroup
+    graph of effects: policygroups -> effects
+    
+    size of policy groups
+*** Pressure groups
+    graph of policies / simstates -> pressure groups?
+*** SimStates
+    simstate - policygroup counts, 
+    simstate - emotion groupings,
+*** Voters
+    influences -> voter graph
+** Analysis
+
+*** Connections
+    Policy.policygroup -> policygroup
+    Policy.income.mult -> 
+    Policy.cost.mult ->
+    Policy.effects -> SimStates / Voters / situations /
+    
+    PressureGroup.type -> type
+    PressureGroup.groups -> Voters
+
+    PressureGroup.parent -> PressureGroup
+    
+    simState.policyGroup -> policyGroup
+    simState.emotion -> emotion
+    simState.inputs -> simState / policies / situations /
+    simState.effects -> voters / simstate / situations
+
+    situation.policyGroup -> policyGroup
+    situation.inputs -> policies / simstate / situations
+    situation.effects -> voters / situations / simstates
+
+    voters.influences -> 
+
+

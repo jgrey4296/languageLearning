@@ -1,0 +1,21 @@
+* Credit System
+** Purpose
+To create a simple credit system. Specify some characters,
+add debts between them, and let them pay back the debts, or transfer
+debts between each other.
+
+** Source
+The source is a single file: CreditSystem.js
+It defines an object that keeps track of individuals, giving them a
+unique id, and then storing their credits and debts separately. 
+** Tests
+** TODO List
+*** Implement Interest
+**** Simple interest
+Final Amount = Principle * ( 1 + rate * years)
+**** Compound interest
+Final Amount = Principle * (1 + r) ^ years
+*** Implement distinction between principle and interest
+*** Store debts separately
+*** Abstract Currency System to allow different forms
+*** Abstract debts and credits to different, separate categories
