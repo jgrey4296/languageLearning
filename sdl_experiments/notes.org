@@ -1,0 +1,17 @@
+* SDL / OpenGL / Lua Program Notes
+** C++
+[[http://www.cplusplus.com/reference/vector/][vector reference]]
+[[http://www.cppsamples.com/][samples]]
+[[https://matt.sh/howto-c][howtoC]]
+[[https://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md][cpp guidelines]]
+[[http://www.boost.org/][boost]]
+** SDL
+[[https://www.libsdl.org/release/SDL-1.2.15/docs/html/guidevideoopengl.html][opengl with sdl]]
+** OpenGL
+[[http://alfonse.bitbucket.org/oldtut/Basics/Tut01%20Following%20the%20Data.html][modern opengl tutorial]]
+** Lua
+[[http://www.gamedev.net/page/resources/_/technical/game-programming/the-lua-tutorial-r2999][tutorial]]
+[[https://learnxinyminutes.com/docs/lua/][learnXInYLua]]
+[[http://getmoai.com/wiki/index.php?title=Main_Page][MOAI]]
+[[http://www.lua.org/manual/5.3/manual.html#4][manual]]
+
