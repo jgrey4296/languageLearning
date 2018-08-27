@@ -1,0 +1,56 @@
+To create new Recipes/Contacts/Tasks:
+Make a new text file in textedit, formatted like the examples, between the ------'s:
+Headers are lines beginning with *.
+YOU HAVE TO HAVE ALL HEADERS FILLED FOR A FILE TO WORK
+
+Contact Example:
+Nothing special here. The first header is the name of the task. 
+----------
+* Bob Something
+* Address
+13 Somewhere street
+Nowhere
+* Phone
+831-123-456
+* Email
+bob@something.com
+
+--------
+
+Recipes:
+Again, first header is the title of the recipe, put anything on successive lines in ingredients
+and instructions
+----------
+* Rice
+
+* Ingredients:
+Rice
+Water
+Oil
+
+* Instructions:
+Bring the water to boil
+add rice
+simmer
+----------
+
+TASKS:
+Tasks are slightly more complicated. First header is name, 
+use a shorted version for the day (ie: mon, tues, wed, thurs etc)
+REPEAT MUST HAVE ONE OF THE FOLLOWING:
+Daily
+Weekly
+Bimonthly
+Monthly
+Biannually
+Annually
+
+----------
+* Restock Wine
+* Day
+Thurs
+* Repeat
+Daily
+* Notes
+Call bob
+---------

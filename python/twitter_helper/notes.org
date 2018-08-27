@@ -1,0 +1,14 @@
+* Notes on Tweet parsing etc
+** Twitters tweet format
+   A Downloaded tweet archive contains a .js that is actually the json data of all tweets.
+   The first line is a non-spec string to do with twitter's grailbird. So read a single line in,
+   discard it, then the rest can be read in and parsed as json. 
+
+** Opening tabs in firefox and tor
+
+   OSX can open apps from the commandline with "open -a {}",
+   and with "open -a {} --args {}" you can pass arguments in to the app.
+   Which can work with firefox to create new tabs and search.
+   That doesn't work for Tor however, despite using firefox under the hood.
+   So construct a search with a search engine, joining individual words together with "+",
+   to make a valid search url.

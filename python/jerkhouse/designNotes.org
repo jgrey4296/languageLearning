@@ -1,0 +1,44 @@
+* Design Notes for Jerk House Managing App
+** Requirements
+*** Bills
+*** Contacts
+*** Recipes
+** Specification
+** Design
+*** Recipes
+    The recipe window is made of a recipe list (in the form of a
+    tree), and the recipe frame, packed to the left and right
+    respectively.
+
+    The recipe list is a vertical sequence of buttons, one for each
+    recipe. Pressing the button triggers a redraw of the recipe frame.
+
+    The recipe frame is 3 rows, 3 columns. R0:C1 is the recipe title.
+    R1:C0 is a separator for the title from the ingredients and
+    instructions.  R2:C0 is the ingredients, while R2:C2 is the
+    instructions. R2:C1 is the vertical separator.
+*** Contacts
+    Similar to Recipes, a list on the left of available contacts
+    organised by tag, and an area that displays the selected contact
+*** Bills
+    Monday - Sunday as buttons, with each day listing what needs to be
+    done
+    
+
+    
+
+** Tech Stack
+Python 3, using tk/tkinter.
+** File Formats
+*** Recipe Format
+*** Bill Format
+*** Contact Format
+* TODOS
+** DONE replace button frame with treeview
+** DONE finish task parsing
+** DONE finish contact parsing
+** DONE adjust task display
+** DONE adjust contact display
+** DONE open data folder from python
+** TODO record when a task was performed last
+** TODO add top level error catching

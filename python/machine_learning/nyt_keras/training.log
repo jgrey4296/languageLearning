@@ -1,0 +1,116 @@
+INFO:__main__:Loading Data
+INFO:__main__:Corpus Length: 300
+INFO:__main__:Total Chars: 44
+INFO:__main__:Sequences: 87
+INFO:__main__:Setting up Model
+INFO:__main__:Starting training
+INFO:__main__:
+---------------Iteration: 1
+INFO:__main__:
+---------- Diversity: 0.2
+INFO:__main__:Gen with Seed:
+p. 230 and onwards) is curiously similar
+-----
+INFO:__main__:Generated:
+p. 230 and onwards) is curiously similar                         t  o       t      oo   to   to     t    t                t        to     o  t           o     t       oooo    o  t                    o     oo       o   o t    o    o         o t   ot   t      too  o  oo    t  o     t     t          o  to o   oo   o          t            t        oo               t     t    t  o t    o    tt   o     t     o  o      o    o   t  o     oo   o
+
+INFO:__main__:
+---------- Diversity: 0.5
+INFO:__main__:Gen with Seed:
+p. 230 and onwards) is curiously similar
+-----
+INFO:__main__:Generated:
+p. 230 and onwards) is curiously similar ohttoihott  ootbthat   tooso     o n    n   
+
+o to tri   ot  n no t te otioo  t sothon   h t toge  atthest  oot   t s n S A   otohts o e oo  a otn   u o oso soaoeh t  ue  nts eo os tt t  oon o ot roo  t  anto to   t   u s t th t o ih t o itoo t r  a    ts to s  o ts   o 2o tn oSoet nat   a o  o h oo  ato t t o    ooo n tt n  
+ o  o ososso rt  trs tr    t  t  o t  od  t   to   t     oho   h  oaot)
+
+INFO:__main__:
+---------- Diversity: 1.0
+INFO:__main__:Gen with Seed:
+p. 230 and onwards) is curiously similar
+-----
+INFO:__main__:Generated:
+p. 230 and onwards) is curiously similar
+ sets tan art ir dos A ooo io gh oeOri  oboehontooeottt o
+tti   ohaAlosog)hsSoaonah o n  hsoh hi oe)helo a h nt noshSrsShhd oAuooartam nuaegtiuWanauso eor ent otulsongliruo 2oegWdnrOt ohesho s hri gtu  sumo  tlt2 oaisonS oot ihAhgloAnrln iaape oolo otrSa tbn nodotu otn utobhtrthosmo  usoOe olh toeshth g Ate aa ootdtaO ot)2h utiglo ls hes ts  t t r ologiho
+noee o mht)c a io )O tgs Mu tartiohinorse
+
+INFO:__main__:
+---------- Diversity: 1.2
+INFO:__main__:Gen with Seed:
+p. 230 and onwards) is curiously similar
+-----
+INFO:__main__:Generated:
+p. 230 and onwards) is curiously similarotrmaAht hs
+)
+
+aoosngisit
+ on egStea2o) genoeod AoS 
+
+n AgaionsOonnsoen hin thgra hnlaomgtteoo tt iAAar b 2 md
+obtoOo l  o tneolm  A2hoo)eot0sg 2o) hth elpuett
+ousr hme
+u ngnouoo2aoOSo Oo ts gottultht2  o  eSa nht a 
+eEna)nnsn rosoe hr Ap2thlhai nt 
+h t2n2))siW U i)ptwahs
+h sp
+htshs'toooAoih ee sptathahhto   tseseit2a ooiogoiimm2oog
+ hm l b)p do s l tb sA,ondWapy otne hh tO sO o   t a oeoos o s)er
+
+INFO:__main__:
+---------------Iteration: 2
+INFO:__main__:
+---------- Diversity: 0.2
+INFO:__main__:Gen with Seed:
+rangeness of reality. The way Ankh-Morpo
+-----
+INFO:__main__:Generated:
+rangeness of reality. The way Ankh-Morpooooootooooooooo oo oooooooooooooooooooooooooeooootootoooooooooooooooooooooooooooooootooooooooooooooooooooooooooeooooooooooooooootoooooooootoooooooooeoooooeotoooootooooooooooooooooooooooooootho tooooooooooooooooo oooooootoootooooooooooooooooooooooooootooooooootoooooooooooooooooooooooooooooottooo oooo ooooooooooooooonooooooooootooooooooooootototoooootoooooo ooooooooooooooooootooooeotoooooooooooooooo
+
+INFO:__main__:
+---------- Diversity: 0.5
+INFO:__main__:Gen with Seed:
+rangeness of reality. The way Ankh-Morpo
+-----
+INFO:__main__:Generated:
+rangeness of reality. The way Ankh-Morpoooooou tooootootteotottnooo ooatoteeooooonogtotooooaso tesooooteoooonoetotooontontoootit ooootanotoohootoonoto etotooe totooooaoooeuoe otonttooooheoee onoo nothteo ootoooeooooino oot atoooootoo oeooe tooOeoosAotooooohooo ooeeeotoon teo ttoooohttonoooooio tstoooo eo toooeaotoonat thoootooottotthootetoeoo oooe toooooon oo oootpoeoSoaoe o t ooootoo tteo otatonsauot2o aooooooo ototothAhtoo thooea tobo
+
+INFO:__main__:
+---------- Diversity: 1.0
+INFO:__main__:Gen with Seed:
+rangeness of reality. The way Ankh-Morpo
+-----
+INFO:__main__:Generated:
+rangeness of reality. The way Ankh-MorpoboooS2on oO a t otaooo)n theeoe O
+l ohebtoino
+AWo  tenoeeott2ossne)gooatagoWrtop toohOohoaop h ooooubooeogooa rotu2'tops o2 S traeoetesseotpg poneaeo anteoseaha oooooohooooR2eoohto gtht estasosoht heb
+aaSoodntmaeaeOetotnn nassp)aetoeS tgeoSoboodhetieteurrg oertuitoesuoaotOheortrosootothoheiaaerShet uo tnoeSomolopnio)opbttuootoshoaooSatteomletoo2ttooetmugonheoo
+
+oga eOooo ooOotp)unAsosut eetse opto
+
+INFO:__main__:
+---------- Diversity: 1.2
+INFO:__main__:Gen with Seed:
+rangeness of reality. The way Ankh-Morpo
+-----
+INFO:__main__:Generated:
+rangeness of reality. The way Ankh-Morpoob iohtehns otspt)ObOohnoemarlth ehte rto wasoesOthgaoegea 2hdo t Sptotoh ooshgnt t eer t srot tdg2eoe)  aoo eeuotpbuhtrooh oab oaroaootiettoorOsuponuieshSmso2Aiho Ot rooheodhoeouoaalt ahleue)hh'spoe e aedseot  o uhoen oboSotsOeng Osenotuooo)ohtsd eMotheAhe taS dplstlghoaotoohsoshonWstmuitet oa h h Saeht
+aOttOlooet)e foblels eoepopooo
+si osa WoOoeunboothsopbseeshstuo'eaioooooeaaeAoso haeeSndoot pe
+
+INFO:__main__:
+---------------Iteration: 3
+INFO:__main__:
+---------- Diversity: 0.2
+INFO:__main__:Gen with Seed:
+ood problems (see p. 230 and onwards) is
+-----
+INFO:__main__:Generated:
+ood problems (see p. 230 and onwards) is o o o o o o o ooo s a oo o o o t t tho oo  a a s t t t t a  s s too oo o   o o ooo o t the t o ono  ona a o  oo o   ooo aos ont t ths o oon t s a o o o   ooo  on s a a the tho a t o oo  h a  ooo oo oa a o ou o a oo ooo o o  on ton a o ooo o  oo o  h o s t tho ou o ons t o o o o o a a t s t o ao  o a o t s e t ooo s t onoo a t s s o o aoo  aoo oo  ont s oo t s ont a s a a oo  oo ont s o   ont o o 
+
+INFO:__main__:
+---------- Diversity: 0.5
+INFO:__main__:Gen with Seed:
+ood problems (see p. 230 and onwards) is
+-----

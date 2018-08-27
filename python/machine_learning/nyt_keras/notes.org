@@ -1,0 +1,6 @@
+unrelated:
+
+https://www.cs.cmu.edu/afs/cs/project/ai-repository/ai/areas/
+https://www.cs.cmu.edu/afs/cs/project/ai-repository/ai/areas/nlp/corpora/names/
+http://ben.bolte.cc/
+https://github.com/codekansas/keras-language-modeling
