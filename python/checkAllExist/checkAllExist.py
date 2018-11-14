@@ -8,7 +8,8 @@
 import IPython
 import logging as root_logger
 from os.path import join, isfile, exists, isdir, splitext, expanduser
-from os import listdir
+from os import listdir, mkdir
+from subprocess import call
 
 #Log Setup
 LOGLEVEL = root_logger.DEBUG
@@ -24,36 +25,44 @@ logging = root_logger.getLogger(__name__)
 ####################
 HTML = ".html"
 TARGET_DIR = "~/Mega/savedTwitter"
-SOURCE_DIRS = [
-    "~/Desktop/savedTwitter",
-    "~/Desktop/new_saved_twitter"
-]
+SOURCE_DIR = "/Volumes/DOCUMENTS/mac mini/mac_mini_savedTwitter"
 
-def collect_sources():
-    collected = set()
-    for x in SOURCE_DIRS:
-        contents = listdir(expanduser(x))
-        html_files = [a for a in contents if splitext(a)[1] == HTML]
-        collected.update(html_files)    
-    return collected
+RESULT_DIR = "~/Desktop/missing_twitter/"
 
-def collect_target():
+def collect(x):
     collected = set()
-    contents = listdir(expanduser(TARGET_DIR))
+    contents = listdir(expanduser(x))
     html_files = [a for a in contents if splitext(a)[1] == HTML]
-    collected.update(html_files)
+    collected.update(html_files)    
     return collected
+
+def copy(files):
+    assert(isinstance(files, set))
+    if not exists(expanduser(RESULT_DIR)):
+        mkdir(expanduser(RESULT_DIR))
+    
+    for x in files:
+        logging.info("To Copy: {}".format(x))
+        #copy the html
+        call(['cp', join(SOURCE_DIR,x), expanduser(RESULT_DIR)])
+        #copy the files
+        f_name, f_type = splitext(x)
+        call(['cp', '-r', join(SOURCE_DIR, (f_name + "_files")), expanduser(RESULT_DIR)])
+        
 
 ########################################
 if __name__ == "__main__":
     logging.info("Starting ")
-    sources = collect_sources()
-    target = collect_target()
+    sources = collect(SOURCE_DIR)
+    target = collect(TARGET_DIR)
 
     diff = sources.difference(target)
+    copy(diff)
+    
     if bool(diff):
         logging.warn("There was a difference")
         logging.warn(diff)
+
     else:
         logging.info("All Good")
     IPython.embed(simple_prompt=True)
