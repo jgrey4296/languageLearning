@@ -1,0 +1,35 @@
+* Prolog Notes
+** Syntax
+   3 basic constructs: Facts, Rules, and Queries
+
+   Facts start lower case. Variables start Upper case.
+   Statements conclude with '.'.
+   Rules of form (head) :- (body). So if (body) then (head).
+   AND two conditions using a comma: (cond1), (cond2).
+   OR two conditions using a semicolon: (cond1); (cond2).
+** Unification
+
+    If term1 and term2 are constants, then term1 and term2 unify if
+    and only if they are the same atom, or the same number.
+
+    If term1 is a variable and term2 is any type of term, then term1
+    and term2 unify, and term1 is instantiated to term2 . Similarly,
+    if term2 is a variable and term1 is any type of term, then term1
+    and term2 unify, and term2 is instantiated to term1 . (So if they
+    are both variables, they’re both instantiated to each other, and
+    we say that they share values.)
+
+    If term1 and term2 are complex terms, then they unify if and only if:
+        They have the same functor and arity, and
+        all their corresponding arguments unify, and
+        the variable instantiations are compatible.
+        (For example, it is not possible to instantiate variable X to mia when unifying one pair of arguments, and to instantiate X to vincent when unifying another pair of arguments .)
+    Two terms unify if and only if it follows from the previous three clauses that they unify.
+
+    Prolog unification skips occur check. (So does not guard against variables unifying with terms that 
+    contain the variable).
+
+** Predicates
+   
+   =/2
+   unify_with_occurs_check/2
