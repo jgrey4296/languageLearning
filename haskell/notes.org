@@ -485,6 +485,12 @@ aShuffle = do
 *** Arguments
     import System.Environment
 
+*** CWD
+    #+begin_src haskell
+      import System.Directory (getCurrentDirectory)
+    #+end_src
+
+
 
 *** Applicative
     Used with Maybe:
