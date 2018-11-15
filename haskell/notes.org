@@ -13,6 +13,18 @@
    --supported-languages
    --supported-extensions
    --show-packages
+** Module loading
+   [[https://stackoverflow.com/questions/21006987/module-loading-options-in-ghci][Stack overflow overview]]
+   Two concepts: Target set and Evaluation context
+
+   Target Set: :add, :load, :reload
+   Eval Context: :module, import
+
+   Target Set is locally available modules
+   load sets to *just those modules*.
+   
+   Eval Context is what is in scope.
+
 
 *** ghci commands
     :module + Data.Ratio
