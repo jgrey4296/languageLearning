@@ -1,0 +1,155 @@
+* Erlang Notes
+** Shell: erl
+   The shell is a shell of shells.
+   Has tab completion
+   q : quits
+   ^G -> h : brings up shell control.
+   f() or f(Variable) : clears bindings.
+** Compiler: erlc
+    #+begin_src erlang
+      %%-compile([debug_info])
+      %% {outdir, Dir}
+      %% export_all
+      %% {d,Macro}
+      %% {d,Macro,Value}
+   #+end_src
+
+
+** Syntax
+   expressions terminate with '. '  Note the whitespace
+   Comments are %%
+
+   Integers can be in the form: base#value. eg: 2#1010101.
+   Variables start with an Uppercase letter or underscore.
+   Atoms start lowercase, and are their own value.
+   (Atoms are not garbage collected, don't generate them dynamically).
+   'true' and 'false' are atoms.
+   *Pattern matching is important*.
+
+   
+*** Comparisons
+    'and','or','xor','not'.
+    <,>,>=,=<  : Comparisons work across types
+
+    Exact Equality: =:=, =/=
+    Type eliding Equality: ==, /=
+    
+    Comparison ordering:
+    number < atom < reference < fun < port < pid < tuple < list < bit string
+
+*** Tuples
+    #+begin_src erlang
+      X = 10, Y = 4.
+      Point = {X,Y}.
+      %% pattern matching
+      {A,B} = Point.
+      {J,_} = Point.
+    #+end_src
+
+
+*** Lists
+    #+begin_src erlang
+      %% Not single typed. Lisp-like.
+      %% Can be improper (last element a value) 
+      %% and Proper (last element an empty list).
+      [1,2,3,{4,5,6}].
+      %% Strings are lists:
+      [97,98,99] = "abc".
+
+      %% Concat (right associative):
+      [1,2,3] ++ [4,5].
+      %% Remove (right associative):
+      [1,2,3,4,5] -- [1,2,3].
+
+      1 = hd([1,2,3,4]).
+      tl([1,2,3,4]) = [2,3,4].
+      %% or: [hd|tl].
+
+    #+end_src
+
+
+**** List Comprehensions
+     [2*N || N <- [1,2,3,4]].
+     [2*N || [_,N] <- [[1,2],[3,4]]].
+     [X || X <- [1,2,3,4,5,6,7], X rem 2 =:= 0].
+     [X+Y || X <- [1,2], Y <- [3,4]].
+     [X || {X, fog} <- [{london, fog}, {newYork, sun}, {brisbane, fog}]]
+
+*** Binary Data
+    #+begin_src erlang
+      ;; Between << and >>, separated by commas.
+      Color = 16#F09A29.
+      Pixel = <<Color:24>>.
+
+      <<Pix1:24, Pix2:24>> = Pixels.
+      <<R:8, Rest/binary>> = Pixels.
+
+      %% Value,
+      %% Value:Size,
+      %% Value/TypeSpecifierList
+      %% Value:Size/TypeSpecifierList
+
+      %% TypeSpecifierList delimiter: '-'
+      %% Where Types can be: 
+      %% integer, float, binary, bytes, bitstring, bits,
+      %% utf8, utf16, utf32. 
+      %% (signed and unsigned, big, little, and native, and unit).
+
+      %% bsl, bsr : bt shifting.
+      %% band, bor, bxor, bnot.
+
+    #+end_src
+
+
+*** Binary Strings
+    #+begin_src erlang
+          <<"this is a binary string">>.
+    #+end_src
+
+
+*** Binary Comprehensions
+    #+begin_src erlang
+      << <<X>> || <<X>> <= <<1,2,3,4,5>>, X rem 2 == 0>>.
+
+    #+end_src
+
+
+** Modules
+   #+begin_src erlang
+     %%To define attributes:
+     -module(Name).
+     -export([Function1/Arity, Function2/Arity...])
+     -import(Module, [Function/Arity..])
+     ;;to call:
+      Module:Function(arguments).
+   #+end_src
+
+
+
+** Functions
+   #+begin_src erlang
+     testFunc() ->
+         io:format("hello").
+   #+end_src
+
+
+** Macros
+   #+begin_src erlang
+   ;; A Macro:
+   -define(MACRO, some_value).
+   ?MACRO.
+   ;;Macro Function:
+   -define(sub(X,Y), X-Y).
+   ;;Predefined:
+   ?MODULE. ?FILE. ?LINE.
+   ;;Conditional macros:
+   -ifdef(DEBUG).
+   -define(DEBUG(S), io:format("dbg: "++S)).
+   else.
+   -define(DEBUG(S), ok).
+   -endif.
+   #+end_src
+
+
+
+
