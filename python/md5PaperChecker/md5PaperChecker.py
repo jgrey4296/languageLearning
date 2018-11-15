@@ -47,7 +47,7 @@ TARGET = "/Users/jgrey/Desktop/deduplicated"
 
 if not isdir(TARGET):
     logging.info("Making Target Dir: {}".format(TARGET))
-    mkdir(TARGET)
+    mkdir(expanduser(TARGET))
 
 def getAllPdfs_deep(loc):
     """ Get the full paths of all pdfs in the location """
