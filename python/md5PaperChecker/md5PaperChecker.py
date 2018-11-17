@@ -23,57 +23,49 @@ logging = root_logger.getLogger(__name__)
 ##############################
 
 #The destination where papers already exist
-SOURCE_ADDED = "/Volumes/DOCUMENTS/mendeley"
-#SOURCE_ADDED = "/Users/jgrey/Desktop/IPAD_MAIN"
-#SOURCE_ADDED = None
+LIBRARY = [
+    "/Volumes/DOCUMENTS/mendeley"
+    #"/Users/jgrey/Desktop/IPAD_MAIN"
+]
 
 #The source of potentially un-integrated papers
-UNSORTED = [
-    ]
+INBOX = [
+    "~/Mega/deduplicated",
+    #"~/Desktop/deduplicated"
     #"/Volumes/DOCUMENTS/Old/missingpapers",
     # "/Volumes/DOCUMENTS/Old/research",
     # "/Users/jgrey/Desktop/feb_2018_pdfs",
     # "/Users/jgrey/Desktop/feb_12_2018_pdfs"
-    # ]
-#directories to depth search for papers
-DEPTHSEARCH = [
+    #"/Volumes/DOCUMENTS/mac mini/mac_mini_pdfs"
     #"~/mega/pdfs"
-     "/Volumes/DOCUMENTS/Papers",
-     "/Volumes/DOCUMENTS/Old",
+    # "/Volumes/DOCUMENTS/Papers",
+    #  "/Volumes/DOCUMENTS/Old",
     # "/Volumes/DOCUMENTS/mendeley"
 ]
 #Where to put papers that need to be integrated
-TARGET = "/Users/jgrey/Desktop/deduplicated"
+TARGET = "/Users/jgrey/Desktop/sanity_check"
 
 if not isdir(TARGET):
     logging.info("Making Target Dir: {}".format(TARGET))
     mkdir(expanduser(TARGET))
 
-def getAllPdfs_deep(loc):
+def getAllPdfs(locs, deep=0):
     """ Get the full paths of all pdfs in the location """
-    loc = expanduser(loc)
-    assert(exists(loc))
-    assert(isdir(loc))
-    queue = [loc]
+    assert(isinstance(deep, int))
+    e_locs = [expanduser(x) for x in locs]
+    assert([exists(x) for x in e_locs])
+    assert(all([isdir(x) for x in e_locs]))
+    queue = [(loc, 0) for loc in e_locs]
     found = []
     while bool(queue):
-        l = queue.pop()
+        (l,l_depth) = queue.pop()
         entries = listdir(l)
         pdfs = [join(l,x) for x in entries if splitext(x)[1] == ".pdf"]
-        dirs = [join(l,x) for x in entries if isdir(join(l,x))]
-        queue += dirs
+        next_depth = l_depth + 1
+        dirs = [(join(l,x),next_depth) for x in entries if isdir(join(l,x))]
+        if bool(dirs) and l_depth < deep:
+            queue += dirs
         found += pdfs
-    return found
-
-def getAllPdfs(loc):
-    """ Get all the pdfs in a directory """
-    loc = expanduser(loc)
-    assert(exists(loc))
-    assert(isdir(loc))
-    found = []
-    for x in listdir(loc):
-        if splitext(x)[1] == ".pdf":
-            found.append(join(loc,x))
     return found
 
 def fileToHash(filename):
@@ -87,37 +79,33 @@ def fileToHash(filename):
 
 #Get all Added file hashes
 logging.info("Starting")
-source_pdfs = []
-if SOURCE_ADDED is not None:
-    source_pdfs = getAllPdfs_deep(SOURCE_ADDED)
-logging.info("Num of Source pdfs: {}".format(len(source_pdfs)))
-source_hashmap = {}
-for x in source_pdfs:
+library_pdfs = getAllPdfs(LIBRARY,5)
+logging.info("Num of Library pdfs: {}".format(len(library_pdfs)))
+library_hashmap = {}
+for x in library_pdfs:
     file_hash = fileToHash(x)
-    if file_hash in source_hashmap:
-        logging.warning("Conflict: {} - {} - {}".format(file_hash, x, source_hashmap[file_hash]))
+    if False: #file_hash in library_hashmap:
+        logging.warning("Library Conflict: {} - {} - {}".format(file_hash, x, library_hashmap[file_hash]))
     else:
-        source_hashmap[file_hash] = x
-source_set = set(source_hashmap.keys())
+        library_hashmap[file_hash] = x
+library_set = set(library_hashmap.keys())
 
-other_pdfs = [y for x in UNSORTED for y in getAllPdfs(x)]
-for x in DEPTHSEARCH:
-    other_pdfs += getAllPdfs_deep(x)
+inbox_pdfs = getAllPdfs(INBOX,5)
 
-logging.info("Num of other pdfs: {}".format(len(other_pdfs)))
-other_hashmap = {}
-for x in other_pdfs:
+logging.info("Num of Inbox pdfs: {}".format(len(inbox_pdfs)))
+inbox_hashmap = {}
+for x in inbox_pdfs:
     file_hash = fileToHash(x)
-    if file_hash in other_hashmap:
-        logging.warning("Conflict: {} - {} - {}".format(file_hash, x, other_hashmap[file_hash]))
+    if False: #file_hash in inbox_hashmap:
+        logging.warning("Conflict: {} - {} - {}".format(file_hash, x, inbox_hashmap[file_hash]))
     else:
-        other_hashmap[file_hash] = x
-other_set = set(other_hashmap.keys())
+        inbox_hashmap[file_hash] = x
+inbox_set = set(inbox_hashmap.keys())
 
-unused_other = other_set.difference(source_set)
-logging.info("Files found: {}".format(len(unused_other)))
-for x in unused_other:
-    name = other_hashmap[x]
+new_pdfs = inbox_set.difference(library_set)
+logging.info("New pdfs found: {}".format(len(new_pdfs)))
+for x in new_pdfs:
+    name = inbox_hashmap[x]
     copyfile(name, join(TARGET, split(name)[1]))
 
 
