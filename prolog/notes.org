@@ -1,12 +1,42 @@
 * Prolog Notes
+** Heuristics 
+   Never write as the leftmost goal of the body something that is 
+   identical with the goal given in the head, place those clauses
+   as far right as possible.
+
+   Use Tail Recursion
+
+   Arithmetic comparisons implicitly evaluate both sides.
+
+
+   #+begin_src prolog
+   4 = 4.     %% True
+   2+2 = 4.   %% False
+   2+2 =:= 4. %% True
+   #+end_src
+
+
+
+*** Instantiation error
+    From trying to do 12 is (X+3)*2
+    Where there are uninstantiated variables on the right of 'is'.
+
 ** Syntax
    3 basic constructs: Facts, Rules, and Queries
+   #+begin_src prolog
+     %% Facts start lower case.
+     a_face.
+     %% Variables start Upper case.
+     %% Statements conclude with '.'.
+     %% if (body) then (head).
+     head :- body.
+     %% AND two conditions using a comma: (cond1), (cond2).
+     head :- body1, body2.
 
-   Facts start lower case. Variables start Upper case.
-   Statements conclude with '.'.
-   Rules of form (head) :- (body). So if (body) then (head).
-   AND two conditions using a comma: (cond1), (cond2).
-   OR two conditions using a semicolon: (cond1); (cond2).
+     %% OR two conditions using a semicolon: (cond1); (cond2).
+     head :- body1 ; body2.
+   #+end_src
+
 ** Unification
 
     If term1 and term2 are constants, then term1 and term2 unify if
@@ -30,6 +60,17 @@
     contain the variable).
 
 ** Predicates
-   
+   is/2
    =/2
    unify_with_occurs_check/2
+   addLen/3
+
+
+** Lists
+   #+begin_src prolog
+   [name(bob), name(bill), [1,2,3,4]]
+   %% Prolog as a separation operator
+   [Head|Tail] = [mia, vincent, jules, yolanda].
+   #+end_src
+
+
