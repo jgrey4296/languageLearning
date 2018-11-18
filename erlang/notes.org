@@ -124,7 +124,7 @@
       Module:Function(arguments).
    #+end_src
 
-
+   Inspect metadata with the function module_info().
 
 ** Functions
    #+begin_src erlang
