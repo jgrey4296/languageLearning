@@ -1,4 +1,6 @@
 * Prolog Notes
+  *use "swipl -tty" in emacs*
+
 ** Heuristics 
    Never write as the leftmost goal of the body something that is 
    identical with the goal given in the head, place those clauses
@@ -16,10 +18,32 @@
    #+end_src
 
 
-
 *** Instantiation error
     From trying to do 12 is (X+3)*2
-    Where there are uninstantiated variables on the right of 'is'.
+    Where uninstantiated variables are on the right of 'is'.
+
+** Debugging
+   See swipl [[http://www.swi-prolog.org/pldoc/man?section=debugoverview][debugger]] and the gnu prolog [[http://gprolog.univ-paris1.fr/manual/gprolog.html#Running-and-stopping-the-debugger][debugger]] 
+
+   #+begin_src prolog
+     %% Debugger ports are: call, exit, redo, fail.
+     %% Which to show:
+     visible(+all).
+     %% Which not to halt on:
+     leash(-exit).
+     %% Trace the next query:
+     trace.
+   #+end_src
+
+   Commands:
+   L : Listing
+   g : goals
+   C : show context
+   A : alternatives
+   
+   
+
+   
 
 ** Syntax
    3 basic constructs: Facts, Rules, and Queries
