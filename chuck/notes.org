@@ -1,0 +1,1468 @@
+* Chuck
+to connect to daw:
+chuck --dac=4 fileName
+
+** Code
+[[file:~/programming/chuck/][Code Directory]]
+
+
+** Links
+http://chuck.cs.princeton.edu/doc/examples/
+http://chuck.cs.princeton.edu/doc/language/
+
+** Inspection and Output:
+//Print statement:
+<<< expression >>>;
+
+//Server status:
+ chuck ^
+
+//Now:
+chuck --time
+
+** Good Style
+
+
+** Usage
+
+chuck --dac:2 for system speaker
+chuck--dac:3 for output via hdmi
+
+*** chuck <file> <other file> //multiple for concurrency
+
+
+*** On the fly programming:
+**** setup a server:
+chuck --loop & //The & lets bash continue
+
+**** add, remove, replace patches:
+chuck + <file>
+chuck - <file>
+chuck = <number> <file>
+
+**** graceful death
+chuck --kill
+
+**** Command line parameters
+ChucK supports passing arbitrary data from the command line into ChucK
+programs using optional command line arguments. An argument is
+specified by appending a colon character ":" to the name of the ChucK
+program to which you wish to send that argument, followed by the
+argument itself.
+
+ %> chuck foo.ck:foo
+
+Multiple arguments can be specified, each separated by the colon
+character.
+
+ %> chuck foo.ck:foo:bar:boo
+
+Furthermore, each ChucK program has its own set of arguments, which
+are specified separately.
+
+ %> chuck foo.ck:foo bar.ck:bar boo.ck
+
+Command line arguments can also be used when using on-the-fly
+programming facilities of ChucK.
+
+ %> chuck + foo.ck:foo bar.ck:bar:boo
+
+
+***** Command line Arg Access
+To access command line arguments within a ChucK program, use the
+me.args() and me.arg() functions.
+
+// print out all arguments
+for( int i; i < me.numArgs(); i++ )
+    <<< me.arg( i ) >>>;
+
+
+*** Code addition and replacement of threads
+Machine.add() and Machine.replace() accept command line arguments in a
+similar fashion.
+
+    // add foo.ck
+    // pass foo and bar as command line arguments
+    Machine.add( "foo.ck:foo:bar" ) => int id;
+
+    // replace shred with "bar.ck"
+    // pass foo and bar as command line arguments
+    Machine.replace( id, "bar.ck:foo:bar" );
+
+
+
+*** Other:
+**** --dac(N)
+opens audio output device #(N) for real-time audio. by default, (N) is 0.
+
+**** --adc(N)
+opens audio input device #(N) for real-time audio input. by default,
+(N) is 0.
+
+**** --chan(N) / -c(N)
+opens (N) number of input and output channels on the audio device. by
+default, (N) is 2.
+
+**** --in(N) / -i(N)
+opens (N) number of input channels on the audio device. by default (N)
+is 2.
+
+**** --out(N) / -o(N)
+opens (N) number of output channels on the audio device. by default
+(N) is 2.
+
+**** --hostname(host) / -h(host)
+sets the hostname to connect to if accompanied by the on-the-fly
+programming commands.  (host) can be name or ip of the host. default
+is 127.0.0.1 (localhost).
+
+**** --port(N) / -p(N)
+sets the port to listen on if not used with on-the-fly programming
+commands.  sets the port to connect to if used with on-the-fly
+programming commands.
+
+**** --verbose(N) / -v(N)
+sets the report level to (N). 0 is none, 10 is all, default is 1.
+
+**** --probe
+probes the system for all audio devices and MIDI devices, and prints
+them.
+
+**** --about / --help
+prints the usage message, with the ChucK URL
+
+**** --callback
+Utilizes a callback for buffering (default).
+
+**** --blocking
+Utilizes blocking for buffering. 
+
+
+** Imports
+
+** Comments
+// comment
+/* comment */
+
+*** Whitespace and Statements
+
+
+** Memory Management
+ChucK objects are reference counted and garbage collection takes place
+automatically. (note: this is still being implemented!)
+
+*** Value vs Reference 
+primitives passed by value
+
+Reference Types: 
+Object, array, Event, UGen, string
+
+ // our single array
+    int the_array[10];
+
+    // assign reference to foo and bar
+    the_array => int foo[] => int bar[];
+
+    // (the_array, foo, and bar now all reference the same array)
+
+    // we change the_array and print foo...
+    // they reference the same array, changing one is like changing the other
+    5 => the_array[0];
+    <<< foo[0] >>>; // should be 5
+
+
+
+** Scope
+Unless declared public, class definitions are scoped to the shred and
+will not conflict with identically named classes in other running
+shreds.
+
+
+** Basic Data Types
+int, float, time, dur (5.5::second)
+void, 
+
+complex eg: #(2,3) where #(...) casts to complex, accessed by .re and .im
+
+polar eg: %(2, .5 * pi), access with .mag and .phase
+
+maybe, null, NULL, me, pi
+
+
+*** Strings
+
+
+***  Booleans
+true, false
+
+
+** Operators:
+
+*** assignment:
+int foo;
+2 => foo;
+
+//Chuck: =>
+//Explicit chuck: @=> ie: Object moe @=> Object @ larry; 
+//Both moe and larray reference the same object
+
+//Arithmetic:
++=>
+-=>
+*=>
+/=>
++ - * /
+%
+
+foo++;
+foo--;
+
+
+*** Bitwise
+These are used on int values at the bit level, often for bit masking.
+
+    >> : shift bits right ( 8 >> 1 = 4 )
+    << : shift bits left ( 8 << 1 = 16 )
+    & : bitwise AND
+    | : bitwise OR
+    ^ : bitwise XOR 
+
+
+*** Comparisons and Logic
+Logical operators - each of these need two operands. The result is an integer value of 0 or 1.
+
+    && : and
+    || : or
+    == : equals
+    != : does not equal
+    >  : greater than
+    >= : greater than or equal to
+    <  : less than
+    <= : less than or equal to 
+
+These operators come before one operand:
+    // logical invert
+    if( !true == false )
+        <<<"yes">>>;
+
+    // negative
+    -1 => int foo;
+
+
+** Variables
+<type> name<array>; 
+
+
+** Data Structures
+
+*** Arrays
+int foo[10];
+[1,1,2,3,5,8] @=> int foo[];
+Object group[10]; //instantiates objects
+Object @ group[10]; //references only
+Object foo[]; //Array Reference as no capacity, with no linked instantiation
+
+//multidimensional arrays:
+float foo[4][2][4];
+
+//lookup:
+foo[2];
+
+*** Objects / Classes:
+class, extends, public, static, pure, this
+
+//Associative Arrays: indexed on strings
+float foo[4];
+4.0 => foo["blah"];
+
+Chuck implements an object system that borrows from both C++ and Java
+conventions. In our case this means:
+
+    You can define custom classes as new types and instantiate objects
+    ChucK supports polymorphic inheritance (this is the same model used in Java, and also known as virtual inheritance in C++)
+    All object variables are references (like Java), but instantiation resembles C++. We will discuss this in detail below.
+    There is a default class library.
+    All objects inherit from the Object class (as in Java)
+
+For the sake of clarity we will define these terms:
+
+    a class is an abstraction of data (members) and behavior (methods)
+
+    a class is a type.
+
+    an object is an instantiation of that class
+
+    a reference variable refers indirectly to an object - it is not
+    the object itself. All ChucK object variables are reference
+    variables (like in Java).
+
+    similarly, reference assignment duplicates a reference to an
+    object and assigns the reference to a reference variable. The
+    object itself is not duplicated. All ChucK object assignments are
+    reference assignments.
+
+ChucK has a number of classes defined within the language.
+
+    Object : base class to all ChucK objects.
+    Event : ChucKs basic synchronization mechanism; may be extended to create custom Event functionality (discussed here).
+    Shred : basic abstraction for a non-preëmptive ChucK process.
+    UGen : base unit generator class (discussed here).
+
+    // create a Foo object; stored in reference variable bar
+    Foo bar;
+
+Note that in contrast to Java, this statement both declares a
+reference variable and instantiates a instance of that class and
+assigns the reference to the variable. Also note that in contrast to
+C++, bar is a reference, and does not represent the object itself.
+
+To declare a reference variable that refers to nothing (also called a
+null reference):
+
+    // create a null reference to a Foo object
+    Foo @ bar;
+
+The above code only declare a reference and initializes it to
+null. (random note: the above statement may be read as "Foo at bar")
+
+We can assign a new instance to the reference variable:
+
+    // assign new instance of Foo to bar
+    new Foo @=> Foo @ bar;
+
+    // (this statement is equivalent to 'Foo bar', above)
+
+The code above is exactly equivalent to Foo bar; as shown above. The
+new operator creates an instance of a class, in this case Foo. The @=>
+operator performs the reference assignment.
+
+Uses 'dot notation' - reference.memberdata and reference.memberfunc(). 
+
+
+// define class X
+class X
+{
+    // insert code here
+}
+
+If a class is defined as public, it is integrated into the central
+namespace (instead of the local one), and can be instantiated from
+other programs that are subsequently compiled. There can be at most
+one public class per file.
+
+// define class X
+class X
+{
+    // declare instance variable 'm_foo'
+    int m_foo;
+    // another instance variable 'm_bar'
+    float m_bar;
+    // yet another, this time an object
+    Event m_event;
+
+    // function that returns value of m_foo
+    fun int getFoo() { return m_foo; }
+
+    // function to set the value of m_foo
+    fun void setFoo( int value ) { value => m_foo; }
+
+    // calculate something
+    fun float calculate( float x, float y )
+    {
+        // insert code
+    }
+
+    // print some stuff
+    fun void print()
+    {
+        <<< m_foo, m_bar, m_event >>>;
+    }
+}
+
+
+In the initial release, we do not support constructors yet. However, we have a single pre-constructor. The code immediately inside a class definiton (and not inside any functions) is run every time an instance of that class is created.
+
+// define class X
+class X
+{
+    // we can put any ChucK statements here as pre-constructor
+    
+    // initialize an instance data
+    109 => int m_foo;
+
+    // loop over stuff
+    for( 0 => int i; i < 5; i++ )
+    {
+        // print out message how silly
+        <<< "part of class pre-constructor...", this, i >>>;
+    }
+
+    // function
+    fun void doit()
+    {
+        // ...
+    }
+}
+
+//Static Data:
+class X
+{
+    // static data
+    static int our_data;
+
+    // static function
+    fun static int doThatThing()
+    {
+        // return the data
+        return our_data;
+    }
+}
+
+We indicate that a new class inherits from another class using the
+extends keyword.
+
+For now, access modifiers (public, protected, private) are included
+but not fully implemented. Everything is public by default.
+
+
+**** Object Creation:
+    new object @=> object @ bar;
+
+
+**** Constructors
+
+
+** Control Structures
+if(condition){ }else{ }
+while(true) {}
+do { } while(true);
+until(false) { }
+do {} until(false);
+for( 0 => int foo; foo < 4; foo++){ }
+
+//repeat, break, continue, return
+
+
+** Functions
+function, fun, spork, const, new, me
+
+fun int funk(int arg){ return arg; }
+funk(3) +> int result;
+
+To spork a shred, use the spork keyword/operator:
+
+    spork dynamically sporks shred from a function call this operation
+    is sample-synchronous, the new shred is shreduled to execute
+    immediately the parent shred continues to execute, until time is
+    advanced (see manipulating time) or until the parent explicitly
+    yields (see next section).  in the current implementation, when a
+    parent shred exits, all child shreds all exit (this behavior will
+    be enhanced in the future.)
+
+    sporking a function returns a reference to the new shred. note
+    that this operation does not return what the function returns
+
+    // define function go()
+    fun void go()
+    {
+        // insert code
+    }
+
+    // spork a new shred to start running from go()
+    spork ~ go();
+
+    // spork another, store reference to new shred in offspring
+    spork ~ go() => Shred @ offspring;
+
+The me keyword (type Shred) refers the current shred. 
+
+Machine.add( string path ) takes the path to a chuck program, and
+sporks it. Unlike spork ~, there is no parent-child relationship
+between the shred that calls the function and the new shred that is
+added. This is useful for dynamically running stored programs.
+
+    // spork "foo.ck"
+    Machine.add( "foo.ck" );
+
+Presently, this returns the id of the new shred, not a reference to
+the shred. This will likely be changed in the future.
+
+Similarly, you can remove shreds from the virtual machine.
+
+    // add
+    Machine.add( "foo.ck" ) => int id;
+
+    // remove shred with id
+    Machine.remove( id );
+
+    // add
+    Machine.add( "boo.ck" ) => id
+
+    // replace shred with "bar.ck"
+    Machine.replace( id, "bar.ck" );
+
+
+** Events:
+Events
+
+In addition to the built-in timing mechanisms for internal control,
+ChucK has an event class to allow exact synchronization across an
+arbitrary number of shreds.  
+
+ChucK events are a native class within the ChucK language. We can
+create an event objects, and then chuck (=>) that event to now. The
+event places the current shred on the event's waiting list, suspends
+the current shred (letting time advance from that shred's point of
+view). When the the event is triggered, one or more of the shreds on
+its waiting list is shreduled to run immediately. This trigger may
+originate from another ChucK shred, or from activities taking place
+outside the Virtual Machine ( MIDI, OSC, or IPC ).
+
+// declare event
+Event e;
+
+// function for shred
+fun void eventshred( Event event, string msg )
+{
+    // infinite loop
+    while ( true )
+    {
+        // wait on event
+        event => now;
+        // print
+        <<<msg>>>;
+    }
+}
+
+// create shreds
+spork ~ eventshred ( e, "fee" );
+spork ~ eventshred ( e, "fi" );
+spork ~ eventshred ( e, "fo" );
+spork ~ eventshred ( e, "fum" );
+
+// infinite time loop
+while ( true )
+{
+    // either signal or broadcast
+    if( maybe )
+    { 
+        <<<"signaling...">>>;
+        e.signal();
+    }
+    else
+    { 
+        <<<"broadcasting...">>>;
+        e.broadcast();
+    }
+
+    // advance time
+    0.5::second => now;
+}
+
+Chucking an event to now suspends the current shred, letting time advance: 
+    // declare Event Event e;
+
+    // wait on the event
+    e => now;
+
+    // after the event is trigger
+    <<< "I just woke up" >>>;
+
+as shown above, events can be triggered in two ways, depending on the
+desired behavior.
+
+    // signal one shred waiting on the event e
+    e.signal();
+
+signal() releases the first shred in that events queue, and shredule
+it to run at the current time, respecting the order in which shreds
+were added to the queue.
+
+    // wake up all shreds waiting on the event e
+    e.broadcast();
+
+broadcast() releases all shreds queued by that event, in the order
+they were added, and at the same instant in time.
+
+The released shreds are shreduled to run immediately. But of course
+they will respect other shreds also shreduled to run at the same
+time. Furthermore, the shred that called signal() or broadcast() will
+continue to run until it advances time itself, or yield the virtual
+machine without advancing time. (see me.yield() under concurrency)
+MIDI events
+
+** Midi
+ChucK contains built-in MIDI classes to allow for interaction with
+MIDI based software or devices.
+
+MidiIn min;
+MidiMsg msg;
+
+// open midi receiver, exit on fail
+if ( !min.open(0) ) me.exit(); 
+
+while( true )
+{
+    // wait on midi event
+    min => now;
+
+    // receive midimsg(s)
+    while( min.recv( msg ) )
+    {
+        // print content
+    	<<< msg.data1, msg.data2, msg.data3 >>>;
+    }
+}
+
+MidiIn is a subclass of Event, and as such can be ChucKed to
+now. MidiIn then takes a MidiMsg object to its .recv() method to
+access the MIDI data.  As a default, MidiIn events trigger the
+broadcast() event behavior.  OSC events
+
+** OSC
+In addition to MIDI, ChucK has OSC communication classes as well:
+
+// create our OSC receiver
+OscRecv orec;
+// port 6449
+6449 => orec.port;
+// start listening (launch thread)
+orec.listen();
+
+function void rate_control_shred()
+{ 
+    // create an address in the receiver 
+    // and store it in a new variable.
+    orec.event("/sndbuf/buf/rate,f") @=> OscEvent rate_event; 
+
+    while ( true )
+    { 
+        rate_event => now; // wait for events to arrive.
+
+        // grab the next message from the queue. 
+        while( rate_event.nextMsg() != 0 )
+        { 
+            // getFloat fetches the expected float
+            // as indicated in the type string ",f"
+            buf.play( rate_event.getFloat() );
+            0 => buf.pos;
+        }
+    }       
+}
+
+The OscRecv class listens for incoming OSC packets on the specified
+port. Each instance of OscRecv can create OscEvent objects using its
+event() method to listen for packets at any valid OSC Address pattern.
+
+An OscEvent object can then be ChucKed to now to wait for messages to
+arrive, after which the nextMsg() and get{Float|String|Int}() methods
+can be used to fetch message data.  creating custom events
+
+Events, like any other class, can be subclassed to add functionality
+and transmit data:
+
+// extended event
+class TheEvent extends Event
+{
+    int value;
+}
+
+// the event
+TheEvent e;
+
+// handler
+fun int hi( TheEvent event )
+{
+    while( true )
+    {
+        // wait on event
+        event => now;
+        // get the data
+        <<<e.value>>>;
+    }
+}
+
+// spork
+spork ~ hi( e );
+spork ~ hi( e );
+spork ~ hi( e );
+spork ~ hi( e );
+
+// infinite time loop
+while( true )
+{
+    // advance time
+    1::second => now;
+
+    // set data
+    Math.rand2( 0, 5 ) => e.value;
+
+    // signal one waiting shred
+    e.signal();
+}
+
+** Examples
+
+
+
+** Language Specific Concepts:
+
+*** duration
+samp, ms, second, minute, hour, day, week
+now // special vairable of type time. modifying moves chuck forwards
+
+Time and duration are native types in ChucK. 
+time represents an absolute point in time (from the beginning of ChucK
+time). 
+dur represents a duration (with the same logical units as
+time).
+
+Advancing time allows other shreds (processes) to run and allows audio
+           to be computed in a controlled manner. There are three ways
+           of advancing time in ChucK:
+
+    chucking (=>) a duration to now: this will advance time by that duration.
+    chucking (=>) a time to now: this will advance time to that point. (note that the desired time must be later than the current time, or at least be equal to it.)
+    chucking (=>) an Event to now: time will advance until the event is triggered. (also see event) 
+
+
+Durations can be used to construct new
+durations, which then be used to inductively construct yet other
+durations. For example:
+
+    // .5 second is a quarter
+    .5::second => dur quarter;
+
+    // 4 quarters is whole
+    4::quarter => dur whole;
+
+**** operations on time and duration (arithmetic):
+
+(time offset):
+
+    // time + dur yields time
+    now + 10::second => time later;
+
+(time subtraction):
+
+    // time - time yields dur
+    later - now => dur D;
+
+(addition):
+
+    // dur + dur yields dur
+    10::second + 100::samp => dur foo;
+
+(subtraction):
+
+    // dur - dur yields dur
+    10::second - 100::samp => dur bar;
+
+(division):
+
+    // dur / dur yields number
+    10::second / 20::ms => float n;
+
+(time mod):
+
+     // time mod dur yields dur
+     now % 1::second => dur remainder;
+
+(synchronize to period):
+
+    // synchronize to period of .5 second
+    .5::second => dur T;
+    T - (now % T) => now;
+
+(comparison on time):
+
+    // compare time and time
+    if( t1 < t2 )
+        // do something...
+
+(comparison on duration):
+
+    // compare dur and dur
+    if( 900::ms < 1::second )
+        <<< "yay!" >>>;
+
+
+**** Advancing time:
+advancing time by duration
+
+    // advance time by 1 second
+    1::second => now;
+
+    // advance time by 100 millisecond
+    100::ms => now;
+
+    // advance time by 1 samp (every sample)
+    1::samp => now;
+
+    // advance time by less than 1 samp
+    .024::samp => now;
+
+advancing time by absolute time
+
+    // figure out when
+    now + 4::hour => time later;
+
+    // advance time to later
+    later => now;
+
+
+** Ugens
+dac, adc, blackhole
+
+
+Unit Generators
+
+Unit Generators are function generators that output signals that can be used as audio or control signals. However, in ChucK, there is no fixed control rate. Any unit generator may be controlled at any rate. Using the timing mechanism, you can program your own control rate, and can dynamically vary the control over time. Using concurrency, it is possible to have many different parallel controls rates, each at any granularity.
+
+Some more quick facts about ChucK unit generators
+
+    All ChucK unit generators are objects (not primitive types). (see objects)
+    All ChucK unit generators inherit from the UGen class.
+    The operation foo => bar, where foo and bar are UGens, connects foo to bar.
+    Unit generators are controlled by calling/chucking to member functions over time.
+    All unit generators have the functions gain, op, channels, chan, and last. (see below)
+    Three default, global unit generators are provided. They are adc, dac, and blackhole. (see below)
+    Unit generators are specially integrated into the virtual machine such that audio is computed for every sample as time is advanced. Via the timing mechanism, we have the ability to assert control over the audio generate process at any point in time and at any desired control rate. 
+
+View a list of ChucKs built-in unit generator classes
+View sample code for unit generators
+declaring
+
+Unit generators (UGens) are objects, and need to be instantiated before they can be used. We declare unit generators the same way we declare objects.
+
+    // instantiate a SinOsc, assign reference to variable s
+    SinOsc s;
+
+connecting
+
+The ChucK operator (=>) is specially overloaded for unit generators: ChucKing one UGen to another connects their respective output(s) and input(s).
+
+    // instantiate a SinOsc, connect its output to dac's input
+    SinOsc s => dac;
+
+It is also possible to linearly chain many UGens together in a single statement.
+
+    // connect SinOsc to Gain to reverb to dac
+    SinOsc s => Gain g => JCRev r => dac;
+
+Furthermore, it is possible to introduce feedback in the network.
+
+    // connect adc to Gain to delayline to dac; (feedforward)
+    adc => Gain g1 => DelayL d => dac;
+
+    // adc to Gain to dac (feedforward)
+    adc => Gain g2 => dac;
+
+    // our delayline to Gain back to itself (feedback)
+    d => Gain g3 => d;
+
+UGens may be dynamically connected in this fashion into an audio synthesis network. It is essential to note that the above only connects the unit generators, but does not actually generate audio - unless time is advanced. (see manipulating time and using events)
+
+    // connect SinOsc to dac
+    SinOsc s => dac;
+    // set initial frequency (see next section)
+    440 => s.freq;
+
+    // advance time; allow audio to compute
+    1::second => now;
+
+It is also possible to dynamically disconnect unit generators, using the UnChucK operator (=< or !=>):
+
+    // connect SinOsc to dac
+    SinOsc s => dac;
+
+    // let time pass for 1 second letting audio be computed for that amount of time
+    1::second => now;
+
+    // disconnect s from the dac
+    s =< dac;
+
+    // let time pass for another second - should hear silence
+    1::second => now;
+
+    // duh, connect them again
+    s => dac;
+
+    // let time pass...
+    1::second => now;
+
+controlling (over time)
+
+In ChucK, parameters of unit generators may be controlled and altered at any point in time and at any control rate. We only have to move through time and assert the control at appropriate points in time, by setting various parameters on the unit generator. To set the a value for a parameter of a unit generator a value of the proper type should be ChucKed to the corresponding control fucntion.
+
+    // connect SinOsc to dac
+    SinOsc s => dac;
+    // set initial frequency to 440 hz
+    440 => s.freq;
+
+    // let time pass for 1 second
+    1::second => now;
+
+    // change the frequency to 880 hz
+    880 => s.freq;
+
+Since the control functions are member functions of the unit generator, the above syntax is equilavent to calling functions.
+
+    // connect SinOsc to dac
+    SinOsc s => dac;
+
+    // set frequency to 440
+    s.freq( 440 );
+
+    // let time pass
+    1::second => now;
+
+For a list of unit generators and their control methods, consult UGen reference.
+
+To read the current value of certain parameters (not all parameters can be read), we may call an overloaded function of the same name.
+
+    // connect SinOsc to dac
+    SinOsc s => dac;
+
+    // store the current value of the freq
+    s.freq() => float the_freq;
+
+You can chain assignments together when you want to assign one value to multiple targets. Note that the parentheses are only needed when the read function is on the very left.
+
+    // SinOsc to dac
+    SinOsc foo => dac;
+    // triosc to dac
+    triosc bar => dac;
+
+    // set frequency of foo and then bar
+    500 => foo.freq => bar.freq;
+
+    // set one freq to the other
+    foo.freq() => bar.freq;
+
+    // the above is same as:
+    bar.freq( foo.freq() );
+
+Of course, varying parameters over time is often more interesting.
+
+    // SinOsc to dac
+    SinOsc s => dac;
+
+    // infinite time loop
+    while( true )
+    {
+        // set the frequency
+	( s.freq() + 200 ) % 5000 => s.freq;
+
+        // advance time
+        100::ms => now;
+    }
+
+All ugen's have at least the following three control parameters:
+
+    gain(float) (of type float): set/get the gain of the UGen's output.
+    last() (of type float): get the last sample computed by the UGen. if UGen has more than one channel, the average of all components channels are returned.
+    channels() (of type int): get the number of channels in the UGen.
+    chan(int) (of type UGen): return reference to nth channel (or null if no such channel).
+    op(int) (of type int): set/get operation at the UGen. Values:
+        0 : stop - always output 0
+        1 : normal operation, add all inputs (default)
+        2 : normal operation, subtract inputs starting from the earliest connected
+        3 : normal operation, multiply all inputs
+        4 : normal operation, divide inputs starting from the earlist connected
+        -1 : passthru - all inputs to the ugen are summed and passed directly to output
+
+mono + stereo
+
+ChucK supports stereo (default) and multi-channel audio (see command line options to select interfaces and number of channels). The dac and the adc are now multi-channel UGens. By default, ChucKing two UGens containing the same number of channels (e.g. both stereo or both mono) automatically matches the output channels with the input channels (e.g. left to left, right to right for stereo). Stereo UGens mix their output channels when connecting to mono UGens. Mono UGens split their output channels when connecting to stereo UGens. Stereo UGens contain the parameters .left and .right, which allow access to the individual channels.
+
+    // adding separate reverb to left and right channels
+    adc.left => JCRev rl => dac.left;
+    adc.right => JCRev rr => dac.right;
+
+The pan2 stereo object takes a mono signal and split it to a stereo signal, with control over the panning. The pan position may be changed with the .pan parameter (-1 (hard left) <= p <= 1 (hard right))
+
+    // white noise to pan to dac
+    noise n => pan2 p => dac;
+
+    // infinite time loop
+    while( true )
+    {
+        // modulate the pan
+        Math.sin( now / 1::second * 2 * pi ) => p.pan;
+        // advance time
+        10::ms => now;
+    }
+
+creating
+
+( coming soon! )
+built-in unit generators
+
+ChucK has a number of built-in UGen classes, included most of the
+Synthesis ToolKit (STK). A list of built-in ChucK unit generators can
+be found here.
+
+** UAna's
+
+Unit Analyzers
+
+Unit Analyzers (UAnae) are analyis building blocks, similar in concept to unit generators. They perform analysis functions on audio signals and/or metadata input, and produce metadata analysis results as output. Unit analyzers can be linked together and with unit generators to form analysis/synthesis networks. Like unit generators, several unit analyzers may run concurrently, each dynamically controlled at different rates. Because data passed between UAnae is not necessarily audio samples, and the relationship of UAna computation to time is fundamentally different than that of UGens (e.g., UAnae might compute on blocks of samples, or on metadata), the connections between UAnae have a different meaning from the connections between UGens formed with the ChucK operator, =>. This difference is reflected in the choice of a new connection operator, the upChucK operator: =^. Another key difference between UGens and UAnae is that UAnae perform analysis (only) on demand, via the upchuck() function (see below).
+
+Some more quick facts about ChucK unit analyzers:
+
+    All ChucK unit analyzers are objects (not primitive types). (see objects)
+    All ChucK unit analyzers inherit from the UAna class.
+    The operation foo =^ yah, where foo and yah are UAnae, connects foo to yah.
+    Unit analyzer parameters and behaviors are controlled by calling / chucking to member functions over time, just like unit generators.
+    Analysis results are always stored in an object called a UAnaBlob. The UAnaBlob contains a time-stamp indicating when it was computed, and it may store an array of floats and/or complex values. Each UAna specifies what information is present in the UAnaBlob it produces.
+    All unit analyzers have the function upchuck(), which when called issues a cascade of analysis computations for the unit analyzer and any "upstream" unit analyzers on which its analysis depends.  In the example of foo =^ yah,  yah.upchuck() will result in foo first performing its analysis (possibly requesting analysis results from unit analyzers further upstream), then yah, using foos analysis results in its computation. upchuck() returns the analysis results in the form of a UAnaBlob.
+    Unit analyzers are specially integrated into the virtual machine such that each unit analyzer performs its analysis on its input whenever it or a downstream UAna is upchuck()-ed. Therefore, we have the ability to assert control over the analysis process at any point in time and at any desired control rate.
+
+View a list of ChucKs built-in unit analyzer classes
+View sample code for unit analyzers
+declaring
+
+Unit analyzers (UAnae) are objects, and they need to be instantiated before they can be used. We declare unit analyzers the same way we declare UGens and other objects.
+
+ // instantiate an FFT, assign reference to variable f
+ FFT f;
+
+connecting
+
+The upChucK operator (=^) is only meaningful for unit analyzers. Similar to the behavior of the ChucK operator between UGens, using =^ to connect one UAna to another connects the analysis results of the first to the analysis input of the second. 
+
+ // instantiate FFT and flux objects, 
+ // connect to allow computation of spectrum and spectral flux on adc input
+ adc => FFT fft =^ Flux flux => blackhole;
+
+Note that the last UAna in any chain must be chucked to the blackhole or dac to "pull" audio samples from the adc or other unit generators upstream.
+
+It is also possible to linearly chain many UAnae together in a single statement. In the example below, the 
+analysis of flux_capacitor depends on the results of flux, so the flux object will always perform its analysis computation before the computation of flux_capacitor.
+
+ // Set up analysis on adc, via an FFT object, a spectral flux object, and a
+ // made-up object called a FluxCapacitor that operates on the flux value.
+ adc => FFT f =^ Flux flux =^ FluxCapacitor flux_capacitor => blackhole;
+
+Very importantly, it is possible to create connection networks containing both UAane and UGens. In the example below, an FFT transforms two (added) sinusoidal inputs, one of which has reverb added. An IFFT transforms the spectrum back into the time domain, and the result is processed with a third sinusoid by a gain object before being played through the dac. (No, this example is not supposed to do anything musically interesting, only help you get a feel for the syntax. Notice that any connection through which audio samples are passed is denoted with the => operator, and the connection through which spectral data is passed (from the FFT to the IFFT) is denoted with the =^ operator.
+
+ //Chain a sine into a reverb, then perform FFT, then IFFT, then apply gain, then output
+ SinOsc s => JCRev r => FFT f =^ IFFT i => Gain g => dac;
+ // Chuck a second sine into the FFT
+ SinOsc s2 => f;
+ // Chuck a third sine into the final gain
+ SinOsc s3 => g;
+
+FFT, IFFT, and other UAnae that perform transforms between the audio domain and another domain play a special role, as illustrated above. FFT takes audio samples as input, so unit generators connect to it with the ChucK operator =>. However, it outputs analysis results in the spectral domain, so it connects to other UAnae with the upChucK operator =^. Conversely, UAnae producing spectral domain output connect to the IFFT using =^, and IFFT can connect to the dac or other UGens using =>. This syntax allows the programmer to clearly reason about the expected behavior of an analysis/synthesis network, while it hides the internal mechanics of ChucK timing and sample buffering from the programmer.
+
+Finally, just as with unit generators, it is possible to dynamically disconnect unit analyzers, using the UnChucK operator (=< or !=>).
+controlling (over time)
+
+In any ChucK program, it is necessary to advance time in order to pull audio samples through the UGen network and create sound. Additionally, it is necessary to trigger analysis computations explicitly in order for any analysis to be performed, and for sound synthesis that depends on analysis results (e.g., IFFT) to be performed. To explicitly trigger computation at a point in time, the UAna upchuck() member function is called. In the example below, an FFT computation is triggered every 1024 samples.
+
+ adc => FFT fft => dac;
+ // set the FFT to be of of size 2048 samples
+ 2048 => fft.size;
+
+ while (true) {
+ // let 1024 samples pass
+ 1024::samp => now;
+ // trigger the FFT computation on the last 2048 samples (the FFT size)
+ fft.upchuck();
+ }
+
+In the example above, because the FFT size is 2048 samples, the while-loop causes a standard "sliding-window" FFT to be computed, where the hop size is equal to half a window. However, ChucK allows you to perform analysis using nonstandard, dynamically set, or even multiple hop sizes with the same object. For example, in the code below, the FFT object fft performs computation every 5 seconds as triggered by shred1, and it additionally performs computation at a variable rate as triggered by shred2.
+
+ adc => FFT fft => dac;
+ 2048 => fft.size;
+
+ // spork two shreds: shred1 and shred2
+ spork ~shred1();
+ spork ~shred2(); 
+ 
+ // shred1 computes FFT every 5 seconds
+ fun void shred1() {
+ while (true) {
+ 5::second => now;
+ fft.upchuck();
+ }
+ }
+
+ // shred2 computes FFT every n seconds, where n is a random number between 1 and 10
+ fun void shred2() {
+ while (true) {
+ Std.rand2f(1, 10)::second => now;
+ fft.upchuck();
+ }
+ }
+
+Parameters of unit analyzers may be controlled and altered at any point in time and at any control rate. We only have to assert control at the appropriate points as we move through time, by setting various parameters of the unit analyzer. To set the a value for a parameter of a UAna, a value of the proper type should be ChucKed to the corresponding control function.
+
+ // connect the input to an FFT
+ adc => FFT fft => blackhole;
+
+ //start with a size of 1024 and a Blackman-Harris window
+ 1024 => fft.size;
+ Windowing.blackmanHarris(512) => fft.window;
+
+ //advance time and compute FFT
+ 1::minute => now;
+ fft.upchuck();
+
+ // change window to Hamming
+ Windowing.hamming(512) => fft.window;
+
+ // let time pass... and carry on.
+
+Since the control functions are member functions of the unit analyzer,
+the above syntax is equilavent to calling functions. For example, the
+line below could alternatively be used to change the FFT window to a
+Hamming window, as above.
+
+ fft.window(Windowing.hamming(512));
+
+For a list of unit analyzers and their control methods, consult UAna
+reference.
+
+Just like unit generators, to read the current value of certain
+parameters of a Uana, we may call an overloaded function of the same
+name. Additionally, assignments can be chained together when assigning
+one value to multiple targets.
+
+ // connect adc to FFT
+ adc => FFT fft => blackhole;
+
+ // store the current value of the FFT size
+ fft.size() => int fft_size;
+
+What if a UAna that performs analysis on a group of audio samples is
+upchuck()-ed before its internal buffer is filled? This is possible if
+an FFT of size 1024 is instantiated, then upchuck()-ed after only 1000
+samples, for example. In this case, the empty buffer slots are treated
+as 0's (that is, zero-padding is applied). This same behavior will
+occur if the FFT object's size is increased from 1024 to 2048, and
+then only 1023 samples pass after this change is applied; the last
+sample in the new (larger) buffer will be 0. Keep in mind, then, that
+certain analysis computations near the beginning of time and analysis
+computations after certain parameters have changed will logically
+involve a short "transient" period.
+
+ // connect adc to FFT to blackhole
+ adc => FFT fft => blackhole;
+ // set the FFT size to 1024 samples
+ 1024 => fft.size;
+
+ // allow 1000 samples to pass
+ 1000::samp => now;
+
+ // compute the FFT: the last 24 spots in the FFT buffer haven't been filled, so they are zero-ed out
+ // the computation is nevertheless valid and proceeds.
+ fft.upchuck(); 
+ 
+ 1::minute => now; // let time pass for a while
+
+ // increase the size of the FFT, and therefore the size of the sample buffer it uses
+ 2048 => fft.size;
+
+ // let 1023 samples pass 
+ 1023::samp => now;
+
+ // at this point, only 2047 of the 2048 buffer spots have been filled
+ // the following computation therefore zeros out the last audio buffer spot
+ fft.upchuck();
+
+ 1::minute => now; //let time pass for a while
+
+ // now the buffer is happy and full
+ fft.upchuck(); // proceeds normally on a full buffer
+
+representing metadata: the UAnaBlob 
+It is great to be able to trigger
+analysis computations like weve been doing above, but what if you
+want to actually use the analysis results? Luckily, calling the
+upchuck() function on a UAna returns a reference to an object that
+stores the results of any UAna analysis, called a UanaBlob. UanaBlobs
+can contain an array of floats, and/or an array of complex numbers
+(see the next section). The meaning and formatting of the UanaBlob
+fields is different for each UAna subtype. FFT, for example (see
+specification), fills in the complex array with the spectrum and the
+floating point array with the magnitude spectrum. Additionally, all
+UanaBlobs store the time when the blob was last computed.
+
+The example below demonstrates how one might access the results of an FFT:
+
+ adc => FFT fft => blackhole;
+ // ... set FFT parameters here ...
+
+ UAnaBlob blob;
+
+ while (true) {
+ 500::ms => now; // use hop size of 50 ms
+ fft.upchuck() @=> blob; // store the result in blob.
+ blob.fvals() @=> float mag_spec[]; // get the magnitude spectrum as float array
+ blob.cvals() @=> complex spec[]; // get the whole spectrum as complex array
+ mag_spec[0] => float first_mag; // get the first bin of the magnitude spectrum
+ blob.fval(0) => float first_mag2; // equivalent way to get first bin of mag spectrum
+ fft.upchuck().fval(0) => float first_mag3; // yet another equivalent way
+ 
+ fft.upchuck().cval(0) => complex first_spec; // similarly, get 1st spectrum bin
+
+ blob.when() => time when_computed; // get the time it was computed
+ } 
+
+Beware: whenever a UAna is upchuck()-ed, the contents of its previous
+UAnaBlob are overwritten. In the following code, blob1 and blob2 refer
+to the same UAnaBlob. When fft.upchuck() is called the second time,
+the contents of the UAnaBlob referred to by blob1 are overwritten.
+
+ adc => FFT fft => blackhole;
+
+ UAnaBlob blob1, blob2;
+ 1::minute => now; //let time pass for a while
+ fft.upchuck() @=> blob1; // blob1 points to the analysis results
+ 1::minute => now; // let time pass again
+ fft.upchuck() @=> blob2; // now both blob1 and blob2 refer to the same object: the new results!
+
+Also beware: if time is not advanced between subsequent upchuck()s of
+a UAna, any upchuck() after the first will not re-compute the
+analysis, even if UAna parameters have been changed. After the code
+below, blob refers to a UAnaBlob that is the result of computing the
+first (size 1024) FFT.
+
+ adc => FFT fft => blackhole;
+ 1024 => fft.size;
+
+ UAnaBlob blob;
+ 1::minute => now; //let time pass for a while
+ fft.upchuck() @=> blob; // blob holds the result of the FFT
+ 
+ 512 => fft.size;
+ fft.upchuck() @=> blob; // time hasn't advanced since the last computation, so no re-computation is done
+
+representing complex data: the complex and polar types In order to
+represent complex data, such as the output of an FFT, two new
+datatypes have been added to ChucK: complex and polar. These types are
+described with examples here.  
+
+performing analysis in UAna networks
+Often, the computation of one UAna will depend on the computation
+results of "upstream" UAnae. For example, in the UAna network below,
+the spectral flux is computed using the results of an FFT.
+
+ adc => FFT fft =^ Flux flux => blackhole;
+
+The flow of computation in UAna networks is set up so that every time
+a UAna a is upchuck()-ed, each UAna whose output is connected to a`s
+input via =^ is upchuck()-ed first, passing the results to a for it to
+use. For example, a call to flux.upchuck() will first force fft to
+compute an FFT on the audio samples in its buffer, then flux will use
+the UanaBlob from fft to compute the spectral flux. This flow of
+computation is handled internally by ChucK; you should understand the
+flow of control, but you don`t need to do fft.upchuck()
+explicitly. Just writing code like that below will do the trick:
+
+ adc => FFT fft =^ Flux flux => blackhole;
+ UAnaBlob blob;
+ while (true) {
+ 100::ms => now;
+ flux.upchuck() @=> blob; // causes fft to compute, then computes flux and stores result in blob
+ }
+
+Additionally, each time a UAna upchuck()s, its results are cached
+until time passes. This means that a UAna will only perform its
+computation once for a particular point in time.
+
+ adc => FFT fft =^ Flux flux => blackhole;
+ fft =^ Centroid c => blackhole;
+
+ UAnaBlob blob, blob2;
+ while (true) {
+ 100::ms => now;
+ flux.upchuck() @=> blob; // causes fft to compute, then computes flux and stores result in blob
+ c.upchuck() @=> blob2; // uses cached fft results from previous line to compute centroid
+ }
+
+When no upchuck() is performed on a UAna, or on UAnae that depend on
+it, it will not do computation. For example, in the network below, the
+flux is never computed.
+
+ adc => FFT fft =^ Flux flux => blackhole;
+ UAnaBlob blob;
+ while (true) {
+ 100::ms => now;
+ fft.upchuck() @=> blob; // compute fft only
+ }
+
+The combination of this "compute-on-demand" behavior and UAna caching
+means that different UAnae in a network can be upchuck()-ed at
+various/varying control rates, with maximum efficiency. In the example
+below, the FFT, centroid, and flux are all computed at different
+rates. When the analysis times for flux and fft or centroid and fft
+overlap, fft is computed just once due to its internal caching. When
+it is an analysis time point for fft but not for flux, flux will not
+be computed.
+
+ adc => FFT fft =^ Flux flux => blackhole;
+ fft =^ Centroid c => blackhole;
+ UAnaBlob blob1, blob2, blob3;
+
+ spork ~do_fft();
+ spork ~do_flux();
+ spork ~do_centroid();
+
+ while (true) {
+ //Keep parent shred going
+ 1::minute => now;
+ }
+
+ fun void do_fft() {
+ while (true) {
+ 50::ms => now;
+ fft.upchuck() @=> blob1;
+ }
+ }
+
+ fun void do_flux() {
+ while (true) {
+ 110::ms => now;
+ flux.upchuck() @=> blob2;
+ }
+ }
+ 
+ fun void do_centroid() {
+ while (true) {
+ 250::ms => now;
+ c.upchuck() @=> blob3;
+ }
+ }
+
+An easy way to synchronize analysis of many UAnae is to upchuck() an
+"agglomerator" UAna. In the example below, agglom.upchuck() triggers
+analysis of all upstream UAnae in the network. Because agglom is only
+a member of the UAna base class, it does no computation of its
+own. However, after agglom.upchuck(), all other UAnae will have
+up-to-date results that are synchronized, computed, and cached so that
+they are available to be accessed via upchuck() on each UAna (possibly
+by a different shred waiting for an event-- see below).
+
+ adc => FFT fft =^ Flux flux =^ UAna agglom => blackhole;
+ fft =^ Centroid centroid =^ agglom;
+ // could add abitrarily many more UAnae that connect to agglom via =^
+
+ while (true) {
+ 100::ms => now;
+ agglom.upchuck(); // forces computation of both centroid and flux (and therefore fft, too)
+ }
+
+Because of the dependency and caching behavior of upchuck()-ing in
+UAna networks, UAna feedback loops should be used with caution. In the
+network below, each time c is upchuck()-ed, it forces b to compute,
+which forces a to compute, which then recognizes that b has been
+traversed in this upChucK path but has not been able to complete its
+computation-- thereby recognizing a loop in the network. a then uses
+b's last computed UAnaBlob to perform its computation. This may or may
+not be desirable, so be careful.
+
+ adc => UAna a =^ UAna b =^ Uana c => blackhole;
+ b =^ a; // creates a feedback loop
+
+ while (true) {
+ 100::ms => now;
+ c.upchuck(); // involves a using b's analysis results from 100 ms ago
+ }
+
+Another handy UAna for synchronizing feature extraction is the
+FeatureCollector. Calling upchuck() on a FeatureCollector triggers
+computation of all upstream UAnae, and it concatenates their output
+blob data into a feature vector that can be used as input to a
+classifier, for example using smirk.
+
+ adc => FFT fft =^ Flux flux =^ FeatureCollector fc => blackhole;
+ fft =^ Centroid centroid =^ fc;
+ // could add abitrarily many more UAnae that connect to fc via =^
+
+ while (true) {
+ 100::ms => now;
+ // forces computation of both centroid and flux (and therefore fft, too)
+ // an vectorBlob's fvals and cvals will be a concatenation of the feature values
+ fc.upchuck() @=> UAnaBlob vectorBlob; 
+ }
+
+
+built-in unit analyzers
+
+ChucK has a number of built-in UAna classes. These classes perform
+many basic transform functions (FFT, IFFT) and feature extraction
+methods (both spectral and time-domain features). A list of built-in
+ChucK unit analyzers can be found here.
+
+
+
+** Reserved Words:
+
+***    (primitive types)
+        int
+        float
+        time
+        dur
+        void
+        same (unimplemented) 
+
+***    (control structures)
+        if
+        else
+        while
+        until
+        for
+        repeat
+        break
+        continue
+        return
+        switch (unimplemented) 
+
+***    (class keywords)
+        class
+        extends
+        public
+        static
+        pure
+        this
+        super (unimplemented)
+        interface (unimplemented)
+        implements (unimplemented)
+        protected (unimplemented)
+        private (unimplemented) 
+
+***    (other chuck keywords)
+        function
+        fun
+        spork
+        const
+        new 
+
+***    (special values)
+        now
+        true
+        false
+        maybe
+        null
+        NULL
+        me
+        pi 
+
+***    (special : default durations)
+        samp
+        ms
+        second
+        minute
+        hour
+        day
+        week 
+
+***    (special : global ugens)
+        dac
+        adc
+        blackhole 
+
+ 
