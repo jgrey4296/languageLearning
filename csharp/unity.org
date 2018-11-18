@@ -1,0 +1,164 @@
+* Language: Unity
+
+** Links
+
+** Inspection and Output:
+
+** Good Style
+
+** Compilation
+
+** Imports
+
+** Comments
+
+** Whitespace and Statements
+
+** Memory Management
+
+** Value vs Reference 
+
+** Scope
+
+** Basic Data Types
+
+** Arithmetic
+
+** Bitwise
+
+** Strings
+
+** Booleans
+
+** Comparisons and Logic
+
+** Variables
+
+** Data Structures
+
+** Arrays
+
+** Objects
+
+** Object Creation:
+
+** Constructors
+
+** Control Structures
+
+*** IF
+if(true || false){};
+
+*** WHILE
+while(true){};
+do {} while(true);
+
+*** FOR
+for(var i = 0; i < 5; i++){}
+
+for(var x in a){
+    if(a.hasOwnProperty(x)){
+
+    }
+}
+
+*** Switch:
+//checks for equality with ===
+//uses break;
+switch(something){
+    case 'A':
+    2+2;
+    break;
+}
+
+** Functions
+
+** Examples
+
+** Language Specific Concepts:
+
+
+* Unity:
+
+http://docs.unity3d.com/Manual/UnityOverview.html
+http://www.beforegame.net/blog/scene-lighting-and-post-processing-in-before/#more-11
+
+CMD-' will bring up documentation in monodevelop
+
+GUI Text: requires a gui layer on the camera, and uses camera coordinates so 0.0 -> 1.0
+
+js:
+The script itself is assumed to define the class (parent MonoBehaviour) and filename of the script asset.
+variables assumed to be public unless stated private
+create a public GameObject, and then click and drag in what needs to be tracked
+
+** Standard Functions:
+#pragma strict
+
+//Called before first frame
+function Start () {
+    //Get a component of the gameobject the script is attached to
+    var rb = GetComponent.<Rigidbody>();
+    //Finds a specific child object
+    transform.Find("gun");
+    //Get a game object from anywhere in the scene.
+    GameObject.Find("something");
+    player = GameObject.FindWithTag("Player");
+    enemies = GameObject.FindGameObjectsWithTag("Enemy");
+    //Instantiation:
+    public GameObject enemy;
+    Instantiate(enemy);
+    //Destroy: (can destroy individual components)
+    Destroy(enemy,0.5f);//time delay
+}
+
+//Called for each object at scene load
+function Awake(){}
+
+//called before frame is rendered or animations calculated
+function Update () {}
+
+//Called before each physics step
+function FixedUpdate(){}
+
+
+//Called periodically for guis
+function OnGUI(){}
+
+//Mouse event functions: Over,Down...
+function OnMouseOver(){}
+
+function OnDestroy(){}
+
+//physics events
+//CollisionEnter,Stay,Exit
+//OnTriggerEnter,Stay,Exit when as a trigger
+function OnCollisionEnter(otherObj: Collision){}
+
+** Debug:  
+Debug.Log()
+
+
+** Coroutines: 
+yield //optional: WaitForSeconds(0.1);
+
+
+Templates: GetComponent.<Rigidbody>();
+
+** Vector2: 
+one, right, up, zero,
+magnitude, normalized, x, y
+Static : Max,Min, Lerp, Dot, Distance, Angle, Scale
+
+
+
+//Array: Add, Clear, Concat, Join, Pop, Push, RemoveAt, Shift, Unshift, Sort
+// Exposes an float array in the inspector,
+// which you can edit there.
+//Typed arrays are fast but unresizable
+var values : float[];
+// Copy the js array into a builtin array
+var builtinArray : Vector3[] = array.ToBuiltin(Vector3) as Vector3[];
+// Assign the builtin array to a js Array
+var newarr = new Array (builtinArray);
+
