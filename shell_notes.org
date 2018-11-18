@@ -1,0 +1,64 @@
+* Shell Shortcuts:
+
+** General Notes
+
+jgmake = copy in makefile template
+jges = edit bash script
+jgee = go to emacs scripts
+log = log stuff
+cdc = cd and list
+alias = list shell aliases
+
+textutil: for converting doc to text
+textutil -convert txt *.doc
+
+** Launchd / Cron
+
+Launchd Stuff:
+Location: ~/Library/LaunchAgents
+
+** Grep
+The basic Grep:
+find . -depth 1 -type f | xargs n 2 grep -i PATTERN
+
+** Latex to HTML
+
+Latex to XML to HTML:
+latexml --includestyles --destination=doc.xml file
+latexml --verbose --destination doc.html ./doc.xml
+
+** unix jobs:
+
+to get process ids for fg use:      jobs
+processes / process tree:           ps | pstree
+to foreground a process:            fg jobno
+
+
+** Man page Sections
+
+1: General commands
+2: system calls
+3: c library functions
+4: Devices and drivers
+5: file formats and conventions
+8: sysadmin commands and daemons
+
+
+** CHMOD:
+
+owner, group, other
+read = 4, write = 2, execute = 1
+
+** SQLITE
+
+sqlite3 is the command
+
+
+** Find
+
+To ignore .git files:
+find . -not -iwholename "*.git*"
+
+** grep
+
+   xargs converts printed output to stdin for use with commands
