@@ -1,0 +1,1127 @@
+--------------------
+Language: Supercollider
+--------------------
+
+-------------------- Links
+
+-------------------- Inspection and Output:
+
+-------------------- Good Style
+
+-------------------- Compilation
+
+-------------------- Imports
+
+-------------------- Comments
+
+
+-------------------- Whitespace and Statements
+
+
+-------------------- Memory Management
+
+-------------------- Value vs Reference 
+
+
+-------------------- Scope
+
+---------------------------------------- Basic Data Types
+
+-------------------- Arithmetic
+
+-------------------- Bitwise
+
+-------------------- Strings
+
+-------------------- Booleans
+
+-------------------- Comparisons and Logic
+
+
+-------------------- Variables
+
+
+---------------------------------------- Data Structures
+
+-------------------- Arrays
+
+-------------------- Objects
+
+---------- Object Creation:
+
+
+-------------------- Constructors
+
+---------------------------------------- Control Structures
+
+//IF
+if(true || false){};
+
+//WHILE
+while(true){};
+do {} while(true);
+
+//FOR
+for(var i = 0; i < 5; i++){}
+
+for(var x in a){
+    if(a.hasOwnProperty(x)){
+
+    }
+}
+
+//Switch:
+//checks for equality with ===
+//uses break;
+switch(something){
+    case 'A':
+    2+2;
+    break;
+}
+
+------------------------------ Functions
+
+
+------------------------------ Examples
+
+
+
+---------------------------------------- Language Specific Concepts:
+
+--------------------
+SuperCollider:
+--------------------
+http://jahya.net/blog/?2012-06-quickref-for-supercollider
+http://www.fonurgia.unito.it/andrea/sw/sc/theSuperColliderHelpBook.pdf
+http://www.sussex.ac.uk/Users/nc81/modules/cm1/workshop.html
+
+
+
+
+Subscribe 
+Posted Monday, 4 June 2012
+QuickRef for SuperCollider
+
+In a previous post I mentioned Scott Wilson's tutorial as a really good starting point for learning SuperCollider (SC). Below I have summarised just about everything (including codeblocks) written in that tutorial, but this time all on one page!
+
+This is so that once you have read the tutorial you have a Quick Reference to help you get started. You can navigate the material quickly using jumplinks:
+
+>> Show Jumplinks
+
+...or just go ahead and scroll down the whole page.
+
+There are also some common keyboard shortcuts and common SC methods right at the bottom: Common methods and shortcuts
+
+Tutorial #1: First Steps
+
+Literals and no-args
+You can treat literals as objects, and you can omit brackets for no-argument methods:
+
+  "Hello World!".postln;
+  8.rand;
+
+Blocks (and variables)
+To execute several statements at once, wrap them in a block - double-click anywhere inside the brackets to select the whole block:
+
+  (
+  "Call me, ".post;
+  "Ishmael.".postln;
+  )
+
+Tutorial #2: Start Your Engines
+
+Boot a server
+Boot a localhost server via the GUI, or by code:
+
+  s.quit;
+  s.boot;
+
+Interpreter variables
+s is just an interpreter variable, which is pre-assigned the value from Server.local:
+
+  Server.local.boot;
+
+Interpreter variables (a - z) are pre-declared when you start up SC, and have global scope.
+
+Environment variables
+You can make your own variables that act like interpreter variables - you don't have to declare them and they have global scope (but for the same reason they are not efficient):
+
+  ~sources = //whatever
+
+(They are introduced on the Groups page)
+
+Local vs. internal
+The local server is the localhost, communicated with over the network, but residing on the same machine as the client. Using the local server is no different to using any networked sever.
+
+The internal server runs as a process within the client app; basically a program within a program. The main advantage is that it allows the two applications to share memory, which allows for things like realtime scoping of audio. The disadvantage is that the two are then interdependent, so if the client crashes, so does the server.
+
+Tutorial #3: Functions and Other Functionality
+
+Functions are objects
+Functions can be assigned and treated as objects:
+
+  f = { "Function evaluated".postln; };
+  f.value;
+
+(The method .value just says 'evaluate this method now')
+
+Arguments
+Functions can have arguments:
+
+  f = { arg a, b; a - b; };
+  f.value(5, 3);
+
+Equivalent syntax
+Declare arguments within pipes:
+
+  f = { |a, b| a - b; };
+
+Polymorphism
+SuperCollider supports polymorphism:
+
+  f = { arg a; a.value + 3 };
+  f.value(3);               // Send an int
+  f.value({ 3.0.rand; });   //Send a function
+          //...either way .value works just fine
+
+Named parameters
+You can use named parameters:
+
+  f = { arg a, b; a / b; };
+  f.value(b: 2, a: 10);
+
+(You can mix regular and named parameters, but regular must come first)
+
+Default arguments
+You can set defaults:
+
+  f = { arg a, b = 2; a + b; };
+  f.value(2);    // 2 + 2
+
+Method variables
+Internal method variables can be declared, but must be directly after args:
+
+  f = {
+    arg a, b;
+    var myVar1, myVar2;
+    //rest of method
+  };
+
+Block variables
+Internal block variables must be declared at the start of the block:
+
+  (
+    var myFunc;
+    myFunc = { |input| input.postln; };
+    myFunc.value("foo");
+    myFunc.value("bar"); //etc
+  )
+
+Operator precedence
+There isn't any. Use brackets:
+
+  1 + 2 * 3; //9
+  1 + (2 * 3); //7
+
+Tutorial #4: Functions and Sound
+
+Instantiation methods
+Various static methods are designed to help you instantiate objects with certain properties:
+
+  x = SomeObject.new(0.5) //equiv to x = SomeObject(0.5)
+  x = SinOsc.ar(440, 0, 0.2) //audio rate
+  x = SinOsc.kr(440, 0, 0.2) //control rate
+
+Unit generators
+SinOsc is a type of UGen. The ar and kr methods accept common arguments:
+
+  SinOsc.ar(freq, phase, mul)
+  //frequency is in Hertz
+  //phase is in radians (between 0 and 2*pi)
+  //mul is multiplier (aka amplitude)
+
+(Read more on phase)
+
+The 'add' argument
+UGens often also come with an optional 'add', as well as mul. These are useful to create kr signals, i.e. if you want to generate a smooth volume envelope:
+
+  SinOsc.kr(0.5, 1.5pi, 0.5, 0.5);
+  //frequency = once every 2 seconds
+  //phase = start with volume at 0
+  //mul = reduce from (-1 to 1) to (-.5 to .5)
+  //add = shift from (-.5 to .5) to (0 to 1)
+
+Use the new kr UGen to control an ar UGen
+Use the UGen as a volume envelope on a SinOsc:
+
+  { var ampOsc;
+    ampOsc = SinOsc.kr(0.5, 1.5pi, 0.5, 0.5);
+    SinOsc.ar(440, 0, ampOsc);
+  }.play;
+
+Tutorial #5: Stereo
+
+Arrays = multi-channel
+Arrays are used to implement multi-channel audio. If your function returns an array of UGens, the .play method will assign each to available channels:
+
+  { [SinOsc.ar(440, 0, 0.2), SinOsc.ar(442, 0, 0.2)] }.play;
+
+Multi-channel expansion
+If you pass an Array argument to a UGen, you get an Array of that UGen:
+
+  { [SinOsc.ar(440, 0, 0.2), SinOsc.ar(442, 0, 0.2)] }.play;
+  { SinOsc.ar([440, 442], 0, 0.2) }.play; //equivalent to above
+
+Panning
+Use the UGen 'Pan2' (demoed here with PinkNoise):
+
+  { Pan2.ar(PinkNoise.ar(0.2), -0.3) }.play; //fixed at -0.3
+  { Pan2.ar(PinkNoise.ar(0.2), SinOsc.kr(0.5)) }.play; //moving
+
+(More on SuperCollider Collections)
+
+Tutorial #6: Mixing
+
+Addition = mixing
+Use +, and a low number for mul, to mix UGen outputs together:
+
+  { PinkNoise.ar(0.2) + Saw.ar(660, 0.2) }.play;
+
+The 'Mix' class
+You can use Mix to mix an array of UGens into a single channel:
+
+  { Mix.new(
+    [SinOsc.ar(440, 0, 0.2), Saw.ar(660, 0.2)]
+  ).postln }.play;
+
+...or to mix an array of arrays, i.e. an array of stereo channels, into a single stereo channel:
+
+  {
+    var a, b;
+    a = [SinOsc.ar(440, 0, 0.2), Saw.ar(662, 0.2)];
+    b = [SinOsc.ar(442, 0, 0.2), Saw.ar(660, 0.2)];
+    Mix([a, b]).postln;
+  }.play;
+
+Note that Mix() is equivalent to Mix.new().
+
+Mixing on a loop
+Mix.fill allows you to mix the same UGen multiple times with parameters:
+
+  (
+    var n = 8;
+    {
+      Mix.fill(n,
+        { SinOsc.ar(500 + 500.0.rand, 0, 1 / n) }
+      )
+    }.play;
+  )
+
+Mixing on a loop with an index parameter
+As above, but taking advantage of the index argument, which increments with each call:
+
+  (
+    var n = 8;
+    {
+      Mix.fill(n,
+        {
+          arg index;
+          var freq;
+          index.postln;
+          freq = 440 + index;
+          freq.postln;
+          SinOsc.ar(freq , 0, 1 / n);
+        }
+      )
+    }.play;
+  )
+
+The index parameter is a special argument which is filled in for you by convention. See the list at the bottom of this post.
+
+Tutorial #7: Scoping and Plotting
+
+Plotting
+Make a graph of the signal produced by the output of the Function:
+
+  { PinkNoise.ar(0.2) + Saw.ar(660, 0.2) }.plot; //default 0.01
+  { PinkNoise.ar(0.2) + Saw.ar(660, 0.2) }.plot(1); // 1 sec
+
+Scoping
+(Internal server only - make sure it is booted)
+Show an oscilloscope of the signal produced by the output of the Function:
+
+  { PinkNoise.ar(0.2) + Saw.ar(660, 0.2) }.scope;
+
+Scoping with zoom
+Just add the named parameter:
+
+  { PinkNoise.ar(0.2) + Saw.ar(660, 0.2) }.scope(zoom: 10);
+
+Scoping any time
+Scope the internal server anytime:
+
+  {
+    [SinOsc.ar(440, 0, 0.2), SinOsc.ar(442, 0, 0.2)]
+  }.play(Server.internal);
+  Server.internal.scope; //or s.scope if internal is default
+
+Frequency scope
+A nice one (not mentioned in the tutorial) is the frequency analyzer:
+
+  { PinkNoise.ar(0.2) + Saw.ar(660, 0.2) }.freqscope;
+
+Tutorial #8: Help
+
+Syntax shortcuts
+Common syntax shortcuts are listed here. There are a range of shortcuts, particularly good for dealing with collections.
+
+Finding help
+The tutorial help page is here, an extended help reference is here: More on Getting Help
+
+Snooping around SC
+SuperCollider has class browsers and other built-in approaches to snooping on source code - find out about them here.
+
+Programmatically navigating the API
+Objects have methods for finding definitions (this is introduced on the Groups page).
+
+  Group.superclass; //this will return 'Node'
+  Group.superclass.openHelpFile;
+  Group.findRespondingMethodFor('set'); //Node-set
+  Group.findRespondingMethodFor('postln'); //Object-postln
+  Group.helpFileForMethod('postln'); //opens Object help file
+
+Tutorial #9: SynthDefs
+
+Functions create SynthDefs
+If you play a function, behind the scenes it creates a SynthDef:
+
+  //these two are equivalent
+  { SinOsc.ar(440, 0, 0.2) }.play;
+  SynthDef.new("tutorial-SinOsc",
+    { Out.ar(0, SinOsc.ar(440, 0, 0.2)) }
+  ).play;
+
+(The first argument to SynthDef.new identifies the SynthDef, the second is a function known as a 'UGen Graph Function', since it tells the synth how to connect various UGens together to make a synth)
+
+Manipulate a SynthDef
+SynthDef.new returns a Synth, which you can manipulate / free:
+
+  x = { SinOsc.ar(660, 0, 0.2) }.play;
+  y = SynthDef.new("myDef",
+      { Out.ar(0, SinOsc.ar(440, 0, 0.2)) }).play;
+  x.free; // free just x
+  y.free; // free just y
+
+Send and load
+Methods for sending a SynthDef to a server without causing playback. Allow you to create additional synths directly on the server without having to parse the code again:
+
+  SynthDef.new("myDef",
+      { Out.ar(0, PinkNoise.ar(0.3)) }).send(s);
+  x = Synth.new("myDef");
+  y = Synth.new("myDef");
+
+(send just sends, load saves to disk and the server reads from disk)
+
+Objects evaluate only on the client
+Compare the two examples - the first creates a new frequency each time, the second creates a new frequency once and that frequency is fixed with all new instantiations:
+
+  f = { SinOsc.ar(440 + 200.rand, 0, 0.2) };
+  x = f.play;
+  y = f.play;
+  z = f.play;
+  x.free; y.free; z.free;
+
+  SynthDef("myDef",
+      { Out.ar(0, SinOsc.ar(440 + 200.rand, 0, 0.2)) }).send(s);
+  x = Synth("myDef");
+  y = Synth("myDef");
+  z = Synth("myDef");
+  x.free; y.free; z.free;
+
+Use arguments to create variety
+You could use the 'Rand' UGen to get round this, but more common to use args:
+
+  SynthDef("myDef", { arg freq = 440, out = 0;
+      Out.ar(out, SinOsc.ar(freq, 0, 0.2));
+  }).send(s);
+  x = Synth("myDef");
+  y = Synth("myDef", ["freq", 660]);
+  z = Synth("myDef", ["freq", 880, "out", 1]);
+
+Change values after instantiation
+Synth understands some methods which allow you to change the values of args after a synth has been created, one example is set:
+
+  SynthDef.new("myDef", { arg freq = 440, out = 0;
+      Out.ar(out, SinOsc.ar(freq, 0, 0.2));
+  }).send(s);
+  x = Synth.new("myDef");
+  x.set("freq", 660);
+  x.set("freq", 880, "out", 1);
+
+Use symbols not strings
+Symbols are more 'typesafe':
+
+  "a String" === "a String"; //false
+  \aSymbol === 'aSymbol';    //true
+  "this" === \this;          //false
+
+Tutorial #10: Busses
+
+Bus indices
+Busses are zero-indexed, in the order: out, in, private:
+
+  2 outs, 2 ins       4 outs, 2 ins
+  ---------------------------------
+  0: Output 1         0: Output 1
+  1: Output 2         1: Output 2
+  2: Input 1          2: Output 3
+  3: Input 2          3: Output 4
+  4: Private 1        4: Input 1
+  5: Private 2        5: Input 2
+  etc.                6: Private 1
+                      7: Private 2
+                      etc.
+
+(See ServerOptions for information on how to set the number of input and output channels, and busses)
+
+Read and write to bus indices
+Use bus indices directly (first arg is 'base' index, second argument is number of channels, counting up from that):
+
+  Out.ar(0, SinOsc.ar(440, 0, 1));
+  In.ar(2, 1); //returns an OutputProxy
+  In.ar(2, 4); //returns an Array of 4 x OutputProxy
+
+Use Bus objects to avoid index-handling
+Get a two channel control Bus, and a one channel private audio Bus (one is the default):
+
+  b = Bus.control(s, 2);
+  c = Bus.audio(s);
+
+Free up busses after use
+The indices from Bus can then be reallocated:
+
+  b = Bus.control(s, 2);
+  b.free;
+
+Busses support downsampling but not upsampling
+The first is legal but the second is not:
+
+  {Out.kr(0, SinOsc.ar)}.play;
+  {Out.ar(0, SinOsc.kr)}.play;
+
+(However most UGens support upsampling and some interpolate to create smooth waves)
+
+Multiple synths on the same bus are summed
+In other words, mixed:
+
+  SynthDef("myDef", { arg freq = 440, out = 0;
+    Out.ar(out, SinOsc.ar(freq, 0, 0.2));
+  }).send(s);
+  // both write to bus 1, and their output is mixed
+  x = Synth("myDef", ["out", 1, "freq", 660]);
+  y = Synth("myDef", ["out", 1, "freq", 770]);
+
+Set the (constant) value of a kr bus
+Use .set to send a fixed value:
+
+  b = Bus.control(s, 1); b.set(880);
+  c = Bus.control(s, 1); c.set(884);
+
+Get the value of a bus (delegate)
+.get takes a delegate function as an argument, because of the latency involved in requesting the sample from the server. The interpreter will go ahead and execute the next line of the main thread:
+
+  f = nil;
+  b = Bus.control(s, 1); b.set(880);
+  b.get({ arg val; val.postln; f = val; });
+  f.postln; //this will most likely be nil as it will be             //executed before .get has had a response from             //the server and executed the delegate
+
+Map a bus to a Synth argument
+Continuously evaluate a busses value in a Synth:
+
+  b = Bus.control(s, 1); b.set(880);
+  c = Bus.control(s, 1); c.set(884);
+  x = SynthDef("myDef", { arg freq1 = 440, freq2 = 440;
+    Out.ar(0, SinOsc.ar([freq1, freq2], 0, 0.1));
+  }).play(s);
+  x.map(\freq1, b, \freq2, c);
+
+Order of execution
+Within each cycle, the server runs through all synths in order. You have to maintain a good order so that synths that write samples to a bus are calculated before the synths that read the samples from that bus:
+
+  //.after and .before
+  x = Synth.new("xDef", [\bus, b]);
+  y = Synth.before(x, "yDef", [\bus, b]);
+  z = Synth.after(x, "zDef", [\bus, b]);
+
+  //equivalent to
+  x = Synth.new("xDef", [\bus, b]);
+  y = Synth.new("yDef", [\bus, b], x, \addBefore);
+  z = Synth.new("zDef", [\bus, b], x, \addAfter);
+
+Above, x is the target, [\addBefore, \addAfter, \attToHead, \addToTail, \addReplace] is the addAction.
+
+There are also methods: [Synth.head, Synth.tail, Synth.replace].
+
+See more on Order of Execution, including info on groups.
+
+Useful examples using busses
+There are some really useful example code listings using busses - see Busses in Action and More Fun with Control Busses.
+
+Tutorial #11: Groups
+
+Group and Synth both derive from Node
+A Synth and Group are both types of Node:
+
+        Node
+         /\
+    Synth  Group
+
+Groups for bulk ordering
+Groups are useful for controlling order:
+
+  ~sources = Group.new;
+  ~effects = Group.after(~sources); //whole ~effects group after
+
+  x = Synth(\anEffect, ~effects);
+  y = Synth(\aSource, ~sources);
+  z = Synth(\aSource, ~sources);
+
+(See an example with actual SynthDefs)
+
+Groups for bulk messaging
+Groups allow you to easily group together Nodes and send them messages all at once:
+
+  g = Group.new;
+  4.do({ { arg amp = 0.1; PinkNoise.ar(0.2); }.play(g); });
+  g.set(\amp, 0.005); // turn them all down
+
+Groups can contains Groups and Synths
+Each Group can contain a mixture of Nodes, i.e. a combination of Synths and more Groups, i.e:
+
+  -Group
+      -Synth
+      -Synth
+      -Group
+          -Synth
+          -Synth
+      -Synth
+
+Query all nodes
+Find out what's happening on the server using s.queryAllNodes:
+
+  nodes on localhost:
+  a Server
+  Group(0)          //RootNode
+      Group(1)        //DefaultNode
+          Group(1000)    //User-defined Groups and Synths
+              Group(1001)
+                  Synth 1002
+
+Root node and Default node
+- RootNode is a top-level for everything to hang off
+- DefaultNode is where all your new nodes should go
+
+It's so that methods such as Server.scope and Server.record (which create nodes which must come after everything else) can function without running into order of execution problems.
+
+Tutorial #12: Buffers
+
+Arrays on the server
+Buffers are just in-memory arrays of floats on the server:
+
+  [0.1, 0.2, 0.3, 0.4, 0.5]   [0.5, 0.4, 0.3, 0.2, 0.1]
+
+(They are designed to handle sound but could really be any values)
+
+Number of buffers available
+Like busses, the number of buffers is set before you boot a server (using ServerOptions).
+
+Buffers are zero-indexed
+Buffers are zero-indexed, but as with Busses there is a handy Buffer class.
+
+Allocate a 2-channel buffer
+Use the Buffer class:
+
+  s.boot;
+  b = Buffer.alloc(s, 100, 2); // 2 channels, 100 frames
+  b.free; // free the memory when done
+
+(Actual number of values stored is numChannels * numFrames, in this case there will be 200 floats)
+
+Allocate in seconds rather than frames
+Multiply by the server's sample rate:
+
+  b = Buffer.alloc(s, s.sampleRate * 8.0, 2); // 8 second stereo
+  b.free;
+
+Read a file into a buffer
+Read a file into a buffer:
+
+  b = Buffer.read(s, "sounds/any.wav");
+
+Record sound into a buffer
+Record sound into a buffer:
+
+  x = {RecordBuf.ar(PinkNoise.ar(0.3)!2, b)}.play;
+  x.free;
+
+Playback from a buffer
+Playback from a buffer:
+
+  x = SynthDef("myDef",{ arg out = 0, buf;
+      Out.ar( out,
+        //Args: numChannels, buffer, playbackSpeed
+        PlayBuf.ar(1, buf, BufRateScale.kr(buf))
+      )
+  }).play(s,[\buf, b]);
+
+(BufRateScale scales the speed, in case the wavefile has a different sample rate to the server)
+
+Play a file straight off the disk
+Load it outside the synth so it can be reused. Note - no rate control:
+
+  SynthDef("myDef",{ arg out=0, buf;
+    Out.ar(out,
+      DiskIn.ar( 1, buf )
+    )
+  }).send(s);
+
+  b = Buffer.cueSoundFile(s,"sounds/mySound.aiff", 0, 1);
+  y = Synth.new("myDef", [\buf,b], s);
+
+Get info from a buffer
+Use it's properties:
+
+  b = Buffer.read(s, "sounds/mySound.wav");
+  b.bufnum;
+  b.numFrames;
+  b.numChannels;
+  b.sampleRate;
+  b.free;
+
+...but make sure the file is loaded into the buffer first:
+
+  b = Buffer.read(s, "sounds/mySound.wav", action: { arg buffer;       //read properties here   });
+
+Get and set data values
+Remember multichannel buffers interleave their data, so for a two channel buffer index 0 = frame1-chan1, index 1 = frame1-chan2, index 2 = frame2-chan1, and so on:
+
+  b = Buffer.alloc(s, 8, 1);
+  b.set(7, 0.5); //index, value
+  b.get(7, {|msg| msg.postln});
+
+Read / write multiple values
+Note the upper limit on the number of values you can get or set is usually 1633, due to packet size:
+
+  b.setn(0, Array.fill(b.numFrames, {1.0.rand}));
+  b.getn(0, b.numFrames, {|msg| msg.postln});
+
+Read / write > 1633 values
+Use b.loadCollection and b.loadToFloatArray:
+
+  (
+  v = FloatArray.fill(44100, {1.0.rand2}); //white noise
+  b = Buffer.alloc(s, 44100);
+  )
+  (
+  // load the FloatArray into b, then play it
+  b.loadCollection(v, action: {|buf|
+      x = {
+        PlayBuf.ar(buf.numChannels, buf, BufRateScale.kr(buf),
+        loop: 1) * 0.2;
+      }.play;
+    });
+  )
+  x.free;
+
+  // Get the FloatArray back, compare it to v
+  // 0 = from beginning, -1 = load whole buffer
+  b.loadToFloatArray(0, -1, {|floatArray|
+      (floatArray == v).postln });
+  b.free;
+
+Plot and play
+Note play's argument - loop. If false (default) the resulting synth is freed automatically:
+
+  //see the waveform
+  b.plot;
+
+  //play the contents
+  b.play; //frees itself
+  x = b.play(true); //loops so doesn't free
+
+Buffers for waveshaping
+The method 'cheby' fills the buffer with a series of chebyshev polynomials. The 'Shaper' UGen then uses the dataset stored in the buffer to shape a SinOsc:
+
+  b = Buffer.alloc(s, 512, 1);
+  b.cheby([1,0,1,1,0,1]);
+  x = play({
+    Shaper.ar(
+      b,
+      SinOsc.ar(300, 0, Line.kr(0,1,6)),
+      0.5
+    )
+  });
+
+Tutorial #13: Scheduling Events
+
+Three types of clock
+Note that while there is only one SystemClock, there can be many TempoClocks all running at different speeds, if need be.
+
+    TempoClock - Musical sequencing, can change tempo and is aware of meter changes
+    SystemClock - Actual time, in seconds
+    AppClock - Also runs in seconds but has a lower system priority (better for graphic updates and other non-timecritical activities)
+
+Schedule relative to current time
+Say 'hello' in 5 seconds:
+
+  SystemClock.sched(5, { "hello".postln });
+
+Schedule for an absolute time
+Provide a time at which to say 'hello':
+
+  var timeNow = TempoClock.default.beats;
+  TempoClock.default.schedAbs(timeNow + 5,
+      { "hello".post; nil });
+
+Change the tempo
+Change the tempo:
+
+  TempoClock.default.tempo = 2; // 2 beats/sec, or 120 BPM
+
+Get a handle to the clock from inside a function
+Use thisThread.clock. Once you know the clock, you can find out what time it is using beats:
+
+  SystemClock.beats;
+  TempoClock.default.beats;
+  AppClock.beats;
+  thisThread.clock.beats;
+
+Fire a function many times
+If you schedule a function that returns a number, the clock will treat that number as the amount of time before running the function again:
+
+  TempoClock.default.sched(1, { rrand(1, 3).postln; });
+
+(Stop it with Cmd - .)
+
+Fire a function once
+Return Nil:
+
+  TempoClock.default.sched(1, { rrand(1, 3).postln; nil });
+
+Don't return zero
+You'll get an infinite loop.
+
+Tutorial #14: Scheduling with Routines and Tasks
+
+It's good to read about Routines and Tasks as taking this step-by-step approach to your understanding pay dividends when you learn Patterns. However the examples given below can be more elegantly expressed - when you do this for real - using Patterns. See Tutorial #15 for more when you are ready.
+
+(See the note on timing and latency at the bottom if you do decide to go ahead with this approach, or read more about Server Timing)
+
+Routines yield values
+The values are arbitrary. Execution is controlled by a pointer.
+
+When .next is called on an instance of Routine, execution begins at the beginning of the specified function. When execution reaches a .yield command on a value, execution halts, the pointer is held in memory, and the value is returned.
+
+When .next is called on the instance again, the pointer allows execution to continue from the current position, yielding the next yielded value, and so on.
+
+When there are no more values available, the Routine instance will return nil.
+
+  r = Routine({
+    "abcde".yield;
+    "fghij".yield;
+    "klmno".yield;
+    "pqrst".yield;
+    "uvwxy".yield;
+    "z{|}~".yield;
+  });
+
+  r.next;
+
+Successive calls to r.next yield the following:
+
+  abcde
+  fghij
+  klmno
+  pqrst
+  uvwxy
+  z{|}~
+  nil
+  nil
+
+You can schedule execution to begin again by yielding numeric values
+Instead of using r.next, use TempoClock as illustrated below, or the shorthand r.play. As before, execution picks up where it left off.
+
+  r = Routine({
+    1.postln.yield;
+    2.postln.yield;
+    1.postln.yield;
+  });
+
+  TempoClock.default.sched(0, r); //instead of r.next
+  r.play; //shorthand for the use of TempoClock
+
+This code posts 1, then waits a second, posts 2, then waits two seconds, and finally posts 1 and waits one more second.
+
+Just keep yielding
+You can keep yielding and waiting indefinitely, using loop.
+
+  r = Routine({
+    var delta;
+    loop {
+      delta = rrand(1, 3) * 0.5;
+      "Will wait ".post; delta.postln;
+      delta.yield; //yield and return this value, which                    schedules the next execution.
+    }
+  });
+
+  TempoClock.default.sched(0, r);
+  r.play;
+
+Using .stop resets the pointer
+So that if you stop mid-way through a Routine, and then start again, the pointer will go back to the beginning of the function and the first value will be yielded again.
+
+  r.play;
+  r.stop;
+
+Schedule a Task instead
+That's where Task steps in. Task is the same as Routine, except when you stop and restart a Task, the pointer position is retained and execution picks up again from there.
+
+  t = Task({
+    loop {
+      [60, 62, 64, 65, 67, 69, 71, 72].do({ |midi|
+        Synth(\someSynth, [freq: midi.midicps]);
+        0.125.wait;
+      });
+    }
+  }).play;
+
+  t.stop; // probably stops in the middle of the scale
+  t.play; // should pick up with the next note
+
+Synchronise Tasks
+.play takes several arguments to control its behavior:
+
+  aRoutine.play(clock, quant)
+  aTask.play(clock, doReset, quant)
+
+- clock (both): an instance of the clock you omitted by using the shorthand
+- doReset (Task only): If true, reset the sequence to the beginning before playing; if false (default), resume
+- quant (both): a quantizer. It's easier just to demonstrate:
+
+  aTask.play(quant: 4); //start on next 4-beat boundary
+  aTask.play(quant: [4, 0.5]); //next 4-beat boundary + half-beat
+
+Use multiple datasets in a Task (with Routines)
+By splitting out data declaration from looping. Here using Routines to store the datasets:
+
+  //datasets
+  var midi = Routine({
+    [60, 72, 71, 67, 69, 71, 72, 60, 69, 67]
+        .do({ |midi| midi.yield });
+  });
+  var dur = Routine({
+    [2, 2, 1, 0.5, 0.5, 1, 1, 2, 2, 3]
+        .do({ |dur| dur.yield });
+  });
+
+  //looping (in this case, once)
+  r = Task({
+    var delta;
+    while {
+      delta = dur.next;
+      delta.notNil
+    } {
+      Synth(\smooth, [freq: midi.next.midicps, sustain: delta]);
+      delta.yield;
+    }
+  }).play(quant: TempoClock.default.beats + 1.0);
+
+(Note that the examples given here can be more elegantly expressed using Patterns, see Tutorial #15)
+
+(See the note on timing and latency at the bottom if you use this approach, or read more about Server Timing)
+
+Tutorial #15: Scheduling with Patterns
+
+Use multiple datasets in a Task (with Patterns)
+Data declaration still split out from looping, but here using Patterns to store the datasets:
+
+(Note that the example given here can be more elegantly expressed using a Pattern-only approach, see below)
+
+  //datasets
+  var midi = Pseq([60, 72, 71, 67, 69, 71, 72, 60, 69, 67], 1)
+      .asStream;
+  var dur = Pseq([2, 2, 1, 0.5, 0.5, 1, 1, 2, 2, 3], 1)
+      .asStream;
+
+  //looping (in this case, once)
+  r = Task({
+    var delta;
+    while {
+      delta = dur.next;
+      delta.notNil
+    } {
+      Synth(\smooth, [freq: midi.next.midicps, sustain: delta]);
+      delta.yield;
+    }
+  }).play(quant: TempoClock.default.beats + 1.0);
+
+(PSeq means just spit out the values in declared order, as many times as the second argument - in this case, once)
+
+(See the note on timing and latency at the bottom if you use this approach, or read more about Server Timing)
+
+Use multiple datasets (Patterns-only approach)
+Finally, the most elegant solution, using only Patterns:
+
+  (
+  SynthDef(\smooth, { |freq = 440, sustain = 1, amp = 0.5|
+    var sig;
+    sig = SinOsc.ar(freq, 0, amp) *
+        EnvGen.kr(Env.linen(0.05, sustain, 0.1), doneAction: 2);
+    Out.ar(0, sig ! 2)
+  }).add;
+  )
+
+  (
+  p = Pbind(
+      // the name of the SynthDef to use for each note
+    \instrument, \smooth,
+      // MIDI note numbers -- converted automatically to Hz
+    \midinote, Pseq([60, 72, 71, 67, 69, 71, 72, 60, 69, 67], 1),
+      // rhythmic values
+    \dur, Pseq([2, 2, 1, 0.5, 0.5, 1, 1, 2, 2, 3], 1)
+  ).play;
+  )
+
+Here, PBind does the same job as the Task does in the previous codeblock. However, in a sense it uses convention over configuration to give concise access to a common scenario. Only the necessary values are passed, using given argument names which correspond to the same actions as defined in the Task in the codeblock above.
+
+(Note that the syntax is now right down to the bone - no programming constructs, almost just data. For completeness, this time I have included the example SynthDef (\smooth))
+
+Sample Pattern types: ordering
+Many patterns take lists of values and return them in some order:
+
+Return the list's values in order:
+
+  Pseq(list, repeats, offset)
+
+Scramble the list into random order:
+
+  Pshuf(list, repeats)
+
+Choose from the list's values randomly:
+
+  Prand(list, repeats)
+
+Choose randomly, but never return the same list item twice in a row:
+
+  Pxrand(list, repeats)
+
+Like Prand, but chooses values according to a list of probabilities/weights:
+
+  Pwrand(list, weights, repeats)
+
+Sample Pattern types: generate based on parameters
+In addition to these basic patterns, there is a whole set of random number generators that produce specific distributions, and also chaotic functions:
+
+Arithmetic series, e.g., 1, 2, 3, 4, 5:
+
+  Pseries(start, step, length)
+
+Geometric series, e.g., 1, 2, 4, 8, 16:
+
+  Pgeom(start, grow, length)
+
+Random number generator, uses rrand(lo, hi) -- equal distribution:
+
+  Pwhite(lo, hi, length)
+
+Random number generator, uses exprand(lo, hi) -- exponential distribution:
+
+  Pwhite(lo, hi, length)
+
+Sample Pattern types: modify the output of other Patterns
+Other patterns modify the output of value patterns. These are called FilterPatterns:
+
+Repeat the pattern as many times as repeats indicates:
+
+  Pn(pattern, repeats)
+
+Repeat individual values from a pattern n times. n may be a numeric pattern itself:
+
+  Pstutter(n, pattern)
+
+Sample Pattern types: Patterns inside other Patterns
+Other patterns modify the output of value patterns. These are called FilterPatterns:
+
+Random numbers over a gradually increasing range (the upper bound on the random number generator is a stream that starts at 0.01, then proceeds to 0.02, 0.03 and so on, as the plot shows clearly):
+
+  p = Pwhite(0.0, Pseries(0.01, 0.01, inf), 100).asStream;
+    // .all pulls from the stream until it returns nil
+    // obviously you don't want to do this for an 'inf'
+    // length stream!
+  p.all.plot;
+
+Order a set of numbers randomly so that all numbers come out before a new order is chosen, use Pn to repeat a Pshuf:
+
+  p = Pn(Pshuf([1, 2, 3, 4, 5], 1), inf).asStream;
+  p.nextN(15); // get 15 values from the pattern's stream
+
+Patterns: further reading
+This is just an intro - see more documentation to really understand it:
+
+    Streams / Patterns / Events - helpfile
+    A Practical Guide to Patterns
+
+
+End of tutorial!
+
+Quick references
+Here is a quick summary of methods and keyboard shortcuts found in the tutorial, plus a couple of helpful extras:
+
+Commonly-used methods
+.new 	      Create new object(s) from a static method.
+Note that e.g. Mix.new(x) is equiv to Mix(x)
+.post 	  Post the object to the console as a string
+.postln   As above with newline
+.value 	  Return the object's value
+(evaluate if it's a function, or just return the object itself)
+.play 	  To functions, 'play' means evaluate yourself and play the result on a server
+.choose   To arrays, means pick any element. The element could be another array (i.e. stereo) or a single value. Arrays can be mixed i.e.
+[[126,213],[415,314],231,344]
+!2	Quickly make mono into stereo
+
+Commonly-used keyboard shortcuts
+Cmd - \       Bring the console window to the front
+Cmd-SHIFT-C   Clear the console
+Cmd - .       Stop all playback
+Cmd - D       Open the helpfile for whatever is currently selected
+Cmd - J       Open the definition file for whatever is currently selected
+Cmd - Y       (On a method) Show a list of classes which implement this method (polymorphism)
+
+Special arguments
+index 	Injects the current iterator into a loop, e.g.
+(
+ 3.do({
+  |index|
+  index.postln;
+ });
+)
+//Prints 1 2 3
+midinote / freq		The argument midinote gets converted into a frequency value, and passed as the argument freq, e.g.
+(
+ SynthDef(\myInst, { |freq|
+  Out.ar(0,
+   SinOsc.ar(freq) *
+   EnvGen.kr(
+    Env.linen(0.1, 0.8, 0.1), doneAction: 2)
+  ! 2)
+ }).add;
+
+ p = Pbind(
+  \instrument, \myInst,
+  \midinote, Pseq([60, 72], inf)
+ ).play;
+)
+
+See also Tutorial #15: Scheduling with Patterns
+dur 	 Duration - see Tutorial #15: Scheduling with Patterns
+instrument 	  See Tutorial #15: Scheduling with Patterns
