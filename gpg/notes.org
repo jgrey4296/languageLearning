@@ -1,0 +1,53 @@
+* GPG Notes (v 2.2.11)
+[[https://www.futureboy.us/pgp.html#gpgorgpg2][General Howto]]
+** Basic Protocol
+   Create Key
+   Create Revocation Cert
+   Create Fingerprint
+   Export Public and Secret Keys
+   Backup [Public, Secret, Revocation]
+
+   Import other persons public key
+   Verify it against their fingerprint
+   Sign the Key
+   (optional, give the signed key back by exporting it)
+
+   Then decrypt messages sent to you,
+   encrypt messages to them using their public key,
+   or verify they sent a plaintext signature.
+
+** Setup for Emacs
+   To use, add "allow-emacs-pinentry" to "~/.gnupg/gpg-agent.conf",
+   reload the configuration with "gpgconf --reload gpg-agent", and
+   start the server with M-x pinentry-start. (or add (pinentry-start) to .emacs)
+
+** List keys
+   gpg -k
+   gpg --list-sigs
+** Importing a key:
+   Works for secret and public keys
+   gpg --import [filename]
+** Generating a key
+   gpg --gen-key
+   gpg --gen-revoke --armor --output=RevocationCertificate.asc [email]
+** Deleting a key:
+   gpg --delete-secret-keys
+   gpg --delete-keys
+** Get a fingerprint
+   Fingerprints give a shorter to verify hash of public keys
+   gpg --fingerprint [email]
+** Sign a key
+   gpg --sign-key [email]
+   or
+   gpg --interactive --edit-key [email]
+** Export keys
+   gpg [-o file] [-a ID] --armor --export[-secret-keys] [email]
+** Encrypt
+   *Don't forget to add yourself to the recipients* 
+   gpg [-o output] --sign --armor [-r recipient] [-e file] 
+** Decrypt
+   gpg  -o output -d file
+** Sign a plaintext message
+   gpg --clearsign file
+** Verify a signature
+   gpg --verify file
