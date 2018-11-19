@@ -51,3 +51,11 @@
    gpg --clearsign file
 ** Verify a signature
    gpg --verify file
+** Using Stronger Encrpytion
+   gpg --interactive --edit-key [email]
+   Then 'showpref' will show algorithm preferences
+   from most - least.
+
+   modify using 'setpref [algorithms..]'
+   
+   then 'save'
