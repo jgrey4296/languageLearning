@@ -1,5 +1,6 @@
 * GPG Notes (v 2.2.11)
-[[https://www.futureboy.us/pgp.html#gpgorgpg2][General Howto]]
+  [[https://www.futureboy.us/pgp.html][General Howto]]
+** *Short IDs*: Last 8 digits of fingerprint
 ** Basic Protocol
    Create Key
    Create Revocation Cert
