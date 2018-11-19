@@ -22,9 +22,18 @@
     From trying to do 12 is (X+3)*2
     Where uninstantiated variables are on the right of 'is'.
 
+*** Multiple Files:
+    Module:
+    #+begin_src prolog
+    :- module(MODULE_NAME, [MODULE_EXPORTS/0]).
+    #+end_src
+    And use:
+    #+begin_src prolog
+    :- use_module(MODULE_NAME).
+    MODULE_NAME:MODULE_EXPORTS.
+    #+end_src
 ** Debugging
    See swipl [[http://www.swi-prolog.org/pldoc/man?section=debugoverview][debugger]] and the gnu prolog [[http://gprolog.univ-paris1.fr/manual/gprolog.html#Running-and-stopping-the-debugger][debugger]] 
-
    #+begin_src prolog
      %% Debugger ports are: call, exit, redo, fail.
      %% Which to show:
@@ -41,7 +50,12 @@
    C : show context
    A : alternatives
    
-   
+   Also print all listings with:
+   #+begin_src prolog
+   listing.
+   #+end_src
+
+
 
    
 
