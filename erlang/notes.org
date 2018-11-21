@@ -13,8 +13,6 @@
       %% {d,Macro}
       %% {d,Macro,Value}
    #+end_src
-
-
 ** Syntax
    expressions terminate with '. '  Note the whitespace
    Comments are %%
@@ -26,16 +24,28 @@
    'true' and 'false' are atoms.
    *Pattern matching is important*.
 
-   
 *** Comparisons
-    'and','or','xor','not'.
-    <,>,>=,=<  : Comparisons work across types
-
-    Exact Equality: =:=, =/=
-    Type eliding Equality: ==, /=
-    
     Comparison ordering:
     number < atom < reference < fun < port < pid < tuple < list < bit string
+    #+begin_src erlang
+    %% Comparisons work across types.
+    %% <, >, >=, =<.
+    1 < 2. 
+    #+end_src
+
+    #+begin_src erlang
+    %% and, or, xor, not.
+    true and true.
+    #+end_src
+
+    #+begin_src erlang
+    %% Exact (in)equality:
+    1 =:= 1.
+    1 =/= 2.
+    %% Type eliding (in)equality:
+    1 == 1.0.
+    1 /= 2.0.
+    #+end_src
 
 *** Tuples
     #+begin_src erlang
@@ -45,8 +55,6 @@
       {A,B} = Point.
       {J,_} = Point.
     #+end_src
-
-
 *** Lists
     #+begin_src erlang
       %% Not single typed. Lisp-like.
@@ -66,7 +74,6 @@
       %% or: [hd|tl].
 
     #+end_src
-
 
 **** List Comprehensions
      [2*N || N <- [1,2,3,4]].
@@ -100,19 +107,16 @@
 
     #+end_src
 
-
 *** Binary Strings
     #+begin_src erlang
           <<"this is a binary string">>.
     #+end_src
-
 
 *** Binary Comprehensions
     #+begin_src erlang
       << <<X>> || <<X>> <= <<1,2,3,4,5>>, X rem 2 == 0>>.
 
     #+end_src
-
 
 ** Modules
    #+begin_src erlang
@@ -132,6 +136,69 @@
          io:format("hello").
    #+end_src
 
+*** Pattern Matching
+    Function clauses combine to make a declaration.
+    *Note the intermediate semicolons and  final full stop*
+    use for Head and tail of list: [H|T].
+    "Don't Care" variable: _
+    #+begin_src erlang
+      greet(male, Name) ->
+          io:format("Hello, Mr ~s", [Name]);
+      greet(female, Name) ->
+          io:format("Hello, Mrs ~s", [Name]);
+      greet(_, Name) ->
+          io:format("Hello, ~s", [Name]).
+    #+end_src
+
+    
+    #+begin_src erlang
+      same(X,X) ->
+          true;
+      same(_,_) ->
+          false.
+    #+end_src
+    
+    use of "=" in head:
+    #+begin_src erlang
+      valid_time({Date = {Y,M,D}, Time = {H,Min,S}}) ->
+          io:format("correct");
+      valid_time(_) ->
+          io:format("Bad Data").
+    #+end_src
+
+    
+*** Guards:
+    Comma for 'and', Semicolon for 'or'
+    Can use math, comparison and type check functions,
+    Can't use user defined functions
+    #+begin_src erlang
+      a_test(X) when X >= 16 ->
+          true;
+      a_test(_) -> false.
+    #+end_src
+
+*** If
+    Acts like guards. Must have a suitable clause
+    #+begin_src erlang 
+      if X > Y -> 2;
+         X < Y -> 3;
+         X == Y -> 4. %% must have a final clause
+      end
+    #+end_src
+    
+*** case .. of
+    You can destructure cases. 
+    #+begin_src erlang
+      test(X,Set) ->
+          case lists:member(X,Set) of
+              true -> "In Set";
+              false -> "Not in Set"
+      end.             
+    #+end_src
+*** Printing
+    io:format()
+    Uses tildes  ("~s" for string, "~n" for newline)
+    
 
 ** Macros
    #+begin_src erlang
