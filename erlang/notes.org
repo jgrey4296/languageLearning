@@ -319,14 +319,14 @@
     
 ** Macros
    #+begin_src erlang
-   ;; A Macro:
+   %% A Macro:
    -define(MACRO, some_value).
    ?MACRO.
-   ;;Macro Function:
+   %% Macro Function:
    -define(sub(X,Y), X-Y).
-   ;;Predefined:
+   %% Predefined:
    ?MODULE. ?FILE. ?LINE.
-   ;;Conditional macros:
+   %% Conditional macros:
    -ifdef(DEBUG).
    -define(DEBUG(S), io:format("dbg: "++S)).
    else.
@@ -451,11 +451,23 @@
    
    Erlang VM creates a *scheduler* per core.
    Schedulers have *run queues*.
+   use pid/3 to convert 3 numbers to a pid.
+   Be careful about filling a mailbox with unused messages.
+
+   Message passing can be optimized using make_ref/0.
+   To a receive with a guard. 
+   TODO: learn more.
+
+   Defensive mailbox pattern: have an Unexpected case.
+   Or use a min-heap.
+
 *** Spawning Processes
     Use spawn/1.
     or spawn/3. Takes module, function, arguments.
+    spawn_lnk/1-3. Spawns and links in an atomic step.
     sleep/1. Sleeps for N milliseconds.
     self/0. Get the pid of the current process.
+    Kill a process with exit/2. Takes a pid and a reason.
     #+begin_src erlang
       F = fun() -> 2 + 2 end.
       Pid = spawn(F).
@@ -482,7 +494,11 @@
               hello ->
                   io:format("hi");
               _ ->
-                  io:format("bye")
+                  io:format("bye");
+              after 3000 ->
+                      #or infinity
+                      io:format("Timeout"),
+                      timeout
       end.
     #+end_src
     
@@ -506,3 +522,14 @@
     #+end_src
 
 
+*** Exception handing and Linking
+    *Links* connect two processes' life cycles.
+    If one dies, the other dies, then restart both processes.
+    use link/1. Takes a pid.
+    Undo with unlink/1.
+    Links can not be stacked.
+    Also use spawn_link/1-3. Links a spawned process in an atomic step.
+
+    When a linked process crashes, it sends a special
+    exit message, which can only be caught with a trap.
+    
