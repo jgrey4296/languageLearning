@@ -4,29 +4,29 @@
   [[http://www.erlang.org/docs][Erlang Docs]]
   [[http://erlang.org/doc/reference_manual/users_guide.html][Reference Manual]]
   [[http://erlang.org/doc/man_index.html][Module Reference]].
-** Shell: erl
-   The shell is a shell of shells.
-   Has tab completion
-   q : quits
-   ^G -> h : brings up shell control.
-   f() or f(Variable) : clears bindings.
-** Compiler: erlc
+** Command Line Programs
+*** Shell: erl
+    The shell is a shell of shells.
+    Has tab completion
+    q : quits
+    ^G -> h : brings up shell control.
+    f() or f(Variable) : clears bindings.
+*** Compiler: erlc
+     #+begin_src erlang
+       %%-compile([debug_info])
+       %% {outdir, Dir}
+       %% export_all
+       %% {d,Macro}
+       %% {d,Macro,Value}
+    #+end_src
+*** Escript
     #+begin_src erlang
-      %%-compile([debug_info])
-      %% {outdir, Dir}
-      %% export_all
-      %% {d,Macro}
-      %% {d,Macro,Value}
-   #+end_src
-** Escript
-   #+begin_src erlang
-     #!/usr/bin/env escript
-     %%! -pa 'ebin/'
-     main...
-   #+end_src
+      #!/usr/bin/env escript
+      %%! -pa 'ebin/'
+      main...
+    #+end_src
 
-
-** Syntax
+** Basic Syntax
    expressions terminate with '. '  Note the whitespace
    Comments are %%
 
@@ -207,7 +207,7 @@
       dec(X) -> X - 1.
       map(fun inc/1, [1,2,3,4,5]).
     #+end_src
-*** Anonymous functions
+*** Anonymous Functions
     Functions have lexical scope.
     #+begin_src erlang
       map(fun(X) -> X + 1 end, [1,2,3,4]).
@@ -249,7 +249,6 @@
 
 
 
-    
 ** Modules
    #+begin_src erlang
      %%To define attributes:
@@ -336,8 +335,6 @@
    #+end_src
 
 
-
-
 ** Errors
 
 *** Compile Time Errors
@@ -373,7 +370,6 @@
           Expression5
       end.
     #+end_src
-
 
 
 **** Exit Exceptions:
@@ -428,7 +424,6 @@
 
 
 
-     
 *** Key/Value Stores
     [[http://erlang.org/doc/man/dict.html][dict]]
     [[http://erlang.org/doc/man/proplists.html][property lists]]
@@ -449,3 +444,65 @@
     
 *** Queue
     [[http://erlang.org/doc/man/queue.html][queue]].
+** Concurrency and Parallelism
+   Concurrency: Many actors running independently but not necessarily
+   at the same time.
+   Parallelism: Having actors running at the same time.
+   
+   Erlang VM creates a *scheduler* per core.
+   Schedulers have *run queues*.
+*** Spawning Processes
+    Use spawn/1.
+    or spawn/3. Takes module, function, arguments.
+    sleep/1. Sleeps for N milliseconds.
+    self/0. Get the pid of the current process.
+    #+begin_src erlang
+      F = fun() -> 2 + 2 end.
+      Pid = spawn(F).
+    #+end_src
+
+*** Sending Messages
+    *Bang operator* adds a message to the process' mailbox.    
+    flush/0. Shows the contents of the current mailbox.
+    #+begin_src erlang
+      self() ! hello.
+      %% Chain the return:
+      self() ! self() ! hello.
+      %% Message using pids:
+      <0.80.0> ! hello.
+    #+end_src
+
+*** Receiving Messages
+    Use *receive*.
+
+    Upon receiving a message, test_func will terminate:
+    #+begin_src erlang
+      test_func() ->
+          receive
+              hello ->
+                  io:format("hi");
+              _ ->
+                  io:format("bye")
+      end.
+    #+end_src
+    
+    To send a response:
+    #+begin_src erlang
+      %% Spawn and message the process:
+      F = spawn(test_func).
+      F ! { self() hello }.
+      flush(). %% will give: hi.
+
+      %% The Process:
+      test_func() ->
+          receive
+              {From, hello} ->
+                  From ! hi,
+                  test_func();
+              {From, _} ->
+                  From ! bye,
+                  test_func();
+          end.
+    #+end_src
+
+
