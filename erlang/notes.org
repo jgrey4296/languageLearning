@@ -1,4 +1,9 @@
 * Erlang Notes
+  [[http://erlang.org/doc/][Erlang Manual]]
+  [[http://erlang.org/doc/efficiency_guide/advanced.html][Efficiency Guide]]
+  [[http://www.erlang.org/docs][Erlang Docs]]
+  [[http://erlang.org/doc/reference_manual/users_guide.html][Reference Manual]]
+  [[http://erlang.org/doc/man_index.html][Module Reference]].
 ** Shell: erl
    The shell is a shell of shells.
    Has tab completion
@@ -13,6 +18,14 @@
       %% {d,Macro}
       %% {d,Macro,Value}
    #+end_src
+** Escript
+   #+begin_src erlang
+     #!/usr/bin/env escript
+     %%! -pa 'ebin/'
+     main...
+   #+end_src
+
+
 ** Syntax
    expressions terminate with '. '  Note the whitespace
    Comments are %%
@@ -118,18 +131,6 @@
 
     #+end_src
 
-** Modules
-   #+begin_src erlang
-     %%To define attributes:
-     -module(Name).
-     -export([Function1/Arity, Function2/Arity...])
-     -import(Module, [Function/Arity..])
-     ;;to call:
-      Module:Function(arguments).
-   #+end_src
-
-   Inspect metadata with the function module_info().
-
 ** Functions
    #+begin_src erlang
      testFunc() ->
@@ -166,7 +167,6 @@
           io:format("Bad Data").
     #+end_src
 
-    
 *** Guards:
     Comma for 'and', Semicolon for 'or'
     Can use math, comparison and type check functions,
@@ -176,7 +176,7 @@
           true;
       a_test(_) -> false.
     #+end_src
-
+    See [[*Type System][Type System]] for type guards
 *** If
     Acts like guards. Must have a suitable clause
     #+begin_src erlang 
@@ -198,8 +198,126 @@
 *** Printing
     io:format()
     Uses tildes  ("~s" for string, "~n" for newline)
-    
+*** Passing Functions
+    Use of: "fun Module:Function/Arity"
+    #+begin_src erlang
+      map(_, []) -> [];
+      map(F, [H|T]) -> [F(H)|map(F,T)].
+      inc(X) -> X + 1.
+      dec(X) -> X - 1.
+      map(fun inc/1, [1,2,3,4,5]).
+    #+end_src
+*** Anonymous functions
+    Functions have lexical scope.
+    #+begin_src erlang
+      map(fun(X) -> X + 1 end, [1,2,3,4]).
+    #+end_src
+    See lists: map/2, filter/2, foldl/3, foldr/3.
+    takewhile/2, and dropwhile/2.
+    flatten/1, flatlength/1, flatmap/2, merge/1, nth/2, nthtail/2, split/2.
 
+*** Map
+    See lists:map/2.
+    #+begin_src erlang
+      map(_, [], Acc) ->
+          Acc;
+      map(F, [H|T], Acc) ->
+          map(F,T, [F(H)|Acc]).
+    #+end_src
+*** Filter
+    See lists:filter/2.
+    #+begin_src erlang
+      filter(_, [], Acc) ->
+          Acc;
+      filter(Pred, [H|T], Acc) ->
+          case Pred(H) of
+              true ->
+                  filter(Pred, T, [H|Acc]);
+              false ->
+                  filter(Pred, T, Acc)
+          end.
+    #+end_src
+*** Fold
+    See lists:foldl/3 and lists:foldr/3.
+    #+begin_src erlang
+      fold(_, [], Start) ->
+          Start;
+      fold(F, [H|T], Start) ->
+          fold(F, T, F(H,Start)).
+    #+end_src
+
+
+
+
+    
+** Modules
+   #+begin_src erlang
+     %%To define attributes:
+     -module(Name).
+     -export([Function1/Arity, Function2/Arity...])
+     -import(Module, [Function/Arity..])
+     -compile(export_all).
+     ;;to call:
+      Module:Function(arguments).
+   #+end_src
+
+   Inspect metadata with the function module_info().
+
+** Type System
+   Erlang is dynamic and strongly typed. 
+   Has explicit functions to convert types between each other:
+   #+begin_src erlang
+     %% All in erlang module.
+     atom_to_binary/2.
+     atom_to_list/1.
+     binary_to_atom/2.
+     binary_to_existing_atom/2.
+     binary_to_list/1.
+     binary_to_term/1.
+     binary_to_term/2.
+     bitstring_to_list/1.
+     float_to_list/1.
+     fun_to_list/1.
+     integer_to_list/1.
+     integer_to_list/2.
+     iolist_to_atom/1.
+     iolist_to_binary/1.
+     list_to_atom/1.
+     list_to_binary/1.
+     list_to_bitstring/1.
+     list_to_existing_atom/1.
+     list_to_float/1.
+     list_to_integer/2.
+     list_to_pid/1.
+     list_to_tuple/1.
+     pid_to_list/1.
+     port_to_list/1.
+     ref_to_list/1.
+     term_to_binary/1.
+     term_to_binary/2.
+     tuple_to_list/1.
+   #+end_src
+   And guard tests:
+   #+begin_src erlang
+     is_atom/1.
+     is_binary/1.
+     is_bitstring/1.
+     is_boolean/1.
+     is_buildint/1.
+     is_float/1.
+     is_function/1.
+     is_function/2.
+     is_integer/1.
+     is_list/1.
+     is_number/1.
+     is_pid/1.
+     is_port/1.
+     is_record/2.
+     is_record/3.
+     is_reference/1.
+     is_tuple/1.
+   #+end_src
+    
 ** Macros
    #+begin_src erlang
    ;; A Macro:
@@ -220,3 +338,114 @@
 
 
 
+** Errors
+
+*** Compile Time Errors
+    "syntax error before" - line termination is incorrect.
+    "head mismatch" - inconsistent arity on functions.
+    "variable unsafe in case" - use of a variable declared inside a branch, outside. 
+*** Runtime Errors
+    "no Function clause matchin" - failing all pattern matches or guards.
+    "no case clause matching" - forgotten a case, sent wrong data, or need a catchall.
+    "no match of right hand side value" - bad pattern matching
+    "bad function" - using a non-function variable as a function
+
+*** Raising Exceptions
+    #+begin_src erlang
+      throw(permission_denied).
+      erlang:error(Reason).
+    #+end_src
+    Can call multiple expressions in a try block using commas.
+    #+begin_src erlang
+      try Expression of
+          SuccessfulPattern1 [Guards] ->
+              Expression1;
+          SuccessfulPattern2 [Guards] ->
+              Expression2
+      catch
+          %%typeoferror: [error, throw, exit]
+          TypeOfError:ExceptionPattern1 ->
+              Expression3;
+          TypeOfError:ExceptionPattern2 ->
+              Expression4;
+          _:_ -> "Catchall"
+      after
+          Expression5
+      end.
+    #+end_src
+
+
+
+**** Exit Exceptions:
+     Internal exits (exit/1). - current process
+     External exits (exit/2). - concurrent processes.
+
+** Main
+   #+begin_src erlang
+     main([FileName]) ->
+         {ok, Bin} = file:read_file(FileName),
+         S = string:tokens(binary_to_list(Bin), "\r\n\t ").
+         L = [list_to_integer(X) || X <- S].
+         erlang:halt().
+   #+end_src
+
+** Data Structures
+*** Records
+    #+begin_src erlang
+      -module(records).
+      -compile(export_all).
+
+      -record(robot, {name, type=industrial, hobbies, details=[]}).
+
+      first_robot() ->
+          #robot{name="Mechatron", type=handmade, details=["Moved by a small man inside"]}.
+    #+end_src
+    Extract values using dot syntax or pattern matching:
+    #+begin_src erlang
+      a_robot = first_robot().
+      a_robot#robot.details.
+      testFunc(R = #robot{}) when R#robot.name =:= "Mechatron" -> true.
+      testFunc(_) -> false.
+    #+end_src
+
+    Update Records by reassigning:
+    #+begin_src erlang
+      Robot = first_robot().
+      %% Under the hood uses erlang:setelement/3.
+      Second = Robot#robot{details=["Now a Second Robot"]}.
+    #+end_src
+
+    Use Header files (.hrl) and define records there.
+    Include with "-include(headerFileName)."
+
+
+**** Records in the Shell
+     Load Records from a module in shell: rr(records). rr(*,[module1, module2...]).
+     Define a Record in the Shell: rd(Name,Definition).
+     Unload records: rf(). rf(Name). rf([Names]).
+
+
+
+
+
+     
+*** Key/Value Stores
+    [[http://erlang.org/doc/man/dict.html][dict]]
+    [[http://erlang.org/doc/man/proplists.html][property lists]]
+    OrdDicts are good for up to 75 elements.
+    [[http://erlang.org/doc/man/orddict.html][ordered dictionaries]]. 
+    For larger data sizes:
+    [[http://erlang.org/doc/man/gb_trees.html][gb_trees]]
+
+*** Sets
+    [[http://erlang.org/doc/man/sets.html][sets]]
+    [[http://erlang.org/doc/man/ordsets.html][ordsets]].
+    [[http://erlang.org/doc/man/gb_sets.html][gb_sets]]
+    [[http://erlang.org/doc/man/sofs.html][Sets of Sets]].
+
+*** Directed Graphs
+    [[http://erlang.org/doc/man/digraph.html][Digraphs]].
+    [[http://erlang.org/doc/man/digraph_utils.html][Digraph Utils]].
+    
+*** Queue
+    [[http://erlang.org/doc/man/queue.html][queue]].
