@@ -248,7 +248,6 @@
 
 
 
-
 ** Modules
    #+begin_src erlang
      %%To define attributes:
@@ -333,7 +332,6 @@
    -define(DEBUG(S), ok).
    -endif.
    #+end_src
-
 
 ** Errors
 
@@ -521,8 +519,7 @@
           end.
     #+end_src
 
-
-*** Exception handing and Linking
+*** Linking and Monitors
     *Links* connect two processes' life cycles.
     If one dies, the other dies, then restart both processes.
     use link/1. Takes a pid.
@@ -532,4 +529,53 @@
 
     When a linked process crashes, it sends a special
     exit message, which can only be caught with a trap.
+    
+    *Monitors* are special links. *Unidirectional*, and they *stack*.
+    erlang:monitor/2. process atom, pid. Returns {'DOWN', #Ref, process, pid, signal}.
+    erlang:spawn_monitor/1-3. returns {pid, ref}.
+    erlang:demonitor/2. Ref, [info, flush]. 
+
+*** System processes
+    process_flag/2. Can convert exit signals to messages.
+    Allows a process to survive even if it receives an exit message.
+
+    exit/2. Allows a process to kill another from a distance.
+
+*** Naming Processes
+    *Warning*: Can produce race conditions.
+    erlang:register/2. Name, pid).
+    erlang:unregister/1.
+    erlang:register/0. Get all registers processes.
+    erlang:whereis/1. Atom -> pid.
+
+*** Exceptions and Traps
+    #+begin_src erlang
+      %% Process Exits normally
+      %% Traps {'EXIT', <pid>, normal}
+      spawn_link(fun() -> ok end)
+
+      %% Process Exists for Custom Reason
+      %% Traps {'EXIT', <pid>, reason}
+      spawn_link(fun() -> exit(reason) end)
+
+      %% Process manually exits normally
+      %% Traps {'EXIT', <pid>, normal}
+      spawn_link(fun() -> exit(normal) end)
+
+      %% Process exits because of bad arithmetic, which isn't caught in try/catch
+      %% Traps {'EXIT', <pid>, {badarith, [stack trace]}}
+      spawn_link(fun() -> 1/0 end)
+
+      %% Process exits with a custom thrown error
+      %% Traps {'EXIT', <pid>, [stack trace]}
+      spawn_link(fun() -> erlang:error(reason) end)
+
+      %% Process exits with an exception bubbling into an error, into an EXIT
+      %% Traps {'EXIT', <pid>, {{nocatch, rocks}, [stack trace]}}
+      spawn_link(fun() -> throw(rocks) end)                    
+    #+end_src
+
+
+
+
     
