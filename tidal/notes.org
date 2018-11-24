@@ -1,5 +1,6 @@
 * [[Https://tidalcycles.org/][Tidal Cycles]]
   Haskell based pattern language.
+  [[file:pattern_library/rhythms.hs::--%20Rhythms:][Pattern Library]]
 ** Startup and setup
    cabal install tidal
    supercollider install SuperDirt quark
