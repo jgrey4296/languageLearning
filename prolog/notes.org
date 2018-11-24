@@ -1,4 +1,8 @@
 * Prolog Notes
+  [[http://www.swi-prolog.org/][Swipl]]
+  [[http://www.swi-prolog.org/pldoc/doc_for?object=manual][Swipl Manual]]
+  [[http://lpn.swi-prolog.org/lpnpage.php?pagetype=html&pageid=lpn-html][Learn Prolog]]
+
   *use "swipl -tty" in emacs*
 
 ** Heuristics 
