@@ -1,0 +1,581 @@
+* Erlang Notes
+  [[http://erlang.org/doc/][Erlang Manual]]
+  [[http://erlang.org/doc/efficiency_guide/advanced.html][Efficiency Guide]]
+  [[http://www.erlang.org/docs][Erlang Docs]]
+  [[http://erlang.org/doc/reference_manual/users_guide.html][Reference Manual]]
+  [[http://erlang.org/doc/man_index.html][Module Reference]].
+** Command Line Programs
+*** Shell: erl
+    The shell is a shell of shells.
+    Has tab completion
+    q : quits
+    ^G -> h : brings up shell control.
+    f() or f(Variable) : clears bindings.
+*** Compiler: erlc
+     #+begin_src erlang
+       %%-compile([debug_info])
+       %% {outdir, Dir}
+       %% export_all
+       %% {d,Macro}
+       %% {d,Macro,Value}
+    #+end_src
+*** Escript
+    #+begin_src erlang
+      #!/usr/bin/env escript
+      %%! -pa 'ebin/'
+      main...
+    #+end_src
+
+** Basic Syntax
+   expressions terminate with '. '  Note the whitespace
+   Comments are %%
+
+   Integers can be in the form: base#value. eg: 2#1010101.
+   Variables start with an Uppercase letter or underscore.
+   Atoms start lowercase, and are their own value.
+   (Atoms are not garbage collected, don't generate them dynamically).
+   'true' and 'false' are atoms.
+   *Pattern matching is important*.
+
+*** Comparisons
+    Comparison ordering:
+    number < atom < reference < fun < port < pid < tuple < list < bit string
+    #+begin_src erlang
+    %% Comparisons work across types.
+    %% <, >, >=, =<.
+    1 < 2. 
+    #+end_src
+
+    #+begin_src erlang
+    %% and, or, xor, not.
+    true and true.
+    #+end_src
+
+    #+begin_src erlang
+    %% Exact (in)equality:
+    1 =:= 1.
+    1 =/= 2.
+    %% Type eliding (in)equality:
+    1 == 1.0.
+    1 /= 2.0.
+    #+end_src
+
+*** Tuples
+    #+begin_src erlang
+      X = 10, Y = 4.
+      Point = {X,Y}.
+      %% pattern matching
+      {A,B} = Point.
+      {J,_} = Point.
+    #+end_src
+*** Lists
+    #+begin_src erlang
+      %% Not single typed. Lisp-like.
+      %% Can be improper (last element a value) 
+      %% and Proper (last element an empty list).
+      [1,2,3,{4,5,6}].
+      %% Strings are lists:
+      [97,98,99] = "abc".
+
+      %% Concat (right associative):
+      [1,2,3] ++ [4,5].
+      %% Remove (right associative):
+      [1,2,3,4,5] -- [1,2,3].
+
+      1 = hd([1,2,3,4]).
+      tl([1,2,3,4]) = [2,3,4].
+      %% or: [hd|tl].
+
+    #+end_src
+
+**** List Comprehensions
+     [2*N || N <- [1,2,3,4]].
+     [2*N || [_,N] <- [[1,2],[3,4]]].
+     [X || X <- [1,2,3,4,5,6,7], X rem 2 =:= 0].
+     [X+Y || X <- [1,2], Y <- [3,4]].
+     [X || {X, fog} <- [{london, fog}, {newYork, sun}, {brisbane, fog}]]
+
+*** Binary Data
+    #+begin_src erlang
+      ;; Between << and >>, separated by commas.
+      Color = 16#F09A29.
+      Pixel = <<Color:24>>.
+
+      <<Pix1:24, Pix2:24>> = Pixels.
+      <<R:8, Rest/binary>> = Pixels.
+
+      %% Value,
+      %% Value:Size,
+      %% Value/TypeSpecifierList
+      %% Value:Size/TypeSpecifierList
+
+      %% TypeSpecifierList delimiter: '-'
+      %% Where Types can be: 
+      %% integer, float, binary, bytes, bitstring, bits,
+      %% utf8, utf16, utf32. 
+      %% (signed and unsigned, big, little, and native, and unit).
+
+      %% bsl, bsr : bt shifting.
+      %% band, bor, bxor, bnot.
+
+    #+end_src
+
+*** Binary Strings
+    #+begin_src erlang
+          <<"this is a binary string">>.
+    #+end_src
+
+*** Binary Comprehensions
+    #+begin_src erlang
+      << <<X>> || <<X>> <= <<1,2,3,4,5>>, X rem 2 == 0>>.
+
+    #+end_src
+
+** Functions
+   #+begin_src erlang
+     testFunc() ->
+         io:format("hello").
+   #+end_src
+
+*** Pattern Matching
+    Function clauses combine to make a declaration.
+    *Note the intermediate semicolons and  final full stop*
+    use for Head and tail of list: [H|T].
+    "Don't Care" variable: _
+    #+begin_src erlang
+      greet(male, Name) ->
+          io:format("Hello, Mr ~s", [Name]);
+      greet(female, Name) ->
+          io:format("Hello, Mrs ~s", [Name]);
+      greet(_, Name) ->
+          io:format("Hello, ~s", [Name]).
+    #+end_src
+
+    
+    #+begin_src erlang
+      same(X,X) ->
+          true;
+      same(_,_) ->
+          false.
+    #+end_src
+    
+    use of "=" in head:
+    #+begin_src erlang
+      valid_time({Date = {Y,M,D}, Time = {H,Min,S}}) ->
+          io:format("correct");
+      valid_time(_) ->
+          io:format("Bad Data").
+    #+end_src
+
+*** Guards:
+    Comma for 'and', Semicolon for 'or'
+    Can use math, comparison and type check functions,
+    Can't use user defined functions
+    #+begin_src erlang
+      a_test(X) when X >= 16 ->
+          true;
+      a_test(_) -> false.
+    #+end_src
+    See [[*Type System][Type System]] for type guards
+*** If
+    Acts like guards. Must have a suitable clause
+    #+begin_src erlang 
+      if X > Y -> 2;
+         X < Y -> 3;
+         X == Y -> 4. %% must have a final clause
+      end
+    #+end_src
+    
+*** case .. of
+    You can destructure cases. 
+    #+begin_src erlang
+      test(X,Set) ->
+          case lists:member(X,Set) of
+              true -> "In Set";
+              false -> "Not in Set"
+      end.             
+    #+end_src
+*** Printing
+    io:format()
+    Uses tildes  ("~s" for string, "~n" for newline)
+*** Passing Functions
+    Use of: "fun Module:Function/Arity"
+    #+begin_src erlang
+      map(_, []) -> [];
+      map(F, [H|T]) -> [F(H)|map(F,T)].
+      inc(X) -> X + 1.
+      dec(X) -> X - 1.
+      map(fun inc/1, [1,2,3,4,5]).
+    #+end_src
+*** Anonymous Functions
+    Functions have lexical scope.
+    #+begin_src erlang
+      map(fun(X) -> X + 1 end, [1,2,3,4]).
+    #+end_src
+    See lists: map/2, filter/2, foldl/3, foldr/3.
+    takewhile/2, and dropwhile/2.
+    flatten/1, flatlength/1, flatmap/2, merge/1, nth/2, nthtail/2, split/2.
+
+*** Map
+    See lists:map/2.
+    #+begin_src erlang
+      map(_, [], Acc) ->
+          Acc;
+      map(F, [H|T], Acc) ->
+          map(F,T, [F(H)|Acc]).
+    #+end_src
+*** Filter
+    See lists:filter/2.
+    #+begin_src erlang
+      filter(_, [], Acc) ->
+          Acc;
+      filter(Pred, [H|T], Acc) ->
+          case Pred(H) of
+              true ->
+                  filter(Pred, T, [H|Acc]);
+              false ->
+                  filter(Pred, T, Acc)
+          end.
+    #+end_src
+*** Fold
+    See lists:foldl/3 and lists:foldr/3.
+    #+begin_src erlang
+      fold(_, [], Start) ->
+          Start;
+      fold(F, [H|T], Start) ->
+          fold(F, T, F(H,Start)).
+    #+end_src
+
+
+
+** Modules
+   #+begin_src erlang
+     %%To define attributes:
+     -module(Name).
+     -export([Function1/Arity, Function2/Arity...])
+     -import(Module, [Function/Arity..])
+     -compile(export_all).
+     ;;to call:
+      Module:Function(arguments).
+   #+end_src
+
+   Inspect metadata with the function module_info().
+
+** Type System
+   Erlang is dynamic and strongly typed. 
+   Has explicit functions to convert types between each other:
+   #+begin_src erlang
+     %% All in erlang module.
+     atom_to_binary/2.
+     atom_to_list/1.
+     binary_to_atom/2.
+     binary_to_existing_atom/2.
+     binary_to_list/1.
+     binary_to_term/1.
+     binary_to_term/2.
+     bitstring_to_list/1.
+     float_to_list/1.
+     fun_to_list/1.
+     integer_to_list/1.
+     integer_to_list/2.
+     iolist_to_atom/1.
+     iolist_to_binary/1.
+     list_to_atom/1.
+     list_to_binary/1.
+     list_to_bitstring/1.
+     list_to_existing_atom/1.
+     list_to_float/1.
+     list_to_integer/2.
+     list_to_pid/1.
+     list_to_tuple/1.
+     pid_to_list/1.
+     port_to_list/1.
+     ref_to_list/1.
+     term_to_binary/1.
+     term_to_binary/2.
+     tuple_to_list/1.
+   #+end_src
+   And guard tests:
+   #+begin_src erlang
+     is_atom/1.
+     is_binary/1.
+     is_bitstring/1.
+     is_boolean/1.
+     is_buildint/1.
+     is_float/1.
+     is_function/1.
+     is_function/2.
+     is_integer/1.
+     is_list/1.
+     is_number/1.
+     is_pid/1.
+     is_port/1.
+     is_record/2.
+     is_record/3.
+     is_reference/1.
+     is_tuple/1.
+   #+end_src
+    
+** Macros
+   #+begin_src erlang
+   %% A Macro:
+   -define(MACRO, some_value).
+   ?MACRO.
+   %% Macro Function:
+   -define(sub(X,Y), X-Y).
+   %% Predefined:
+   ?MODULE. ?FILE. ?LINE.
+   %% Conditional macros:
+   -ifdef(DEBUG).
+   -define(DEBUG(S), io:format("dbg: "++S)).
+   else.
+   -define(DEBUG(S), ok).
+   -endif.
+   #+end_src
+
+** Errors
+
+*** Compile Time Errors
+    "syntax error before" - line termination is incorrect.
+    "head mismatch" - inconsistent arity on functions.
+    "variable unsafe in case" - use of a variable declared inside a branch, outside. 
+*** Runtime Errors
+    "no Function clause matchin" - failing all pattern matches or guards.
+    "no case clause matching" - forgotten a case, sent wrong data, or need a catchall.
+    "no match of right hand side value" - bad pattern matching
+    "bad function" - using a non-function variable as a function
+
+*** Raising Exceptions
+    #+begin_src erlang
+      throw(permission_denied).
+      erlang:error(Reason).
+    #+end_src
+    Can call multiple expressions in a try block using commas.
+    #+begin_src erlang
+      try Expression of
+          SuccessfulPattern1 [Guards] ->
+              Expression1;
+          SuccessfulPattern2 [Guards] ->
+              Expression2
+      catch
+          %%typeoferror: [error, throw, exit]
+          TypeOfError:ExceptionPattern1 ->
+              Expression3;
+          TypeOfError:ExceptionPattern2 ->
+              Expression4;
+          _:_ -> "Catchall"
+      after
+          Expression5
+      end.
+    #+end_src
+
+
+**** Exit Exceptions:
+     Internal exits (exit/1). - current process
+     External exits (exit/2). - concurrent processes.
+
+** Main
+   #+begin_src erlang
+     main([FileName]) ->
+         {ok, Bin} = file:read_file(FileName),
+         S = string:tokens(binary_to_list(Bin), "\r\n\t ").
+         L = [list_to_integer(X) || X <- S].
+         erlang:halt().
+   #+end_src
+
+** Data Structures
+*** Records
+    #+begin_src erlang
+      -module(records).
+      -compile(export_all).
+
+      -record(robot, {name, type=industrial, hobbies, details=[]}).
+
+      first_robot() ->
+          #robot{name="Mechatron", type=handmade, details=["Moved by a small man inside"]}.
+    #+end_src
+    Extract values using dot syntax or pattern matching:
+    #+begin_src erlang
+      a_robot = first_robot().
+      a_robot#robot.details.
+      testFunc(R = #robot{}) when R#robot.name =:= "Mechatron" -> true.
+      testFunc(_) -> false.
+    #+end_src
+
+    Update Records by reassigning:
+    #+begin_src erlang
+      Robot = first_robot().
+      %% Under the hood uses erlang:setelement/3.
+      Second = Robot#robot{details=["Now a Second Robot"]}.
+    #+end_src
+
+    Use Header files (.hrl) and define records there.
+    Include with "-include(headerFileName)."
+
+
+**** Records in the Shell
+     Load Records from a module in shell: rr(records). rr(*,[module1, module2...]).
+     Define a Record in the Shell: rd(Name,Definition).
+     Unload records: rf(). rf(Name). rf([Names]).
+
+
+
+
+
+*** Key/Value Stores
+    [[http://erlang.org/doc/man/dict.html][dict]]
+    [[http://erlang.org/doc/man/proplists.html][property lists]]
+    OrdDicts are good for up to 75 elements.
+    [[http://erlang.org/doc/man/orddict.html][ordered dictionaries]]. 
+    For larger data sizes:
+    [[http://erlang.org/doc/man/gb_trees.html][gb_trees]]
+
+*** Sets
+    [[http://erlang.org/doc/man/sets.html][sets]]
+    [[http://erlang.org/doc/man/ordsets.html][ordsets]].
+    [[http://erlang.org/doc/man/gb_sets.html][gb_sets]]
+    [[http://erlang.org/doc/man/sofs.html][Sets of Sets]].
+
+*** Directed Graphs
+    [[http://erlang.org/doc/man/digraph.html][Digraphs]].
+    [[http://erlang.org/doc/man/digraph_utils.html][Digraph Utils]].
+    
+*** Queue
+    [[http://erlang.org/doc/man/queue.html][queue]].
+** Concurrency and Parallelism
+   Concurrency: Many actors running independently but not necessarily
+   at the same time.
+   Parallelism: Having actors running at the same time.
+   
+   Erlang VM creates a *scheduler* per core.
+   Schedulers have *run queues*.
+   use pid/3 to convert 3 numbers to a pid.
+   Be careful about filling a mailbox with unused messages.
+
+   Message passing can be optimized using make_ref/0.
+   To a receive with a guard. 
+   TODO: learn more.
+
+   Defensive mailbox pattern: have an Unexpected case.
+   Or use a min-heap.
+
+*** Spawning Processes
+    Use spawn/1.
+    or spawn/3. Takes module, function, arguments.
+    spawn_lnk/1-3. Spawns and links in an atomic step.
+    sleep/1. Sleeps for N milliseconds.
+    self/0. Get the pid of the current process.
+    Kill a process with exit/2. Takes a pid and a reason.
+    #+begin_src erlang
+      F = fun() -> 2 + 2 end.
+      Pid = spawn(F).
+    #+end_src
+
+*** Sending Messages
+    *Bang operator* adds a message to the process' mailbox.    
+    flush/0. Shows the contents of the current mailbox.
+    #+begin_src erlang
+      self() ! hello.
+      %% Chain the return:
+      self() ! self() ! hello.
+      %% Message using pids:
+      <0.80.0> ! hello.
+    #+end_src
+
+*** Receiving Messages
+    Use *receive*.
+
+    Upon receiving a message, test_func will terminate:
+    #+begin_src erlang
+      test_func() ->
+          receive
+              hello ->
+                  io:format("hi");
+              _ ->
+                  io:format("bye");
+              after 3000 ->
+                      #or infinity
+                      io:format("Timeout"),
+                      timeout
+      end.
+    #+end_src
+    
+    To send a response:
+    #+begin_src erlang
+      %% Spawn and message the process:
+      F = spawn(test_func).
+      F ! { self() hello }.
+      flush(). %% will give: hi.
+
+      %% The Process:
+      test_func() ->
+          receive
+              {From, hello} ->
+                  From ! hi,
+                  test_func();
+              {From, _} ->
+                  From ! bye,
+                  test_func();
+          end.
+    #+end_src
+
+*** Linking and Monitors
+    *Links* connect two processes' life cycles.
+    If one dies, the other dies, then restart both processes.
+    use link/1. Takes a pid.
+    Undo with unlink/1.
+    Links can not be stacked.
+    Also use spawn_link/1-3. Links a spawned process in an atomic step.
+
+    When a linked process crashes, it sends a special
+    exit message, which can only be caught with a trap.
+    
+    *Monitors* are special links. *Unidirectional*, and they *stack*.
+    erlang:monitor/2. process atom, pid. Returns {'DOWN', #Ref, process, pid, signal}.
+    erlang:spawn_monitor/1-3. returns {pid, ref}.
+    erlang:demonitor/2. Ref, [info, flush]. 
+
+*** System processes
+    process_flag/2. Can convert exit signals to messages.
+    Allows a process to survive even if it receives an exit message.
+
+    exit/2. Allows a process to kill another from a distance.
+
+*** Naming Processes
+    *Warning*: Can produce race conditions.
+    erlang:register/2. Name, pid).
+    erlang:unregister/1.
+    erlang:register/0. Get all registers processes.
+    erlang:whereis/1. Atom -> pid.
+
+*** Exceptions and Traps
+    #+begin_src erlang
+      %% Process Exits normally
+      %% Traps {'EXIT', <pid>, normal}
+      spawn_link(fun() -> ok end)
+
+      %% Process Exists for Custom Reason
+      %% Traps {'EXIT', <pid>, reason}
+      spawn_link(fun() -> exit(reason) end)
+
+      %% Process manually exits normally
+      %% Traps {'EXIT', <pid>, normal}
+      spawn_link(fun() -> exit(normal) end)
+
+      %% Process exits because of bad arithmetic, which isn't caught in try/catch
+      %% Traps {'EXIT', <pid>, {badarith, [stack trace]}}
+      spawn_link(fun() -> 1/0 end)
+
+      %% Process exits with a custom thrown error
+      %% Traps {'EXIT', <pid>, [stack trace]}
+      spawn_link(fun() -> erlang:error(reason) end)
+
+      %% Process exits with an exception bubbling into an error, into an EXIT
+      %% Traps {'EXIT', <pid>, {{nocatch, rocks}, [stack trace]}}
+      spawn_link(fun() -> throw(rocks) end)                    
+    #+end_src
+
+
+
+
+    

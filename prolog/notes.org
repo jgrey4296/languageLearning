@@ -1,0 +1,151 @@
+* Prolog Notes
+  [[http://www.swi-prolog.org/][Swipl]]
+  [[http://www.swi-prolog.org/pldoc/doc_for?object=manual][Swipl Manual]]
+  [[http://lpn.swi-prolog.org/lpnpage.php?pagetype=html&pageid=lpn-html][Learn Prolog]]
+
+  *use "swipl -tty" in emacs*
+
+** Heuristics 
+   Never write as the leftmost goal of the body something that is 
+   identical with the goal given in the head, place those clauses
+   as far right as possible.
+
+   Use Tail Recursion
+
+   Arithmetic comparisons implicitly evaluate both sides.
+
+
+   #+begin_src prolog
+   4 = 4.     %% True
+   2+2 = 4.   %% False
+   2+2 =:= 4. %% True
+   #+end_src
+
+
+*** Instantiation error
+    From trying to do 12 is (X+3)*2
+    Where uninstantiated variables are on the right of 'is'.
+
+*** Multiple Files:
+    Module:
+    #+begin_src prolog
+    :- module(MODULE_NAME, [MODULE_EXPORTS/0]).
+    #+end_src
+    And use:
+    #+begin_src prolog
+    :- use_module(MODULE_NAME).
+    MODULE_NAME:MODULE_EXPORTS.
+    #+end_src
+** Debugging
+   See swipl [[http://www.swi-prolog.org/pldoc/man?section=debugoverview][debugger]] and the gnu prolog [[http://gprolog.univ-paris1.fr/manual/gprolog.html#Running-and-stopping-the-debugger][debugger]] 
+   #+begin_src prolog
+     %% Debugger ports are: call, exit, redo, fail.
+     %% Which to show:
+     visible(+all).
+     %% Which not to halt on:
+     leash(-exit).
+     %% Trace the next query:
+     trace.
+   #+end_src
+
+   Commands:
+   L : Listing
+   g : goals
+   C : show context
+   A : alternatives
+   
+   Also print all listings with:
+   #+begin_src prolog
+   listing.
+   #+end_src
+
+** Syntax
+   3 basic constructs: Facts, Rules, and Queries
+   #+begin_src prolog
+     %% Facts start lower case.
+     a_face.
+     %% Variables start Upper case.
+     %% Statements conclude with '.'.
+     %% if (body) then (head).
+     head :- body.
+     %% AND two conditions using a comma: (cond1), (cond2).
+     head :- body1, body2.
+
+     %% OR two conditions using a semicolon: (cond1); (cond2).
+     head :- body1 ; body2.
+   #+end_src
+
+** Unification
+
+    If term1 and term2 are constants, then term1 and term2 unify if
+    and only if they are the same atom, or the same number.
+
+    If term1 is a variable and term2 is any type of term, then term1
+    and term2 unify, and term1 is instantiated to term2 . Similarly,
+    if term2 is a variable and term1 is any type of term, then term1
+    and term2 unify, and term2 is instantiated to term1 . (So if they
+    are both variables, they’re both instantiated to each other, and
+    we say that they share values.)
+
+    If term1 and term2 are complex terms, then they unify if and only if:
+        They have the same functor and arity, and
+        all their corresponding arguments unify, and
+        the variable instantiations are compatible.
+        (For example, it is not possible to instantiate variable X to mia when unifying one pair of arguments, and to instantiate X to vincent when unifying another pair of arguments .)
+    Two terms unify if and only if it follows from the previous three clauses that they unify.
+
+    Prolog unification skips occur check. (So does not guard against variables unifying with terms that 
+    contain the variable).
+
+** Predicates
+   is/2
+   =/2
+   unify_with_occurs_check/2
+   addLen/3
+
+** Lists
+   #+begin_src prolog
+   [name(bob), name(bill), [1,2,3,4]]
+   %% Prolog as a separation operator
+   [Head|Tail] = [mia, vincent, jules, yolanda].
+   #+end_src
+
+
+** DCGs
+   #+begin_src prolog
+   a --> b, c.
+   b --> [hello].
+   c --> [bob].
+   c --> [bill].
+   #+end_src
+   Is syntactic sugar for difference list rules:
+   #+begin_src prolog
+   a(X,Y) --> b(X,Z),(Z,Y).
+   b(X,[]) --> [bob].
+   b(X,[]) --> [bill].
+   #+end_src
+   DCGs can have extra arguments, and can call additional code.
+   #+begin_src 
+   a(Count) --> [b], { Count = 1 }.
+   #+end_src
+   Which can allow separation of lexicon from the rules:
+   #+begin_src prolog
+   np --> det, n.
+   vp --> v, np.
+   vp --> v.
+
+   det --> [Word],{lex(Word,det)}.
+   n --> [Word],{lex(Word,n)}.
+   v --> [Word],{lex(Word,v)}.
+
+   lex(the,det).
+   lex(a,det).
+   lex(woman,n).
+   lex(man,n).
+   lex(shoots,v).
+   #+end_src
+
+
+
+
+

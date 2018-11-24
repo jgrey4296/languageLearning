@@ -1,0 +1,52 @@
+* Doxygen:
+
+http://www.mcternan.me.uk/mscgen/ 
+
+** For Python
+
+use ## and @, rather than python docstyle of three ''
+INPUT_FILTER = "python /usr/local/bin/doxypy.py"
+
+
+
+** Init/Config
+create a config file: doxygen -g 
+can create test/todo lists with \test or \todo, \bug,
+
+uses dot (graphviz)
+
+
+good things to set in the config:
+project_name
+output_directory
+input
+file_patterns
+generate_html
+extract_all
+
+
+** keywords: 
+@, \
+brief
+param
+return
+class
+file
+
+
+* YUIDoc
+https://yui.github.io/yuidoc/
+https://yui.github.io/yuidoc/syntax/index.html
+
+language agnostic
+
+@module
+@module
+@class
+@namespace
+@param
+@return
+@method
+@property
+@type
+@default

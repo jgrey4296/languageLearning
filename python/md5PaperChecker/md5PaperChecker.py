@@ -1,3 +1,7 @@
+#------------------------------
+# Simple program to integrate papers into a collection   
+#------------------------------
+
 from os.path import join, isfile, exists, isdir, splitext, expanduser, split
 from os import listdir, mkdir
 from hashlib import sha256
@@ -97,6 +101,35 @@ unused_other = other_set.difference(source_set)
 logging.info("Files found: {}".format(len(unused_other)))
 for x in unused_other:
     name = other_hashmap[x]
+=======
+library_pdfs = getAllPdfs(LIBRARY,5)
+logging.info("Num of Library pdfs: {}".format(len(library_pdfs)))
+library_hashmap = {}
+for x in library_pdfs:
+    file_hash = fileToHash(x)
+    if False: #file_hash in library_hashmap:
+        logging.warning("Library Conflict: {} - {} - {}".format(file_hash, x, library_hashmap[file_hash]))
+    else:
+        library_hashmap[file_hash] = x
+library_set = set(library_hashmap.keys())
+
+inbox_pdfs = getAllPdfs(INBOX,5)
+
+logging.info("Num of Inbox pdfs: {}".format(len(inbox_pdfs)))
+inbox_hashmap = {}
+for x in inbox_pdfs:
+    file_hash = fileToHash(x)
+    if False: #file_hash in inbox_hashmap:
+        logging.warning("Conflict: {} - {} - {}".format(file_hash, x, inbox_hashmap[file_hash]))
+    else:
+        inbox_hashmap[file_hash] = x
+inbox_set = set(inbox_hashmap.keys())
+
+new_pdfs = inbox_set.difference(library_set)
+logging.info("New pdfs found: {}".format(len(new_pdfs)))
+for x in new_pdfs:
+    name = inbox_hashmap[x]
+>>>>>>> c677e1274da95e802a626275c51a13b7f4431fb1
     copyfile(name, join(TARGET, split(name)[1]))
 
 

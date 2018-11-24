@@ -1,0 +1,90 @@
+--------------------
+Language: Scheme / Racket
+--------------------
+
+-------------------- Links
+
+-------------------- Inspection and Output:
+
+-------------------- Good Style
+
+-------------------- Compilation
+
+-------------------- Imports
+
+-------------------- Comments
+
+
+-------------------- Whitespace and Statements
+
+
+-------------------- Memory Management
+
+-------------------- Value vs Reference 
+
+
+-------------------- Scope
+
+---------------------------------------- Basic Data Types
+
+-------------------- Arithmetic
+
+-------------------- Bitwise
+
+-------------------- Strings
+
+-------------------- Booleans
+
+-------------------- Comparisons and Logic
+
+
+-------------------- Variables
+
+
+---------------------------------------- Data Structures
+
+-------------------- Arrays
+
+-------------------- Objects
+
+---------- Object Creation:
+
+
+-------------------- Constructors
+
+---------------------------------------- Control Structures
+
+//IF
+if(true || false){};
+
+//WHILE
+while(true){};
+do {} while(true);
+
+//FOR
+for(var i = 0; i < 5; i++){}
+
+for(var x in a){
+    if(a.hasOwnProperty(x)){
+
+    }
+}
+
+//Switch:
+//checks for equality with ===
+//uses break;
+switch(something){
+    case 'A':
+    2+2;
+    break;
+}
+
+------------------------------ Functions
+
+
+------------------------------ Examples
+
+
+
+---------------------------------------- Language Specific Concepts:
+

@@ -8,3 +8,5 @@
 *.hi
 *.png
 .DS_Store
+*.log
+log.*
