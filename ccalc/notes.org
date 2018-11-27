@@ -1,0 +1,61 @@
+* CCalc
+  [[https://www.cs.utexas.edu/users/tag/cc/][The Causal Calculator]]
+  [[http://www.cs.utexas.edu/users/tag/mad/][MAD]]
+
+** Syntax
+   
+*** Constants
+    Types: fluent, intertialFluent, exogenousAction
+
+    #+begin_src prolog
+    :- constants
+    	p :: inertialFluent(0..3);
+        a :: exogenousAction.
+    #+end_src
+
+*** Transitions
+    Define movements between states, using actions
+
+    #+begin_src prolog
+    a causes c.
+    a causes c=1 if c=0.
+    nonexecutable a if c=3.
+    #+end_src
+
+*** Variables
+    Uppercase as standard in prolog.
+    #+begin_src prolog
+    :- variables
+    	I :: 0..2.
+
+    a causes c=I+1 if c=I.
+    #+end_src
+
+*** Macros
+    
+    #+begin_src prolog
+    :- macros
+    	n -> 3.
+
+    :- constants
+    	p :: inertialFluent(0..n).
+    #+end_src
+
+*** Queries
+    Defined as paths of node -> action -> node of maxstep length.
+
+    #+begin_src prolog
+    %% Calls for finding paths of length 1.
+    :- query
+    	maxstep :: 1.
+    #+end_src
+
+    Add requirements at particular nodes or edges.
+    #+begin_src prolog 
+      :- query
+         maxstep :: 2;
+         0 : c=5; %% '& a'; or ', a;'
+         0 : a;
+         1 : a;
+         maxstep :: 1.
+    #+end_src
