@@ -1,8 +1,6 @@
 :set -XOverloadedStrings
 :set prompt "tidal>"
 
-putStrLn "Hello"
-
 import Sound.Tidal.Context
 import Sound.Tidal.MIDI.Context
 import qualified Sound.Tidal.Scales as Scales
