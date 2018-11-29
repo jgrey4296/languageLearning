@@ -11,6 +11,11 @@
     q : quits
     ^G -> h : brings up shell control.
     f() or f(Variable) : clears bindings.
+*** Emacs Shell: erlang-shell
+    use C-q C-g to get the shell control
+    auto complete with C-q TAB RET
+
+
 *** Compiler: erlc
      #+begin_src erlang
        %%-compile([debug_info])
@@ -245,7 +250,6 @@
       fold(F, [H|T], Start) ->
           fold(F, T, F(H,Start)).
     #+end_src
-
 
 
 ** Modules
@@ -534,19 +538,24 @@
     erlang:monitor/2. process atom, pid. Returns {'DOWN', #Ref, process, pid, signal}.
     erlang:spawn_monitor/1-3. returns {pid, ref}.
     erlang:demonitor/2. Ref, [info, flush]. 
+    	info allows demonitor to return success/failure of demonitoring.
+        flush removes a DOWN message from the mailbox.
 
 *** System processes
     process_flag/2. Can convert exit signals to messages.
     Allows a process to survive even if it receives an exit message.
 
-    exit/2. Allows a process to kill another from a distance.
+    exit/2. pid, reason. Allows a process to kill another from a distance.
 
 *** Naming Processes
     *Warning*: Can produce race conditions.
     erlang:register/2. Name, pid).
     erlang:unregister/1.
     erlang:register/0. Get all registers processes.
-    erlang:whereis/1. Atom -> pid.
+    erlang:whereis/1. Atom -> pid. Retrieves the Pid for pattern matching.
+
+    To avoid race conditions, use references:
+    make_ref/0.
 
 *** Exceptions and Traps
     #+begin_src erlang
