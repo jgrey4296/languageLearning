@@ -1,0 +1,29 @@
+
+keyTemplate = [
+  
+
+              ]
+
+
+cTemplates = [
+  [Chords.major, Chords.minor]
+
+  ]
+
+cPatterns = [
+  "0 0 {0 0 1}"
+  ,"0 5 0 4"
+
+  ]
+
+enc tempIndex patternIndex modulation = Chords.enchord template cPattern modulation
+  where template = cTemplates !! tempIndex
+        cPattern = cPatterns !! patternIndex
+                                        
+
+-- f :: keyTemplate -> cycles -> rootPattern -> Pattern
+
+
+m1 $ slow 3 $ (n $  Chords.enchord [Chords.major, Chords.minor] (Scales.scaleP "minor" "0 1 [2 ~ 5] 5") "1 [0 1 0]") # legato "0.2 0.4 0.5"
+
+m1 $ (n $ Scales.scaleP "minor" "[0 [0 ~] 0 -4, [2 3] 5?]") # legato "0.2 0.4 0.5" # velocity "0.4 0.5 0.6 0.7"
