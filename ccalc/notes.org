@@ -2,6 +2,13 @@
   [[https://www.cs.utexas.edu/users/tag/cc/][The Causal Calculator]]
   [[http://www.cs.utexas.edu/users/tag/mad/][MAD]]
 
+* Using
+  Needs swi-prolog < 7
+  So rebuild from the git ref 406202420c of [[https://github.com/SWI-Prolog/swipl][swipl]] 
+  You need to update submodules first *before* going off HEAD.
+  Make sure to add the compiler flags *brew info readline* suggests.
+  
+
 ** Syntax
    
 *** Constants
