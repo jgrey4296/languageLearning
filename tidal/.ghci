@@ -1,6 +1,7 @@
 :set -XOverloadedStrings
 :set prompt "tidal>"
-:set prompt2 "tidal>"
+
+putStrLn "Hello"
 
 import Sound.Tidal.Context
 import Sound.Tidal.MIDI.Context
