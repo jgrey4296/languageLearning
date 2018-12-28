@@ -42,7 +42,7 @@
    or
    gpg --interactive --edit-key [email]
 ** Export keys
-   gpg [-o file] [-a ID] --armor --export[-secret-keys] [email]
+   gpg --armor --export[-secret-keys] [-o file] [-a ID | email]
 ** Encrypt
    *Don't forget to add yourself to the recipients* 
    gpg [-o output] --sign --armor [-r recipient] [-e file] 
