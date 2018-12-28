@@ -3,15 +3,15 @@
   [[http://www.cs.utexas.edu/users/tag/mad/][MAD]]
   [[https://www.cs.utexas.edu/users/tag/cc/tutorial/toc.html][Online Tutorial]].
 
-* Using
-  Needs swi-prolog < 7
-  So rebuild from the git ref 406202420c of [[https://github.com/SWI-Prolog/swipl][swipl]] 
-  You need to update submodules first *before* going off HEAD.
-  Make sure to add the compiler flags *brew info readline* suggests.
+** Using
+   Needs swi-prolog < 7
+   So rebuild from the git ref 406202420c of [[https://github.com/SWI-Prolog/swipl][swipl]] 
+   You need to update submodules first *before* going off HEAD.
+   Make sure to add the compiler flags *brew info readline* suggests.
   
-  Solvers need to be put in a *Darwin* solvers subdir.
-  For Solvers, use [[https://github.com/roberto-bayardo/relsat][relsat]].
-  [[https://gitlab.com/HenryKautz/Walksat][Walksat]] also compiles but doesn't output solutions.
+   Solvers need to be put in a *Darwin* solvers subdir.
+   For Solvers, use [[https://github.com/roberto-bayardo/relsat][relsat]].
+   [[https://gitlab.com/HenryKautz/Walksat][Walksat]] also compiles but doesn't output solutions.
 
 ** Syntax
    
@@ -70,3 +70,49 @@
          1 : a;
          maxstep :: 1.
     #+end_src
+
+** Examples
+   [[https://www.cs.utexas.edu/users/tag/cc/examples/][Examples Source]]
+
+   To Run:
+   #+begin_src prolog
+   loadf [zoo, 'zoo-example', 'zoo-test1'].
+   query 0.
+   #+end_src
+
+   Giunchiglia et al:
+   [[file:monkeys::%25%20Monkey%20and%20Bananas%20("Nonmonotonic%20Causal%20Theories,"%20Figures%2010-12)][Monkeys]]
+   [[file:prediction][Prediction and Postdiction]]
+   [[file:defeasible_rules][Defeasible Rules]]
+   [[file:turkeys][Shooting Turkey]]
+   [[file:work][Going to Work]]
+   [[file:lifting][Lifing The Table]]
+   [[file:pendulum][Pendulum]]
+   [[file:publishing][Publishing]]
+
+   Akman et al:
+   [[file:zoo][Zoo]]
+   [[~/github/languageLearning/ccalc/][Zoo Landscape]]
+   [[file:animals][Zoo Animals]]
+   [[file:movement][Zoo Movement]]
+   [[file:actions][Zoo Actions]]
+   [[file:little_zoo][Little Zoo]]
+
+   [[file:traffic][Traffic]]
+
+   Lifschitz et al:
+   [[file:airport-domain][Airport Domain]]
+   [[file:airport-problem][Airport Problem]]
+
+   Lee and Lifschitz:
+   [[file:spacecraft][Spacecraft Domain]]
+   [[file:spacecraft-test][Spacecraft Example]]
+   [[file:buying][Buying and Selling Domain]]
+   [[file:buying-test][Buying Example]]
+   [[file:mcp][Missionaries and Cannibals]]
+   [[file:mcp-test][Missionaries and Cannibals Test]]
+
+   Other:
+   [[file:hanoi][Hanoi]]
+   [[file:bw][Blocks World Description]]
+   [[file:bw-test][Blocks World Problem]]
