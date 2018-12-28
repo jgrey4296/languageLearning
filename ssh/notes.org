@@ -1,0 +1,25 @@
+* ssh 
+** Config files
+   /etc/ssh/sshd_config
+
+** os
+*** osx
+*** windows
+*** ubuntu
+** Best Practices
+   [[https://www.cyberciti.biz/tips/linux-unix-bsd-openssh-server-best-practices.html][Examples]]
+
+   Disable password logins, prefer key-based.
+   move off port 22. (ubuntu: ufw allow/disable)
+   (ubuntu): use fail2ban.
+   
+   Create keys using: ssh-keygen
+   
+   Upload keys: ssh-copy-id user@host
+   Or For OSX: scp then pipe the file into .ssh/authorized_keys
+   #+begin_src bash
+   cat ~/.ssh/id_ed25519.pub | ssh user@host "mkdir -p ~/.ssh; cat >> ~/.ssh/authorized_keys"
+   #+end_src
+
+
+   
