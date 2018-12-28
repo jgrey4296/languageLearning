@@ -16,15 +16,15 @@ logging = root_logger.getLogger(__name__)
 ####################
 import IPython
 import requests
+import json
 from time import sleep
 from os.path import isfile, exists, join
-import json
 
 ##############################
 # CONSTANTS
 ####################
 api_key = None
-url = lambda d: "https://api.nytimes.com/svc/archive/v1/{}/{}.json".format(d['year'],d['month'])
+url = lambda d: "https://api.nytimes.com/svc/archive/v1/{}/{}.json".format(d['year'], d['month'])
 api_key_params = lambda k: {'api-key': k }
 header = { 'user-agent': 'jg-nyt-nlp-scraper/0.0.1' }
 WAIT_TIME = 1
@@ -54,10 +54,10 @@ def retrieve_api_key():
     if api_key is None:
         raise Exception('API_KEY not set')
     logging.info('Key retrieved')
-    
+
 def create_session(params={}, headers={}):
     """ For use as the ctor of a 'with' context """
-    logging.info('Creating Session with: {}  --- {}'.format(params,headers))
+    logging.info('Creating Session with: {}  --- {}'.format(params, headers))
     session = requests.Session()
     session.params.update(params)
     session.headers.update(headers)
@@ -72,7 +72,7 @@ def prep_request(session, url, params={}, headers={}, data={}):
     print('Prepared Request: {}'.format(prepped))
     return prepped
 
-    
+
 def perform_request_then_wait(session, request):
     """ Request information, get the data or deal with the failure  """
     global total_requests_performed_in_session
@@ -80,7 +80,7 @@ def perform_request_then_wait(session, request):
     if total_requests_performed_in_session > MAX_REQUESTS:
         raise Exception('Limit fulfilled')
     total_requests_performed_in_session += 1
-    response = session.send(request,timeout=TIMEOUT)
+    response = session.send(request, timeout=TIMEOUT)
     logging.info('Sleeping')
     sleep(WAIT_TIME)
     if response.status_code >= 400:
@@ -106,7 +106,7 @@ def load_last_date():
     global requested_dates
     if len(requested_dates) == 0 and exists(DATE_LOG):
         logging.info('Loading Date Log')
-        with open(DATE_LOG,'r') as f:
+        with open(DATE_LOG, 'r') as f:
             requested_dates = json.load(f)
     else:
         logging.info('Initialising Date Log')
@@ -115,8 +115,8 @@ def load_last_date():
 
 def save_dates():
     """ Save the requested dates to the log  """
-    with open(DATE_LOG,'w') as f:
-        json.dump(requested_dates,f)
+    with open(DATE_LOG, 'w') as f:
+        json.dump(requested_dates, f)
         logging.info('Date Log Saved')
 
 def increment_date(date):
@@ -133,19 +133,19 @@ def increment_date(date):
     new_date ={ 'month': month, 'year': year}
     logging.info("New Date: {}".format(new_date))
     return new_date
-    
-        
+
+
 #Storing responses
 def save_response(response, date):
     """ Create the appropriately dated nyt response json file """
-    filename = "nyt_response_{}_{}.json".format(date['year'],date['month'])
-    filepath = join(DATA_DIR,filename)
+    filename = "nyt_response_{}_{}.json".format(date['year'], date['month'])
+    filepath = join(DATA_DIR, filename)
     if exists(filepath):
         raise Exception('File already exists: {}'.format(filepath))
     with open(filepath, 'w') as f:
         f.write(response.text)
     logging.info('Wrote: {}'.format(filename))
-    
+
 ##############################
 # Core Functions
 ####################
@@ -157,9 +157,9 @@ def main_scrape():
         with create_session(params=api_key_params(api_key), headers=header) as session:
             while total_requests_performed_in_session < MAX_REQUESTS:
                 logging.info("\n--------------------\n          NEW REQUEST\n--------------------")
-                req = prep_request(session,url(date))
+                req = prep_request(session, url(date))
                 response = perform_request_then_wait(session, req)
-                save_response(response,date)                
+                save_response(response, date)
                 date = increment_date(date)
                 check_response_header(response)
                 local_count += 1
