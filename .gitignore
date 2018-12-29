@@ -12,4 +12,5 @@
 log.*
 *.beam
 *.jpg
-*/sfam_scraper/data/*
+python/scrapers/sfam_scraper/data/*
+python/scrapers/sfam_scraper/imgs/*
