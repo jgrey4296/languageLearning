@@ -17,8 +17,8 @@ chain(N) ->
     link(Pid),
     receive
         _ -> ok
-    end.        
-        
+    end.
+
 
 %%%%%%%%%%%%%%%%%%%%
 %%   Critic
@@ -50,7 +50,7 @@ judge(Band, Album) ->
 
 critic() ->
     receive
-        {From, Ref, {"ratm", "ut"}} -> 
+        {From, Ref, {"ratm", "ut"}} ->
             From ! {Ref, "Great"};
         {From, Ref, {"soad", "tc"}} ->
             From ! {Ref, "good"};
@@ -58,4 +58,3 @@ critic() ->
             From ! {Ref, "Terrible"}
     end,
     critic().
-            
