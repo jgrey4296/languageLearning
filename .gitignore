@@ -11,3 +11,5 @@
 *.log
 log.*
 *.beam
+*.jpg
+*/sfam_scraper/data/*
