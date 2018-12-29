@@ -1,0 +1,4 @@
+* Bash Notes
+** chmod
+   a-w file : make something read only
+
