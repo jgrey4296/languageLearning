@@ -1,5 +1,4 @@
 * Emacs
-
 ** Emacs Regexp
 The following characters are special : . * + ? ^ $ \ [
 
@@ -243,12 +242,9 @@ Icicles provides these interactive ways to learn about regexps:
 
 
 
-
-
 ** Package Management:
 M-x list-packages
 C-h v package-activated-list
-
 
 ** Help:
 M-x describe-<package,variable,minor-mode,face...>
@@ -259,8 +255,6 @@ M-x describe-<package,variable,minor-mode,face...>
 in lisp single quote ' will stop something being eval'd
 backquote ` will mean only things prefixed with a comma , will be
 eval'd
-
-
 
 ** Shortcuts:
 
@@ -330,7 +324,6 @@ To Load a remote file:
 *** Encoding:
 C-x ret t coding
 set/describe-variable
-
 
 ** Modes:
 *** VC Mode:
@@ -709,15 +702,11 @@ use duplicates to mirror
 placeholders:
 ${N:default value}
 
-
-
 ** Packages to install
 http://steckerhalter.co.vu/steckemacs.html#sec-2-11
 https://www.reddit.com/r/emacs/comments/1xjlrq/emacs_modes_that_are_worth_knowing_about/
 http://melpa.milkbox.net/#/
 http://emacsblog.org/2007/10/07/declaring-emacs-bankruptcy/#more-105
-
-
 
 ** Evil Mode
 
@@ -828,3 +817,6 @@ http://emacsblog.org/2007/10/07/declaring-emacs-bankruptcy/#more-105
 
   3. Typing a capital  R  enters Replace mode until  <ESC>  is pressed to exit.
 
+** [[https://github.com/auto-complete/auto-complete/blob/master/doc/manual.md][Auto-Complete]]
+   
+   
