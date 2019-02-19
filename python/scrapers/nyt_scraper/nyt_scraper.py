@@ -16,15 +16,15 @@ logging = root_logger.getLogger(__name__)
 ####################
 import IPython
 import requests
-import json
 from time import sleep
 from os.path import isfile, exists, join
+import json
 
 ##############################
 # CONSTANTS
 ####################
 api_key = None
-url = lambda d: "https://api.nytimes.com/svc/archive/v1/{}/{}.json".format(d['year'], d['month'])
+url = lambda d: "https://api.nytimes.com/svc/archive/v1/{}/{}.json".format(d['year'],d['month'])
 api_key_params = lambda k: {'api-key': k }
 header = { 'user-agent': 'jg-nyt-nlp-scraper/0.0.1' }
 WAIT_TIME = 1
@@ -57,7 +57,7 @@ def retrieve_api_key():
 
 def create_session(params={}, headers={}):
     """ For use as the ctor of a 'with' context """
-    logging.info('Creating Session with: {}  --- {}'.format(params, headers))
+    logging.info('Creating Session with: {}  --- {}'.format(params,headers))
     session = requests.Session()
     session.params.update(params)
     session.headers.update(headers)

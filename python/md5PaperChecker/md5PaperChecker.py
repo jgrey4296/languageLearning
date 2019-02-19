@@ -1,5 +1,5 @@
 #------------------------------
-# Simple program to integrate papers into a collection   
+# Simple program to integrate papers into a collection
 #------------------------------
 
 from os.path import join, isfile, exists, isdir, splitext, expanduser, split
@@ -7,9 +7,6 @@ from os import listdir, mkdir
 from hashlib import sha256
 from shutil import copyfile
 import IPython
-#https://ipython.readthedocs.io/en/stable/config/options/terminal.html
-#IPython.embed(simple_prompt=True)
-#in shell: ipython --simple-prompty --matplotlib
 # Setup root_logger:
 import logging as root_logger
 LOGLEVEL = root_logger.DEBUG
@@ -25,12 +22,12 @@ logging = root_logger.getLogger(__name__)
 #The destination where papers already exist
 LIBRARY = [
     "/Volumes/DOCUMENTS/mendeley"
-    #"/Users/jgrey/Desktop/IPAD_MAIN"
 ]
 
 #The source of potentially un-integrated papers
 INBOX = [
     "~/Mega/deduplicated",
+    "~/Desktop/pdfs",
     #"~/Desktop/deduplicated"
     #"/Volumes/DOCUMENTS/Old/missingpapers",
     # "/Volumes/DOCUMENTS/Old/research",
@@ -81,25 +78,25 @@ def fileToHash(filename):
 logging.info("Starting")
 library_pdfs = getAllPdfs(LIBRARY,5)
 logging.info("Num of Library pdfs: {}".format(len(library_pdfs)))
-library_hashmap = {}
-for x in library_pdfs:
-    file_hash = fileToHash(x)
-    if False: #file_hash in library_hashmap:
-        logging.warning("Library Conflict: {} - {} - {}".format(file_hash, x, library_hashmap[file_hash]))
-    else:
-        library_hashmap[file_hash] = x
+library_hashmap = { fileToHash(x) : x for x in library_pdfs }
+# for x in library_pdfs:
+#     file_hash = fileToHash(x)
+#     if file_hash in library_hashmap:
+#         logging.warning("Library Conflict: {} - {} - {}".format(file_hash, x, library_hashmap[file_hash]))
+#     else:
+#         library_hashmap[file_hash] = x
 library_set = set(library_hashmap.keys())
 
 inbox_pdfs = getAllPdfs(INBOX,5)
 
 logging.info("Num of Inbox pdfs: {}".format(len(inbox_pdfs)))
-inbox_hashmap = {}
-for x in inbox_pdfs:
-    file_hash = fileToHash(x)
-    if False: #file_hash in inbox_hashmap:
-        logging.warning("Conflict: {} - {} - {}".format(file_hash, x, inbox_hashmap[file_hash]))
-    else:
-        inbox_hashmap[file_hash] = x
+inbox_hashmap = { fileToHash(x) : x for x in inbox_pdfs }
+# for x in inbox_pdfs:
+#     file_hash = fileToHash(x)
+#     if file_hash in inbox_hashmap:
+#         logging.warning("Conflict: {} - {} - {}".format(file_hash, x, inbox_hashmap[file_hash]))
+#     else:
+#         inbox_hashmap[file_hash] = x
 inbox_set = set(inbox_hashmap.keys())
 
 new_pdfs = inbox_set.difference(library_set)
@@ -109,4 +106,3 @@ for x in new_pdfs:
     copyfile(name, join(TARGET, split(name)[1]))
 
 
-IPython.embed(simple_prompt=True)

@@ -33,14 +33,14 @@ def collect(x):
     collected = set()
     contents = listdir(expanduser(x))
     html_files = [a for a in contents if splitext(a)[1] == HTML]
-    collected.update(html_files)    
+    collected.update(html_files)
     return collected
 
 def copy(files):
     assert(isinstance(files, set))
     if not exists(expanduser(RESULT_DIR)):
         mkdir(expanduser(RESULT_DIR))
-    
+
     for x in files:
         logging.info("To Copy: {}".format(x))
         #copy the html
@@ -48,7 +48,7 @@ def copy(files):
         #copy the files
         f_name, f_type = splitext(x)
         call(['cp', '-r', join(SOURCE_DIR, (f_name + "_files")), expanduser(RESULT_DIR)])
-        
+
 
 ########################################
 if __name__ == "__main__":
@@ -58,7 +58,7 @@ if __name__ == "__main__":
 
     diff = sources.difference(target)
     copy(diff)
-    
+
     if bool(diff):
         logging.warn("There was a difference")
         logging.warn(diff)

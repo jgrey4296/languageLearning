@@ -27,7 +27,7 @@ if __name__ == "__main__":
         outFileName = os.path.join(base,"parsed_data",
                                    fileName + "_chars")
 
-        
+
 print "Using Filename:",fileName
 #Regexs
 dramatisReg = re.compile(r'DRAMATIS|PERSONAE',re.IGNORECASE)
@@ -51,7 +51,7 @@ if dramatisCount < needed:
     print "None Found"
     exit()
 
-    
+
 print "Finding Lines describing Chars"
 linesToUse = []
 #go through each line, untill there have been 5 non-matching lines
@@ -72,11 +72,11 @@ while line != "" and failCount < 8:
     line = file.readline()
 
 print "Number of Potential Lines:",len(linesToUse)
-    
+
 if len(linesToUse) == 0:
     print "No Applicable Lines Found"
     exit()
-    
+
 
 #EXTRACT THE CHARACTERS:
 characters = {}
@@ -87,7 +87,7 @@ for x in linesToUse:
         characters[match.group(1)] = match.group(3)
 
 print "Found: ", len(characters.keys()),"/",len(linesToUse)
-        
+
 # print "Found Characters:",
 # for x in characters.keys():
 #     print x,characters[x]
@@ -100,5 +100,3 @@ for x in characters.keys():
 
 outFile.close()
 exit()
-
-        

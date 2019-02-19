@@ -21,12 +21,12 @@ def modifyChannel(data):
             raise Exception("Block Length difference")
 
         #modify the block
-        
+
         for y in xrange(len(fftBlock)):
             fftBlock[y] *= random.uniform(-1.0,1.0)
 
 
-            
+
         #ifft each block
         reconstructedBlock = ifft(fftBlock)
         #cast it back to int16
@@ -35,14 +35,14 @@ def modifyChannel(data):
         #add the block to the channel:
         toReturn = numpy.concatenate((toReturn,castBlock))
 
-        
+
     if len(toReturn) != data.shape[0]:
         remaining = data.shape[0] - len(toReturn)
         zeros = numpy.zeros(remaining,dtype=numpy.int16)
         toReturn = numpy.concatenate((toReturn,zeros))
 
     return toReturn
-        
+
 #save
 data.T[0] = modifyChannel(data.T[0])
 data.T[1] = modifyChannel(data.T[1])
