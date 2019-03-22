@@ -1,5 +1,5 @@
 """
-A means to open archived tweets, and open the tweets in batches 
+A means to open archived tweets, and open the tweets in batches
 of 10 to bookmark
 
 """
@@ -67,7 +67,7 @@ def save_set(i):
             pickle.dump(bookmarked_tweet_set,f)
     except Exception as e:
         logging.exception("Saving set failed".format(i),e)
-                        
+
 
 def constructSearch(string):
     return SEARCH_ENGINE + "'{}'".format(string.replace(' ','+'))
@@ -82,7 +82,7 @@ def open_url(url):
     if url is not None:
         logging.debug("Opening: {}".format(url))
         run([TOR_CALL.format(url)],shell=True)
-    
+
 def split_into_text_and_url(tweet):
     """
     Each tweet has text and a url. split them apart,
@@ -104,8 +104,8 @@ def split_into_text_and_url(tweet):
     logging.debug("URL: {}".format(tweet_url))
     logging.debug("TEXT: {}".format(tweet_text))
     return (tweet_text,tweet_url)
-    
-    
+
+
 #the counter to track numbers processed:
 counter = 0
 while len(focusData) > 0:
@@ -118,10 +118,10 @@ while len(focusData) > 0:
             tweet = random.choice(focusData)
     logging.debug("Processing tweet: {}".format(tweet['id_str']))
     tt,tu = split_into_text_and_url(tweet)
-    
+
     open_url(tu)
     trigger_search(tt)
- 
+
     response = input("({}) Waiting.... ".format(counter))
     while(response != "" and response != "q"):
         if response == "r":
@@ -133,7 +133,7 @@ while len(focusData) > 0:
         response = input("({}) Waiting_b.... ".format(counter))
 
     if response == "q":
-        #finish  
+        #finish
         logging.debug("Got Response: {}".format(response))
         logging.debug("Breaking at tweet: {}".format(tweet['id_str']))
         break;
@@ -142,5 +142,5 @@ while len(focusData) > 0:
     focusData.remove(tweet)
     save_set(counter)
     counter += 1
-    
+
 logging.debug("Finishing")

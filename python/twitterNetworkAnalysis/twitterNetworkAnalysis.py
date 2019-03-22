@@ -47,10 +47,10 @@ def load_if_exists():
         with open(FMP, 'rb') as f:
             friend_map = pickle.load(f)
     return all_my_friends, friend_map
-    
+
 def load_credentials_and_setup():
     """ Load the keys and tokens, and setup the twitter client """
-    #Get the Key and Secret from (gitignored) files 
+    #Get the Key and Secret from (gitignored) files
     assert(exists(KEY_FILE))
     assert(exists(SECRET_FILE))
     logging.info("Setting up Twitter Client")
@@ -69,7 +69,7 @@ def load_credentials_and_setup():
 
 
 def get_friends(t, id=None):
-    """ Given a twitter client, get my friends (ie: people I follow) 
+    """ Given a twitter client, get my friends (ie: people I follow)
     friends/ids returns up to 5000, 15 times in 15 minutes
     """
     logging.info("Getting friends for: {}, type: {}".format(id, type(id)))
@@ -83,8 +83,8 @@ def get_friends(t, id=None):
 
 
 def get_details(t, ids=None):
-    """ Use users/lookup 300 times every 15 minutes on blocks of 100 users """ 
-    
+    """ Use users/lookup 300 times every 15 minutes on blocks of 100 users """
+
 
 
 
@@ -122,13 +122,13 @@ def get_details(t, ids=None):
 
 
 if __name__ == "__main__":
-    logging.info("TWITTER NETWORK ANALYSIS") 
+    logging.info("TWITTER NETWORK ANALYSIS")
     #Load data
     all_my_friends, friend_map = load_if_exists()
-    
+
     #start the client
     t_client = load_credentials_and_setup()
-    
+
     #get the people I follow
     if len(all_my_friends) == 0:
         all_my_friends = get_friends(t_client)
@@ -156,12 +156,12 @@ if __name__ == "__main__":
             logging.info("Hit a Rate limit error, sleeping")
             to_query.append(x)
             sleepAndSave(all_my_friends, friend_map)
-    
+
     #get all people followed
     all_friends = set([x for y in friend_map.values() for x in y])
-    
+
     IPython.embed(simple_prompt=True)
-    
+
     #flatten to get all ids
     logging.info("Getting all friend ids")
     all_ids = set(all_my_friends)
@@ -181,7 +181,7 @@ if __name__ == "__main__":
             details = get_details(t, xs)
             #integrate the details
 
-            
+
             count += 1
             if count >= 300:
                 sleepAndSave
@@ -189,9 +189,3 @@ if __name__ == "__main__":
             logging.info("Hit a details rate limit, saving and sleeping")
             to_query += xs
             sleepAndSave
-            
-        
-        
-    
-        
-    

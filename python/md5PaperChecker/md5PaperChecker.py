@@ -28,6 +28,7 @@ LIBRARY = [
 INBOX = [
     "~/Mega/deduplicated",
     "~/Desktop/pdfs",
+    "~/Desktop/from ipad"
     #"~/Desktop/deduplicated"
     #"/Volumes/DOCUMENTS/Old/missingpapers",
     # "/Volumes/DOCUMENTS/Old/research",
@@ -76,27 +77,30 @@ def fileToHash(filename):
 
 #Get all Added file hashes
 logging.info("Starting")
-library_pdfs = getAllPdfs(LIBRARY,5)
+library_pdfs = getAllPdfs(LIBRARY,9)
 logging.info("Num of Library pdfs: {}".format(len(library_pdfs)))
 library_hashmap = { fileToHash(x) : x for x in library_pdfs }
-# for x in library_pdfs:
-#     file_hash = fileToHash(x)
-#     if file_hash in library_hashmap:
-#         logging.warning("Library Conflict: {} - {} - {}".format(file_hash, x, library_hashmap[file_hash]))
-#     else:
-#         library_hashmap[file_hash] = x
+# if len(library_hashmap) != len(library_pdfs):
+#     for x in library_pdfs:
+#         file_hash = fileToHash(x)
+#         if file_hash in library_hashmap:
+#             logging.warning("Library Conflict: {} - {} - {}".format(file_hash, x, library_hashmap[file_hash]))
+#         else:
+#             library_hashmap[file_hash] = x
 library_set = set(library_hashmap.keys())
 
 inbox_pdfs = getAllPdfs(INBOX,5)
 
 logging.info("Num of Inbox pdfs: {}".format(len(inbox_pdfs)))
 inbox_hashmap = { fileToHash(x) : x for x in inbox_pdfs }
-# for x in inbox_pdfs:
-#     file_hash = fileToHash(x)
-#     if file_hash in inbox_hashmap:
-#         logging.warning("Conflict: {} - {} - {}".format(file_hash, x, inbox_hashmap[file_hash]))
-#     else:
-#         inbox_hashmap[file_hash] = x
+if len(inbox_hashmap) != len(inbox_pdfs):
+    inbox_hashmap = {}
+    for x in inbox_pdfs:
+        file_hash = fileToHash(x)
+        if file_hash in inbox_hashmap:
+            logging.warning("Conflict: {} - {} - {}".format(file_hash, x, inbox_hashmap[file_hash]))
+        else:
+            inbox_hashmap[file_hash] = x
 inbox_set = set(inbox_hashmap.keys())
 
 new_pdfs = inbox_set.difference(library_set)
