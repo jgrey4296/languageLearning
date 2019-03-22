@@ -28,7 +28,7 @@ class RecipeStore:
         if not name in self.recipes:
             raise Exception("Recipe not found: {}".format(name))
         return self.recipes[name]
-    
+
     def loadRecipes(self):
         logging.debug("Loading Recipes from: {} of type: {}".format(self.data_directory,self.recipe_const))
         try:
@@ -56,7 +56,7 @@ class RecipeStore:
                         logging.exception("Recipe Load Exception: {}".format(e))
         except Exception as e:
             logging.exception("Recipe Access Exception: {}".format(e))
-            
+
     def process_recipe(self,lines):
         """ Take the text of a recipe, extract the name, ingredients, and instructions
             as separate strings
@@ -66,7 +66,7 @@ class RecipeStore:
         name = None
         ingredients = None
         instructions = None
-        
+
         filteredLines = [x.strip() for x in lines if x.strip() != '']
         titles = [(i,x) for i,x in enumerate(filteredLines) if x[0] == TITLE_DELIM]
         #Go through each title, and extract information as appropriate:
@@ -89,7 +89,7 @@ class RecipeStore:
         else:
             logging.warning("Recipe processing failure")
             return (None,None,None)
-        
+
 
     def updateRecipe(self,name,ingredients,instructions):
         if not name in self.recipes:

@@ -63,7 +63,7 @@ class TaskStore:
         except FileNotFoundError as e:
             logging.debug("No performance log, adding empty log")
             self.task_performance_times = {}
-            
+
     def save_task_performance_times(self):
         """ Save a task and the time it was performed   """
         logging.debug("Saving performance times")
@@ -96,7 +96,7 @@ class TaskStore:
                 self.critical_tasks.remove(task)
             else:
                 logging.debug("Verified task: {}".format(task))
-    
+
     def getTaskNames(self):
         return self.tasks.keys()
 
@@ -110,12 +110,12 @@ class TaskStore:
             return ("N/A",False)
         isCritical = taskName in self.critical_tasks
         return (self.task_performance_times[taskName].strftime(DATE_FORMAT),isCritical)
-    
+
     def getTask(self,name):
         if not name in self.tasks:
             raise Exception("Task not found: {}".format(name))
         return self.tasks[name]
-    
+
     def loadTasks(self):
         logging.debug("Loading Tasks from: {} of type: {}".format(self.data_directory,self.task_const))
         try:
@@ -144,7 +144,7 @@ class TaskStore:
                         logging.exception("Task Load Exception: {}".format(e))
         except Exception as e:
             logging.exception("Task Access Exception: {}".format(e))
-            
+
     def process_task(self,lines):
         """ Take the text of a task, extract the name, ingredients, and instructions
             as separate strings
@@ -156,7 +156,7 @@ class TaskStore:
         repeat = None
         notes = None
         dayDiff = None
-        
+
         filteredLines = [x.strip() for x in lines if x.strip() != '']
         titles = [(i,x) for i,x in enumerate(filteredLines) if x[0] == TITLE_DELIM]
         #Go through each title, and extract information as appropriate:

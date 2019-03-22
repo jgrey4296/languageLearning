@@ -19,7 +19,7 @@ MAIN_SIZE = 300
 
 class Application(tk.Frame):
     """ Top level of Tim-GUI app. Creates the initial windowx  """
-    
+
     def __init__(self,master=None):
         """ Create the top level access to each of sub-elements of the program  """
         super().__init__(master)
@@ -32,7 +32,7 @@ class Application(tk.Frame):
         self.task_const = TASK_CONSTANT
         self.pack()
         self.create_widgets()
-        
+
         #Sub windows (kept track of for cleanup):
         self.taskWindow = None
         self.recipeWindow = None
@@ -65,16 +65,16 @@ class Application(tk.Frame):
         self.dataButton['text'] = "Data Directory"
         self.dataButton['command'] = self.open_data_directory
         self.dataButton.pack()
-        
+
         #Create a Quit button
         self.quit = tk.Button(self,text="Quit", fg="red",command=root.destroy)
         self.quit.pack(side="bottom")
-        
+
     def destroy(self):
         """ Customised destroy method  """
         logging.info("Closing program")
         tk.Frame.destroy(self)
-        
+
     #----------
     def open_tasks(self):
         """ Create only 1 task window, lift it to be at the front either way  """
@@ -82,7 +82,7 @@ class Application(tk.Frame):
             logging.debug("Creating Task window")
             self.taskWindow = TaskWindow(self)
         self.taskWindow.lift()
-            
+
     def destroy_tasks(self):
         self.taskWindow = None
 
@@ -93,10 +93,10 @@ class Application(tk.Frame):
             logging.debug("Creating Recipe window")
             self.recipeWindow = RecipeWindow(self)
         self.recipeWindow.lift()
-        
+
     def destroy_recipes(self):
         self.recipeWindow = None
-        
+
     #----------
     def open_contacts(self):
         if self.contactWindow is None:
@@ -110,8 +110,8 @@ class Application(tk.Frame):
     #----------
     def open_data_directory(self):
         subprocess.call(['open',DATA_DIRECTORY])
-        
-        
+
+
 
 ########################################
 #                    MAIN
@@ -136,4 +136,3 @@ if __name__ == "__main__":
     root = tk.Tk()
     app = Application(master=root)
     app.mainloop()
-

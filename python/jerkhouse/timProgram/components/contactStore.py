@@ -28,7 +28,7 @@ class ContactStore:
         if not name in self.contacts:
             raise Exception("Contact not found: {}".format(name))
         return self.contacts[name]
-    
+
     def loadContacts(self):
         logging.debug("Loading Contacts from: {} of type: {}".format(self.data_directory,self.contact_const))
         try:
@@ -56,9 +56,9 @@ class ContactStore:
                         logging.exception("Contact Load Exception: {}".format(e))
         except Exception as e:
             logging.exception("Contact Access Exception: {}".format(e))
-            
+
     def process_contact(self,lines):
-        """ Take the text of a contact, extract the name,address,phone,email 
+        """ Take the text of a contact, extract the name,address,phone,email
         """
         logging.debug("Processing Contact")
         #The Data to extract:
@@ -66,7 +66,7 @@ class ContactStore:
         address = None
         phone = None
         email = None
-        
+
         filteredLines = [x.strip() for x in lines if x.strip() != '']
         titles = [(i,x) for i,x in enumerate(filteredLines) if x[0] == TITLE_DELIM]
         #Go through each title, and extract information as appropriate:
@@ -91,6 +91,6 @@ class ContactStore:
         else:
             logging.warning("Contact processing failure")
             return (None,None,None,None)
-        
+
     def resaveContacts(self):
         raise Exception("TODO: resaveContacts")
