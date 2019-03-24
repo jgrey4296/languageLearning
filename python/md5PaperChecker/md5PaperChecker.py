@@ -1,13 +1,12 @@
 #------------------------------
 # Simple program to integrate papers into a collection
 #------------------------------
-
+import argparse
 from os.path import join, isfile, exists, isdir, splitext, expanduser, split
 from os import listdir, mkdir
 from hashlib import sha256
 from shutil import copyfile
 import IPython
-# Setup root_logger:
 import logging as root_logger
 LOGLEVEL = root_logger.DEBUG
 LOG_FILE_NAME = "log.md5PaperChecker"
@@ -19,9 +18,8 @@ root_logger.getLogger('').addHandler(console)
 logging = root_logger.getLogger(__name__)
 ##############################
 
-#The destination where papers already exist
 LIBRARY = [
-    "/Volumes/DOCUMENTS/mendeley"
+    "~/Mega/Mendeley"
 ]
 
 #The source of potentially un-integrated papers
@@ -43,9 +41,30 @@ INBOX = [
 #Where to put papers that need to be integrated
 TARGET = "/Users/jgrey/Desktop/sanity_check"
 
-if not isdir(TARGET):
-    logging.info("Making Target Dir: {}".format(TARGET))
-    mkdir(expanduser(TARGET))
+
+#see https://docs.python.org/3/howto/argparse.html
+parser = argparse.ArgumentParser("")
+parser.add_argument('-l', '--library', action='append')
+parser.add_argument('-s', '--source', action='append')
+parser.add_argument('-t', '--target', default=TARGET)
+parser.add_argument('-q', '--quit', action='store_true')
+
+args = parser.parse_args()
+if args.library is None:
+    args.library = LIBRARY
+if args.source is None:
+    args.source = INBOX
+
+logging.info("MD5 LIBRARY: {}".format(args.library))
+logging.info("MD5 SOURCE: {}".format(args.source))
+logging.info("MD5 TARGET: {}".format(args.target))
+
+if args.quit:
+    exit()
+
+if not isdir(args.target):
+    logging.info("Making Target Dir: {}".format(args.target))
+    mkdir(expanduser(args.target))
 
 def getAllPdfs(locs, deep=0):
     """ Get the full paths of all pdfs in the location """
@@ -77,7 +96,7 @@ def fileToHash(filename):
 
 #Get all Added file hashes
 logging.info("Starting")
-library_pdfs = getAllPdfs(LIBRARY,9)
+library_pdfs = getAllPdfs(args.library,9)
 logging.info("Num of Library pdfs: {}".format(len(library_pdfs)))
 library_hashmap = { fileToHash(x) : x for x in library_pdfs }
 # if len(library_hashmap) != len(library_pdfs):
@@ -89,7 +108,7 @@ library_hashmap = { fileToHash(x) : x for x in library_pdfs }
 #             library_hashmap[file_hash] = x
 library_set = set(library_hashmap.keys())
 
-inbox_pdfs = getAllPdfs(INBOX,5)
+inbox_pdfs = getAllPdfs(args.source,5)
 
 logging.info("Num of Inbox pdfs: {}".format(len(inbox_pdfs)))
 inbox_hashmap = { fileToHash(x) : x for x in inbox_pdfs }
@@ -107,6 +126,6 @@ new_pdfs = inbox_set.difference(library_set)
 logging.info("New pdfs found: {}".format(len(new_pdfs)))
 for x in new_pdfs:
     name = inbox_hashmap[x]
-    copyfile(name, join(TARGET, split(name)[1]))
+    copyfile(name, join(args.target, split(name)[1]))
 
 
