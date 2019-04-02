@@ -46,7 +46,7 @@ TARGET = "/Users/jgrey/Desktop/sanity_check"
 parser = argparse.ArgumentParser("")
 parser.add_argument('-l', '--library', action='append')
 parser.add_argument('-s', '--source', action='append')
-parser.add_argument('-t', '--target', default=TARGET)
+parser.add_argument('-o', '--output', default=TARGET)
 parser.add_argument('-q', '--quit', action='store_true')
 
 args = parser.parse_args()
@@ -57,14 +57,14 @@ if args.source is None:
 
 logging.info("MD5 LIBRARY: {}".format(args.library))
 logging.info("MD5 SOURCE: {}".format(args.source))
-logging.info("MD5 TARGET: {}".format(args.target))
+logging.info("MD5 OUTPUT: {}".format(args.output))
 
 if args.quit:
     exit()
 
-if not isdir(args.target):
-    logging.info("Making Target Dir: {}".format(args.target))
-    mkdir(expanduser(args.target))
+if not isdir(args.output):
+    logging.info("Making Output Dir: {}".format(args.output))
+    mkdir(expanduser(args.output))
 
 def getAllPdfs(locs, deep=0):
     """ Get the full paths of all pdfs in the location """
@@ -126,6 +126,6 @@ new_pdfs = inbox_set.difference(library_set)
 logging.info("New pdfs found: {}".format(len(new_pdfs)))
 for x in new_pdfs:
     name = inbox_hashmap[x]
-    copyfile(name, join(args.target, split(name)[1]))
+    copyfile(name, join(args.output, split(name)[1]))
 
 
