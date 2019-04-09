@@ -1,241 +1,240 @@
 * Emacs
 ** Emacs Regexp
-The following characters are special : . * + ? ^ $ \ [
+   The following characters are special : . * + ? ^ $ \ [
 
-Between brackets [], the following are special : ] - ^
+   Between brackets [], the following are special : ] - ^
 
-Many characters are special when they follow a backslash – see below.
+   Many characters are special when they follow a backslash – see below.
 
-  .        any character (but newline)
-  *        previous character or group, repeated 0 or more time
-  +        previous character or group, repeated 1 or more time
-  ?        previous character or group, repeated 0 or 1 time  
-  ^        start of line
-  $        end of line
-  [...]    any character between brackets
-  [^..]    any character not in the brackets
-  [a-z]    any character between a and z
-  \        prevents interpretation of following special char
-  \|       or
-  \w       word constituent
-  \b       word boundary
-  \sc      character with c syntax (e.g. \s- for whitespace char)
-  \( \)    start\end of group
-  \< \>    start\end of word
-  \_< \_>  start\end of symbol
-  \` \'    start\end of buffer\string
-  \1       string matched by the first group
-  \n       string matched by the nth group
-  \{3\}    previous character or group, repeated 3 times
-  \{3,\}   previous character or group, repeated 3 or more times
-  \{3,6\}  previous character or group, repeated 3 to 6 times
-  \=       match succeeds if it is located at point
+   .        any character (but newline)
+   *        previous character or group, repeated 0 or more time
+   +        previous character or group, repeated 1 or more time
+   ?        previous character or group, repeated 0 or 1 time
+   ^        start of line
+   $        end of line
+   [...]    any character between brackets
+   [^..]    any character not in the brackets
+   [a-z]    any character between a and z
+   \        prevents interpretation of following special char
+   \|       or
+   \w       word constituent
+   \b       word boundary
+   \sc      character with c syntax (e.g. \s- for whitespace char)
+   \( \)    start\end of group
+   \< \>    start\end of word
+   \_< \_>  start\end of symbol
+   \` \'    start\end of buffer\string
+   \1       string matched by the first group
+   \n       string matched by the nth group
+   \{3\}    previous character or group, repeated 3 times
+   \{3,\}   previous character or group, repeated 3 or more times
+   \{3,6\}  previous character or group, repeated 3 to 6 times
+   \=       match succeeds if it is located at point
 
 
-multiples: *?, +?, and ?? are non-greedy versions of *, +, and ? – see NonGreedyRegexp. Also, \W, \B, and \Sc match any character that does not match \w, \b, and \sc.
+   multiples: *?, +?, and ?? are non-greedy versions of *, +, and ? – see NonGreedyRegexp. Also, \W, \B, and \Sc match any character that does not match \w, \b, and \sc.
 
-Characters are organized by category. Use C-u C-x = to display the category of the character under the cursor.
+   Characters are organized by category. Use C-u C-x = to display the category of the character under the cursor.
 
-  \ca      ascii character
-  \Ca      non-ascii character (newline included)
-  \cl      latin character
-  \cg      greek character
+   \ca      ascii character
+   \Ca      non-ascii character (newline included)
+   \cl      latin character
+   \cg      greek character
 
-Here are some syntax classes that can be used between brackets, e.g. [[:upper:]\|[:digit:]\.].
+   Here are some syntax classes that can be used between brackets, e.g. [[:upper:]\|[:digit:]\.].
 
-  [:digit:]  a digit, same as [0-9]
-  [:alpha:]  a letter (an alphabetic character)
-  [:alnum:]  a letter or adigit (an alphanumeric character ()
-  [:upper:]  a letter in uppercase
-  [:space:]  a whitespace character, as defined by the syntax table
-  [:xdigit:] an hexadecimal digit
-  [:cntrl:]  a control character
-  [:ascii:]  an ascii character
+   [:digit:]  a digit, same as [0-9]
+   [:alpha:]  a letter (an alphabetic character)
+   [:alnum:]  a letter or adigit (an alphanumeric character ()
+   [:upper:]  a letter in uppercase
+   [:space:]  a whitespace character, as defined by the syntax table
+   [:xdigit:] an hexadecimal digit
+   [:cntrl:]  a control character
+   [:ascii:]  an ascii character
 
-Syntax classes:
+   Syntax classes:
 
-  \s-   whitespace character        \s/   character quote character
-  \sw   word constituent            \s$   paired delimiter         
-  \s_   symbol constituent          \s'   expression prefix        
-  \s.   punctuation character       \s<   comment starter          
-  \s(   open delimiter character    \s>   comment ender            
-  \s)   close delimiter character   \s!   generic comment delimiter
-  \s"   string quote character      \s|   generic string delimiter 
-  \s\   escape character            
+   \s-   whitespace character        \s/   character quote character
+   \sw   word constituent            \s$   paired delimiter
+   \s_   symbol constituent          \s'   expression prefix
+   \s.   punctuation character       \s<   comment starter
+   \s(   open delimiter character    \s>   comment ender
+   \s)   close delimiter character   \s!   generic comment delimiter
+   \s"   string quote character      \s|   generic string delimiter
+   \s\   escape character
 
-You can see the current syntax table by typing C-h s. The syntax table
-depends on the current mode. As expected, letters a..z are listed as
-word constituents in text-mode. Other word constituents in this mode
-include A..Z, 0..9, $, %, currency units, accented letters,
-kanjis. See EmacsSyntaxTable for details.
+   You can see the current syntax table by typing C-h s. The syntax table
+   depends on the current mode. As expected, letters a..z are listed as
+   word constituents in text-mode. Other word constituents in this mode
+   include A..Z, 0..9, $, %, currency units, accented letters,
+   kanjis. See EmacsSyntaxTable for details.
 
-Idiosyncrasies of Emacs Regular Expressions
+   Idiosyncrasies of Emacs Regular Expressions
 
-    In an interactive search, a space character stands for one or more
-    whitespace characters (tabs are whitespace characters). You can
-    use M-s SPC while searching or replacing to toggle between this
-    behavior and treating spaces as literal spaces. Or put the
-    following in your InitFile to override this behaviour.
+   In an interactive search, a space character stands for one or more
+   whitespace characters (tabs are whitespace characters). You can
+   use M-s SPC while searching or replacing to toggle between this
+   behavior and treating spaces as literal spaces. Or put the
+   following in your InitFile to override this behaviour.
 
-                 (setq search-whitespace-regexp nil)
+   (setq search-whitespace-regexp nil)
 
-    [^ … ] matches all characters not in the list, even newlines. Put
-    a newline in the list if you want it not to be matched. You can
-    enter a newline character using ‘C-o’, ‘C-q C-j’, or ‘C-q 012
-    RET’. Note also that \s- matches space, tab, newline and carriage
-    return. This can be handy in a [^ … ] construct.  Default case
-    handling for replacing commands executes case conversion. This
-    means that both upper and lower case match in the regexp, whereas
-    the case in the replacement string is chosen according to the
-    match syntax. Try for example replacing john by harry below. Case
-    conversion can be toggled on/off by typing ‘M-c’ in the minibuffer
-    during search. You can also set the variable case-fold-search to
-    nil to disable case conversion; see CaseFoldSearch for more
-    details. In the following example, only the last line would then
-    be replaced.
+   [^ … ] matches all characters not in the list, even newlines. Put
+   a newline in the list if you want it not to be matched. You can
+   enter a newline character using ‘C-o’, ‘C-q C-j’, or ‘C-q 012
+   RET’. Note also that \s- matches space, tab, newline and carriage
+   return. This can be handy in a [^ … ] construct.  Default case
+   handling for replacing commands executes case conversion. This
+   means that both upper and lower case match in the regexp, whereas
+   the case in the replacement string is chosen according to the
+   match syntax. Try for example replacing john by harry below. Case
+   conversion can be toggled on/off by typing ‘M-c’ in the minibuffer
+   during search. You can also set the variable case-fold-search to
+   nil to disable case conversion; see CaseFoldSearch for more
+   details. In the following example, only the last line would then
+   be replaced.
 
-                           John  =>  Harry
-                           JOHN  =>  HARRY
-                           john  =>  harry
- 
+   John  =>  Harry
+   JOHN  =>  HARRY
+   john  =>  harry
 
-    Backslashes must be double-quoted when used in Lisp code. Regular
-    expressions are often specified using strings in EmacsLisp. Some
-    abbreviations are available: \n for newline, \t for tab, \b for
-    backspace, \u3501 for character with unicode value 3501, and so
-    on. Backslashes must be entered as \\. Here are two ways to
-    replace the decimal point by a comma (e.g. 1.5 -> 1,5), first by
-    an interactive command, second by executing Lisp code (type C-x
-    C-e after the expression to get it executed).
 
-           M-x replace-regexp RET \([0-9]+\)\. RET \1, RET
-          (while (re-search-forward "\\([0-9]+\\)\\." nil t)
-                        (replace-match "\\1,"))
+   Backslashes must be double-quoted when used in Lisp code. Regular
+   expressions are often specified using strings in EmacsLisp. Some
+   abbreviations are available: \n for newline, \t for tab, \b for
+   backspace, \u3501 for character with unicode value 3501, and so
+   on. Backslashes must be entered as \\. Here are two ways to
+   replace the decimal point by a comma (e.g. 1.5 -> 1,5), first by
+   an interactive command, second by executing Lisp code (type C-x
+   C-e after the expression to get it executed).
 
-Some Regexp Examples
+   M-x replace-regexp RET \([0-9]+\)\. RET \1, RET
+   (while (re-search-forward "\\([0-9]+\\)\\." nil t)
+   (replace-match "\\1,"))
 
- [-+[:digit:]]                     digit or + or - sign
- \(\+\|-\)?[0-9]+\(\.[0-9]+\)?     decimal number (-2 or 1.5 but not .2 or 1.)
- \(\w+\) +\1\>                     two consecutive, identical words
- \<[[:upper:]]\w*                  word starting with an uppercase letter
-  +$                               trailing whitespaces (note the starting SPC)
- \w\{20,\}                         word with 20 letters or more
- \w+phony\>                        word ending by phony
- \(19\|20\)[0-9]\{2\}              year 1900-2099
- ^.\{6,\}                          at least 6 symbols
- ^[a-zA-Z0-9_]\{3,16\}$            decent string for a user name
- <tag[^> C-q C-j ]*>\(.*?\)</tag>  html tag
+   Some Regexp Examples
 
-Some Emacs Commands that Use Regular Expressions
+   [-+[:digit:]]                     digit or + or - sign
+   \(\+\|-\)?[0-9]+\(\.[0-9]+\)?     decimal number (-2 or 1.5 but not .2 or 1.)
+   \(\w+\) +\1\>                     two consecutive, identical words
+   \<[[:upper:]]\w*                  word starting with an uppercase letter
+   +$                               trailing whitespaces (note the starting SPC)
+   \w\{20,\}                         word with 20 letters or more
+   \w+phony\>                        word ending by phony
+   \(19\|20\)[0-9]\{2\}              year 1900-2099
+   ^.\{6,\}                          at least 6 symbols
+   ^[a-zA-Z0-9_]\{3,16\}$            decent string for a user name
+   <tag[^> C-q C-j ]*>\(.*?\)</tag>  html tag
 
- C-M-s                   incremental forward search matching regexp
- C-M-r                   incremental backward search matching regexp 
- replace-regexp          replace string matching regexp
- query-replace-regexp    same, but query before each replacement
- align-regexp            align, using strings matching regexp as delimiters
- highlight-regexp        highlight strings matching regexp
- occur                   show lines containing a match
- multi-occur             show lines in all buffers containing a match
- how-many                count the number of strings matching regexp
- keep-lines              delete all lines except those containing matches
- flush-lines             delete lines containing matches
- grep                    call unix grep command and put result in a buffer
- lgrep                   user-friendly interface to the grep command
- rgrep                   recursive grep
- dired-do-copy-regexp    copy files with names matching regexp
- dired-do-rename-regexp  rename files matching regexp 
- find-grep-dired         display files containing matches for regexp with Dired
+   Some Emacs Commands that Use Regular Expressions
 
-Note that list-matching-lines is an alias for occur and
-delete-matching-lines is an alias for flush-lines. The command
-highlight-regexp is bound to C-x w h. Also query-replace-regexp is
-bound by default to C-M-%, although some people prefer using an alias,
-like M-x qrr. Put the following in your InitFile to create such alias.
+   C-M-s                   incremental forward search matching regexp
+   C-M-r                   incremental backward search matching regexp
+   replace-regexp          replace string matching regexp
+   query-replace-regexp    same, but query before each replacement
+   align-regexp            align, using strings matching regexp as delimiters
+   highlight-regexp        highlight strings matching regexp
+   occur                   show lines containing a match
+   multi-occur             show lines in all buffers containing a match
+   how-many                count the number of strings matching regexp
+   keep-lines              delete all lines except those containing matches
+   flush-lines             delete lines containing matches
+   grep                    call unix grep command and put result in a buffer
+   lgrep                   user-friendly interface to the grep command
+   rgrep                   recursive grep
+   dired-do-copy-regexp    copy files with names matching regexp
+   dired-do-rename-regexp  rename files matching regexp
+   find-grep-dired         display files containing matches for regexp with Dired
+
+   Note that list-matching-lines is an alias for occur and
+   delete-matching-lines is an alias for flush-lines. The command
+   highlight-regexp is bound to C-x w h. Also query-replace-regexp is
+   bound by default to C-M-%, although some people prefer using an alias,
+   like M-x qrr. Put the following in your InitFile to create such alias.
 
    (defalias 'qrr 'query-replace-regexp)
 
-See also: IncrementalSearch, ReplaceRegexp, AlignCommands, OccurBuffer, DiredPower
+   See also: IncrementalSearch, ReplaceRegexp, AlignCommands, OccurBuffer, DiredPower
 
-Tools for Constructing Regexps
+   Tools for Constructing Regexps
 
-    Command ‘re-builder’ constructs a regular expression. You enter
-    the regexp in a small window at the bottom of the frame. The first
-    200 matches in the buffer are highlighted, so you can see if the
-    regexp does what you want. Use Lisp syntax, which means doubling
-    backslashes and using \\\\ to match a literal backslash.  Macro
-    ‘rx’ provides user-friendly syntax for regular expressions. For
-    example, (rx (one-or-more blank) line-end) returns the regexp
-    string "\\(?:[[:blank:]]+$\\)". See rx.  SymbolicRegexp is similar
-    in aim to ‘rx’.
+   Command ‘re-builder’ constructs a regular expression. You enter
+   the regexp in a small window at the bottom of the frame. The first
+   200 matches in the buffer are highlighted, so you can see if the
+   regexp does what you want. Use Lisp syntax, which means doubling
+   backslashes and using \\\\ to match a literal backslash.  Macro
+   ‘rx’ provides user-friendly syntax for regular expressions. For
+   example, (rx (one-or-more blank) line-end) returns the regexp
+   string "\\(?:[[:blank:]]+$\\)". See rx.  SymbolicRegexp is similar
+   in aim to ‘rx’.
 
-Study and Practice
+   Study and Practice
 
-    Read about regexps in the Elisp manual. See also RegexpReferences. Study EmacsLisp code that uses regexps.
+   Read about regexps in the Elisp manual. See also RegexpReferences. Study EmacsLisp code that uses regexps.
 
-    Regexp searching (‘C-M-s’) is a great way to learn about regexps –
-    see Regexp Searches. Change your regexp on the fly and see
-    immediately what difference the change makes.
+   Regexp searching (‘C-M-s’) is a great way to learn about regexps –
+   see Regexp Searches. Change your regexp on the fly and see
+   immediately what difference the change makes.
 
-    Some examples of use (see also ReplaceRegexp and EmacsCrashRegexp):
-        Search for trailing whitespace: C-M-s SPC+$
-        Highlight all trailing whitespace: M-x highlight-regexp RET SPC+$ RET RET
-        Delete trailing whitespace: M-x replace-regexp RET SPC+$ RET RET (same as ‘M-x delete-trailing-whitespace’)
-        Search for open delimiters: C-M-s \s(
-        Search for duplicated words (works across lines): C-M-s \(\<\w+\>\)\s-+\1
-        Count number of words in buffer: M-x how-many RET \< RET
-        Align words beginning with an uppercase letter followed by a lowercase letter: M-: (setq case-fold-search nil) RET then M-x align-regexp RET \<[[:upper:]][[:lower:]] RET
-        Replace word foo by bar (won’t replace fool by barl): M-x replace-regexp RET \<foo\> RET bar
-        Keep only the first two words on each line: M-x replace-regexp RET ^\(\W*\w+\W+\w+\).* RET \1 RET
-        Suppress lines beginning with ;;: M-x flush-lines RET ^;; RET
-        Remove the text after the first ; on each line: M-x replace-regexp RET \([^;]*\);.* RET \1 RET
-        Keep only lines that contain an email address: M-x keep-lines RET \w+\(\.\w+\)?@\(\w\|\.\)+ RET
-        Keep only one instance of consecutive empty lines: M-x replace-regexp RET ^C-q C-j\{2,\} RET C-q C-j RET
-        Keep words or letters in uppercase, one per line: M-x replace-regexp RET [^[:upper:]]+ RET C-o RET
-        List lines beginning with Chapter or Section: M-x occur RET ^\(Chapter\|Section\) RET
-        List lines with more than 80 characters: M-x occur RET ^.\{81,\} RET
+   Some examples of use (see also ReplaceRegexp and EmacsCrashRegexp):
+   Search for trailing whitespace: C-M-s SPC+$
+   Highlight all trailing whitespace: M-x highlight-regexp RET SPC+$ RET RET
+   Delete trailing whitespace: M-x replace-regexp RET SPC+$ RET RET (same as ‘M-x delete-trailing-whitespace’)
+   Search for open delimiters: C-M-s \s(
+   Search for duplicated words (works across lines): C-M-s \(\<\w+\>\)\s-+\1
+   Count number of words in buffer: M-x how-many RET \< RET
+   Align words beginning with an uppercase letter followed by a lowercase letter: M-: (setq case-fold-search nil) RET then M-x align-regexp RET \<[[:upper:]][[:lower:]] RET
+   Replace word foo by bar (won’t replace fool by barl): M-x replace-regexp RET \<foo\> RET bar
+   Keep only the first two words on each line: M-x replace-regexp RET ^\(\W*\w+\W+\w+\).* RET \1 RET
+   Suppress lines beginning with ;;: M-x flush-lines RET ^;; RET
+   Remove the text after the first ; on each line: M-x replace-regexp RET \([^;]*\);.* RET \1 RET
+   Keep only lines that contain an email address: M-x keep-lines RET \w+\(\.\w+\)?@\(\w\|\.\)+ RET
+   Keep only one instance of consecutive empty lines: M-x replace-regexp RET ^C-q C-j\{2,\} RET C-q C-j RET
+   Keep words or letters in uppercase, one per line: M-x replace-regexp RET [^[:upper:]]+ RET C-o RET
+   List lines beginning with Chapter or Section: M-x occur RET ^\(Chapter\|Section\) RET
+   List lines with more than 80 characters: M-x occur RET ^.\{81,\} RET
 
-Use Icicles to Learn about Regexps
+   Use Icicles to Learn about Regexps
 
-Icicles provides these interactive ways to learn about regexps:
+   Icicles provides these interactive ways to learn about regexps:
 
-    `C-`’ (‘icicle-search’) shows you regexp matches, as does ‘C-M-s’,
-    but it can also show you (that is, highlight) regexp subgroup
-    matches. Showing matched subgroups is very helpful for learning,
-    and Icicles is unique in this. There are two ways that you can use
-    this feature:
-        You can seach for a regexp, but limit the search context, used
-        for further searching, to a particular subgroup match. For
-        example, you can search for and highlight Lisp argument lists,
-        by using a regexp subgroup that matches lists, placing that
-        subgroup after ‘defun’: (defun [^(]*\(([^(]*)\), that is,
-        defun, followed by non-`(’ character(s), followed by `(’,
-        possibly followed by non-`)’ character(s), followed by `)’.
+   `C-`’ (‘icicle-search’) shows you regexp matches, as does ‘C-M-s’,
+   but it can also show you (that is, highlight) regexp subgroup
+   matches. Showing matched subgroups is very helpful for learning,
+   and Icicles is unique in this. There are two ways that you can use
+   this feature:
+   You can seach for a regexp, but limit the search context, used
+   for further searching, to a particular subgroup match. For
+   example, you can search for and highlight Lisp argument lists,
+   by using a regexp subgroup that matches lists, placing that
+   subgroup after ‘defun’: (defun [^(]*\(([^(]*)\), that is,
+   defun, followed by non-`(’ character(s), followed by `(’,
+   possibly followed by non-`)’ character(s), followed by `)’.
 
-        You can search for a regexp without limiting the search
-        context to a subgroup match. In this case, Icicles highlights
-        each subgroup match in a different color. Here’s an example,
-        showing how each subgroup of the complex regexp (\([-a-z*]+\)
-        *\((\(([-a-z]+ *\([^)]*\))\))\).* is matched:
+   You can search for a regexp without limiting the search
+   context to a subgroup match. In this case, Icicles highlights
+   each subgroup match in a different color. Here’s an example,
+   showing how each subgroup of the complex regexp (\([-a-z*]+\)
+   *\((\(([-a-z]+ *\([^)]*\))\))\).* is matched:
 
-    IciclesSearchContextLevelsScreenshot
+   IciclesSearchContextLevelsScreenshot
 
-    `C-`’ also helps you learn by letting you use two simple regexps
-    (search within a search) as an alternative to coming up with a
-    single, complex regexp to do the same job. And, as with
-    incremental search, you can change the second regexp on the fly to
-    see immediately what difference the change makes. See Icicles -
-    Search Commands, Overview
+   `C-`’ also helps you learn by letting you use two simple regexps
+   (search within a search) as an alternative to coming up with a
+   single, complex regexp to do the same job. And, as with
+   incremental search, you can change the second regexp on the fly to
+   see immediately what difference the change makes. See Icicles -
+   Search Commands, Overview
 
-    ‘S-TAB’ during minibuffer input shows you all matches for your
-    input string, which can be a regexp. So, just type a regexp
-    whenever the minibuffer is active for completion and hit ‘S-TAB’
-    to see what the regexp matches. Try this with command input
-    (‘M-x’), buffer switching (‘C-x b’), file visiting (‘C-x f’), help
-    (‘C-h f’, ‘C-h v’), and so on. Almost any time you type input in
-    the minibuffer, you can type a regexp and use ‘S-TAB’ to see what
-    it matches (and then choose one of the matching candidates to
-    input, if you want).
-
+   ‘S-TAB’ during minibuffer input shows you all matches for your
+   input string, which can be a regexp. So, just type a regexp
+   whenever the minibuffer is active for completion and hit ‘S-TAB’
+   to see what the regexp matches. Try this with command input
+   (‘M-x’), buffer switching (‘C-x b’), file visiting (‘C-x f’), help
+   (‘C-h f’, ‘C-h v’), and so on. Almost any time you type input in
+   the minibuffer, you can type a regexp and use ‘S-TAB’ to see what
+   it matches (and then choose one of the matching candidates to
+   input, if you want).
 
 
 
@@ -243,580 +242,576 @@ Icicles provides these interactive ways to learn about regexps:
 
 
 ** Package Management:
-M-x list-packages
-C-h v package-activated-list
+   M-x list-packages
+   C-h v package-activated-list
 
 ** Help:
-M-x describe-<package,variable,minor-mode,face...>
+   M-x describe-<package,variable,minor-mode,face...>
 
 ** Elisp:
-
 *** Eval lisp:           C-x C-e
-in lisp single quote ' will stop something being eval'd
-backquote ` will mean only things prefixed with a comma , will be
-eval'd
+    in lisp single quote ' will stop something being eval'd
+    backquote ` will mean only things prefixed with a comma , will be
+    eval'd
 
 ** Shortcuts:
 
 *** To Check:
-DYNAMIC ABBREVIATIONS: M-/
-
+    DYNAMIC ABBREVIATIONS: M-/
 
 *** Occur:
-Icy Occur: C-c '
-Normal : M-x Occur <string>
+    Icy Occur: C-c '
+    Normal : M-x Occur <string>
 
 *** Navigation
-Goto Line:       M-g g 
-Goto Line:       M-g M-g
-Switch Buffers:  C-x C-(j/l/i/k)
+    Goto Line:       M-g g
+    Goto Line:       M-g M-g
+    Switch Buffers:  C-x C-(j/l/i/k)
 
 *** Kill Ring
-Kill Ring:
-kill                 C-y
-loop through ring    M-y
+    Kill Ring:
+    kill                 C-y
+    loop through ring    M-y
 
 *** Macros
-Start macro:         C-x (
-End Macro:           C-x )
-Use Macro:           C-x e
-Repeat:              C-x z
-Repeat n:            C-u (no.) (cmd)
-Function Help:       C-h f
-Variable Help:       C-h v
-Mode Help:           C-h m
-fill:                M-q
+    Start macro:         C-x (
+    End Macro:           C-x )
+    Use Macro:           C-x e
+    Repeat:              C-x z
+    Repeat n:            C-u (no.) (cmd)
+    Function Help:       C-h f
+    Variable Help:       C-h v
+    Mode Help:           C-h m
+    fill:                M-q
 
 *** Target Column
-target column:       C-x C-n
-cancel target column:C-u C-x C-n
+    target column:       C-x C-n
+    cancel target column:C-u C-x C-n
 
 *** Lorem Ipsum
-lorem-ipsum:         (C-u 0-9) M-x lorem 
+    lorem-ipsum:         (C-u 0-9) M-x lorem
 
 *** Version Control
-Commit:              C-x v v
-Finish Commit:       C-c C-c
+    Commit:              C-x v v
+    Finish Commit:       C-c C-c
 
 *** Tabify
-tabify and untabify - 
-quoted-insert to add an actual tab
+    tabify and untabify -
+    quoted-insert to add an actual tab
 
 *** Occurance / Grep
-shortcut:            occur
-M-x grep *PATTERN then FILETYPE
+    shortcut:            occur
+    M-x grep *PATTERN then FILETYPE
 
 *** Windows, Frames and Buffers
-shrink-window-if-larger-than-buffer
-horizontal changes:  C-x { or }
-Dedicated window:    M-x ded
-Display all buffers  M-x db
+    shrink-window-if-larger-than-buffer
+    horizontal changes:  C-x { or }
+    Dedicated window:    M-x ded
+    Display all buffers  M-x db
 
 *** Author and Date
-Add Author and Date: C-c C-d
+    Add Author and Date: C-c C-d
 
 *** Remote Files
-To Load a remote file: 
-                    C-x C-f /host@server:file
-                    C-x C-f /ssh:user@host:filename
+    To Load a remote file:
+    C-x C-f /host@server:file
+    C-x C-f /ssh:user@host:filename
 
 
 *** Encoding:
-C-x ret t coding
-set/describe-variable
+    C-x ret t coding
+    set/describe-variable
 
 ** Modes:
 *** VC Mode:
 
     C-x v v : commit
-    
 
-C-x v l
+
+    C-x v l
     Display the change history for the current fileset (vc-print-log).
-C-x v L
+    C-x v L
     Display the change history for the current repository (vc-print-root-log).
-C-x v I
+    C-x v I
     Display the changes that a pull operation will retrieve (vc-log-incoming).
-C-x v O
-    Display the changes that will be sent by the next push operation (vc-log-outgoing). 
+    C-x v O
+    Display the changes that will be sent by the next push operation (vc-log-outgoing).
 
 *** IBuffer mode:
-Operations on marked buffers:
+    Operations on marked buffers:
 
-  'S' - Save the marked buffers
-  'A' - View the marked buffers in this frame.
-  'H' - View the marked buffers in another frame.
-  'V' - Revert the marked buffers.
-  'T' - Toggle read-only state of marked buffers.
-  'D' - Kill the marked buffers.
-  'M-s a C-s' - Do incremental search in the marked buffers.
-  'M-s a C-M-s' - Isearch for regexp in the marked buffers.
-  'U' - Replace by regexp in each of the marked
-          buffers.
-  'Q' - Query replace in each of the marked buffers.
-  'I' - As above, with a regular expression.
-  'P' - Print the marked buffers.
-  'O' - List lines in all marked buffers which match
-          a given regexp (like the function `occur').
-  'X' - Pipe the contents of the marked
-          buffers to a shell command.
-  'N' - Replace the contents of the marked
-          buffers with the output of a shell command.
-  '!' - Run a shell command with the
-          buffer's file as an argument.
-  'E' - Evaluate a form in each of the marked buffers.  This
-          is a very flexible command.  For example, if you want to make all
-          of the marked buffers read only, try using (read-only-mode 1) as
-          the input form.
-  'W' - As above, but view each buffer while the form
-          is evaluated.
-  'k' - Remove the marked lines from the *Ibuffer* buffer,
-          but don't kill the associated buffer.
-  'x' - Kill all buffers marked for deletion.
+    'S' - Save the marked buffers
+    'A' - View the marked buffers in this frame.
+    'H' - View the marked buffers in another frame.
+    'V' - Revert the marked buffers.
+    'T' - Toggle read-only state of marked buffers.
+    'D' - Kill the marked buffers.
+    'M-s a C-s' - Do incremental search in the marked buffers.
+    'M-s a C-M-s' - Isearch for regexp in the marked buffers.
+    'U' - Replace by regexp in each of the marked
+    buffers.
+    'Q' - Query replace in each of the marked buffers.
+    'I' - As above, with a regular expression.
+    'P' - Print the marked buffers.
+    'O' - List lines in all marked buffers which match
+    a given regexp (like the function `occur').
+    'X' - Pipe the contents of the marked
+    buffers to a shell command.
+    'N' - Replace the contents of the marked
+    buffers with the output of a shell command.
+    '!' - Run a shell command with the
+    buffer's file as an argument.
+    'E' - Evaluate a form in each of the marked buffers.  This
+    is a very flexible command.  For example, if you want to make all
+    of the marked buffers read only, try using (read-only-mode 1) as
+    the input form.
+    'W' - As above, but view each buffer while the form
+    is evaluated.
+    'k' - Remove the marked lines from the *Ibuffer* buffer,
+    but don't kill the associated buffer.
+    'x' - Kill all buffers marked for deletion.
 
-Marking commands:
+    Marking commands:
 
-  'm' - Mark the buffer at point.
-  't' - Unmark all currently marked buffers, and mark
-          all unmarked buffers.
-  'u' - Unmark the buffer at point.
-  'DEL' - Unmark the buffer at point, and move to the
-          previous line.
-  'M-DEL' - Unmark all marked buffers.
-  '* M' - Mark buffers by major mode.
-  '* u' - Mark all "unsaved" buffers.
-          This means that the buffer is modified, and has an associated file.
-  '* m' - Mark all modified buffers,
-          regardless of whether or not they have an associated file.
-  '* s' - Mark all buffers whose name begins and
-          ends with '*'.
-  '* e' - Mark all buffers which have
-          an associated file, but that file doesn't currently exist.
-  '* r' - Mark all read-only buffers.
-  '* /' - Mark buffers in `dired' mode.
-  '* h' - Mark buffers in `help-mode', `apropos-mode', etc.
-  '.' - Mark buffers older than `ibuffer-old-time'.
-  'd' - Mark the buffer at point for deletion.
-  '% n' - Mark buffers by their name, using a regexp.
-  '% m' - Mark buffers by their major mode, using a regexp.
-  '% f' - Mark buffers by their filename, using a regexp.
+    'm' - Mark the buffer at point.
+    't' - Unmark all currently marked buffers, and mark
+    all unmarked buffers.
+    'u' - Unmark the buffer at point.
+    'DEL' - Unmark the buffer at point, and move to the
+    previous line.
+    'M-DEL' - Unmark all marked buffers.
+    '* M' - Mark buffers by major mode.
+    '* u' - Mark all "unsaved" buffers.
+    This means that the buffer is modified, and has an associated file.
+    '* m' - Mark all modified buffers,
+    regardless of whether or not they have an associated file.
+    '* s' - Mark all buffers whose name begins and
+    ends with '*'.
+    '* e' - Mark all buffers which have
+    an associated file, but that file doesn't currently exist.
+    '* r' - Mark all read-only buffers.
+    '* /' - Mark buffers in `dired' mode.
+    '* h' - Mark buffers in `help-mode', `apropos-mode', etc.
+    '.' - Mark buffers older than `ibuffer-old-time'.
+    'd' - Mark the buffer at point for deletion.
+    '% n' - Mark buffers by their name, using a regexp.
+    '% m' - Mark buffers by their major mode, using a regexp.
+    '% f' - Mark buffers by their filename, using a regexp.
 
-Filtering commands:
+    Filtering commands:
 
-  'M-x ibuffer-filter-by-mode' - Add a filter by any major mode.
-  '/ m' - Add a filter by a major mode now in use.
-  '/ M' - Add a filter by derived mode.
-  '/ n' - Add a filter by buffer name.
-  '/ c' - Add a filter by buffer content.
-  '/ f' - Add a filter by filename.
-  '/ >' - Add a filter by buffer size.
-  '/ <' - Add a filter by buffer size.
-  '/ e' - Add a filter by an arbitrary Lisp predicate.
-  '/ s' - Save the current filters with a name.
-  '/ r' - Switch to previously saved filters.
-  '/ a' - Add saved filters to current filters.
-  '/ o' - Replace the top two filters with their logical OR.
-  '/ p' - Remove the top filter.
-  '/ !' - Invert the logical sense of the top filter.
-  '/ d' - Break down the topmost filter.
-  '/ /' - Remove all filtering currently in effect.
+    'M-x ibuffer-filter-by-mode' - Add a filter by any major mode.
+    '/ m' - Add a filter by a major mode now in use.
+    '/ M' - Add a filter by derived mode.
+    '/ n' - Add a filter by buffer name.
+    '/ c' - Add a filter by buffer content.
+    '/ f' - Add a filter by filename.
+    '/ >' - Add a filter by buffer size.
+    '/ <' - Add a filter by buffer size.
+    '/ e' - Add a filter by an arbitrary Lisp predicate.
+    '/ s' - Save the current filters with a name.
+    '/ r' - Switch to previously saved filters.
+    '/ a' - Add saved filters to current filters.
+    '/ o' - Replace the top two filters with their logical OR.
+    '/ p' - Remove the top filter.
+    '/ !' - Invert the logical sense of the top filter.
+    '/ d' - Break down the topmost filter.
+    '/ /' - Remove all filtering currently in effect.
 
-Filter group commands:
+    Filter group commands:
 
-  '/ g' - Create filter group from filters.
-  '/ P' - Remove top filter group.
-  'TAB' - Move to the next filter group.
-  'M-p' - Move to the previous filter group.
-  '/ \' - Remove all active filter groups.
-  '/ S' - Save the current groups with a name.
-  '/ R' - Restore previously saved groups.
-  '/ X' - Delete previously saved groups.
+    '/ g' - Create filter group from filters.
+    '/ P' - Remove top filter group.
+    'TAB' - Move to the next filter group.
+    'M-p' - Move to the previous filter group.
+    '/ \' - Remove all active filter groups.
+    '/ S' - Save the current groups with a name.
+    '/ R' - Restore previously saved groups.
+    '/ X' - Delete previously saved groups.
 
-Sorting commands:
+    Sorting commands:
 
-  ',' - Rotate between the various sorting modes.
-  's i' - Reverse the current sorting order.
-  's a' - Sort the buffers lexicographically.
-  's f' - Sort the buffers by the file name.
-  's v' - Sort the buffers by last viewing time.
-  's s' - Sort the buffers by size.
-  's m' - Sort the buffers by major mode.
+    ',' - Rotate between the various sorting modes.
+    's i' - Reverse the current sorting order.
+    's a' - Sort the buffers lexicographically.
+    's f' - Sort the buffers by the file name.
+    's v' - Sort the buffers by last viewing time.
+    's s' - Sort the buffers by size.
+    's m' - Sort the buffers by major mode.
 
-Other commands:
+    Other commands:
 
-  'g' - Regenerate the list of all buffers.
-          Prefix arg means to toggle whether buffers that match
-          `ibuffer-maybe-show-predicates' should be displayed.
+    'g' - Regenerate the list of all buffers.
+    Prefix arg means to toggle whether buffers that match
+    `ibuffer-maybe-show-predicates' should be displayed.
 
-  '`' - Change the current display format.
-  'SPC' - Move point to the next line.
-  'C-p' - Move point to the previous line.
-  'q' - Bury the Ibuffer buffer.
-  '?' - This help.
-  '=' - View the differences between this buffer
-          and its associated file.
-  'RET' - View the buffer on this line.
-  'o' - As above, but in another window.
-  'C-o' - As both above, but don't select
-          the new window.
-  'b' - Bury (not kill!) the buffer on this line.
+    '`' - Change the current display format.
+    'SPC' - Move point to the next line.
+    'C-p' - Move point to the previous line.
+    'q' - Bury the Ibuffer buffer.
+    '?' - This help.
+    '=' - View the differences between this buffer
+    and its associated file.
+    'RET' - View the buffer on this line.
+    'o' - As above, but in another window.
+    'C-o' - As both above, but don't select
+    the new window.
+    'b' - Bury (not kill!) the buffer on this line.
 
 
 *** Org Mode
-Reference: [[http:orgmode.org/orgcard.txt][org mode reference]]
+    Reference: [[http:orgmode.org/orgcard.txt][org mode reference]]
 
-http://orgmode.org/manual/index.html
+    http://orgmode.org/manual/index.html
 
 **** General
 
-use <TAB> to cycle
+     use <TAB> to cycle
 
-C-c C-n    Next heading.
-C-c C-p    Previous heading.
-C-c C-f    Next heading same level.
-C-c C-b    Previous heading same level.
-C-c C-u    Backward to higher level heading.
+     C-c C-n    Next heading.
+     C-c C-p    Previous heading.
+     C-c C-f    Next heading same level.
+     C-c C-b    Previous heading same level.
+     C-c C-u    Backward to higher level heading.
 
-M-<LEFT/RIGHT/UP/DOWN> modify a heading
+     M-<LEFT/RIGHT/UP/DOWN> modify a heading
 
-C-c @      mark subtree
+     C-c @      mark subtree
 
-C-c ^      org-sort same level entries
+     C-c ^      org-sort same level entries
 
-C-c *      toggle heading
+     C-c *      toggle heading
 
-C-u C-c C-l    insert link with completion
+     C-u C-c C-l    insert link with completion
 
-C-c l      store link
+     C-c l      store link
 
-C-u C-c C-o    open link in emacs
+     C-u C-c C-o    open link in emacs
 
 
-(show-all)
-C-c C-x b (org-tree-to-indirect-buffer)
-C-c C-x v (org-copy-visible)
+     (show-all)
+     C-c C-x b (org-tree-to-indirect-buffer)
+     C-c C-x v (org-copy-visible)
 
 
 
 ***** Org Goto
-C-c C-j     (org-goto)
-Jump to a different place without changing the current outline visibility. Shows the document structure in a temporary buffer, where you can use the following keys to find your destination:
+      C-c C-j     (org-goto)
+      Jump to a different place without changing the current outline visibility. Shows the document structure in a temporary buffer, where you can use the following keys to find your destination:
 
-<TAB>         Cycle visibility.
-<down> / <up>   Next/previous visible headline.
-<RET>         Select this location.
-/           Do a Sparse-tree search
-The following keys work if you turn off org-goto-auto-isearch
-n / p        Next/previous visible headline.
-f / b        Next/previous headline same level.
-u            One level up.
-0-9          Digit argument.
-q            Quit
+      <TAB>         Cycle visibility.
+      <down> / <up>   Next/previous visible headline.
+      <RET>         Select this location.
+      /           Do a Sparse-tree search
+      The following keys work if you turn off org-goto-auto-isearch
+      n / p        Next/previous visible headline.
+      f / b        Next/previous headline same level.
+      u            One level up.
+      0-9          Digit argument.
+      q            Quit
 
 
 
 *** Outline mode:
-https://www.gnu.org/software/emacs/manual/html_node/emacs/Outline-Visibility.html#Outline-Visibility
+    https://www.gnu.org/software/emacs/manual/html_node/emacs/Outline-Visibility.html#Outline-Visibility
 
-Customise ident:
+    Customise ident:
 
-M-x set-variable outline-regexp
+    M-x set-variable outline-regexp
 
-C-c C-c hide section
-C-c C-e show section
-C-c C-d hide subtree
-C-c C-a show-subtree
-C-c C-l hide leaves
-C-c C-k show branches
-C-c C-t hide body
-C-c C-a show all
+    C-c C-c hide section
+    C-c C-e show section
+    C-c C-d hide subtree
+    C-c C-a show-subtree
+    C-c C-l hide leaves
+    C-c C-k show branches
+    C-c C-t hide body
+    C-c C-a show all
 
-C-c C-n    next visible heading line (outline-next-visible-heading).
-C-c C-p    previous visible heading line (outline-previous-visible-heading).
-C-c C-f    next visible heading line at the same level as the one point is on (outline-forward-same-level).
-C-c C-b    previous visible heading line at the same level (outline-backward-same-level).
-C-c C-u    lower level heading line
+    C-c C-n    next visible heading line (outline-next-visible-heading).
+    C-c C-p    previous visible heading line (outline-previous-visible-heading).
+    C-c C-f    next visible heading line at the same level as the one point is on (outline-forward-same-level).
+    C-c C-b    previous visible heading line at the same level (outline-backward-same-level).
+    C-c C-u    lower level heading line
 
 
 
 
 
 *** icy-mode:
-http://www.emacswiki.org/emacs/EmacsNewbieWithIcicles
+    http://www.emacswiki.org/emacs/EmacsNewbieWithIcicles
 
-Shift Tab for completion
+    Shift Tab for completion
 
 *** Yasnippet:
-https://capitaomorte.github.io/yasnippet/
+    https://capitaomorte.github.io/yasnippet/
 
 **** .yas-parents
-add to directory. whitespace list of other mode names 
+     add to directory. whitespace list of other mode names
 
 **** # group: directive
-use in a snippet definition
+     use in a snippet definition
 
 
 **** TAB (`yas-expand')
-   Attempt to expand a snippet before point.  For example, typing TAB
-   after `if' may expand a snippet beginning with `if', if one exists.
-   If no snippet expansion is possible, run the usual binding of TAB.
+     Attempt to expand a snippet before point.  For example, typing TAB
+     after `if' may expand a snippet beginning with `if', if one exists.
+     If no snippet expansion is possible, run the usual binding of TAB.
 
 **** `C-c & C-s' (`yas-insert-snippet')
-   Prompts for a snippet, and inserts it.
+     Prompts for a snippet, and inserts it.
 
 **** `C-c & C-n' (`yas-new-snippet')
-   Opens a *new snippet* buffer where you can define a new snippet.
-   Typing C-c C-c in this buffer saves and invokes the definition.
-   The variable `yas-snippet-dirs' determines where snippet
-   definitions are stored.
+     Opens a *new snippet* buffer where you can define a new snippet.
+     Typing C-c C-c in this buffer saves and invokes the definition.
+     The variable `yas-snippet-dirs' determines where snippet
+     definitions are stored.
 
 **** M-x yas-describe-tables
 
 
 **** Trigger remapping
 
- When yas-minor-mode is enabled, it binds yas-expand to TAB and <tab> by default, however, you can freely set it to some other key:
+     When yas-minor-mode is enabled, it binds yas-expand to TAB and <tab> by default, however, you can freely set it to some other key:
 
-(define-key yas-minor-mode-map (kbd "<tab>") nil)
-(define-key yas-minor-mode-map (kbd "TAB") nil)
-(define-key yas-minor-mode-map (kbd "<the new key>") 'yas-expand)
+     (define-key yas-minor-mode-map (kbd "<tab>") nil)
+     (define-key yas-minor-mode-map (kbd "TAB") nil)
+     (define-key yas-minor-mode-map (kbd "<the new key>") 'yas-expand)
 
 
 **** `C-c & C-v' (`yas-visit-snippet-file')
-   Prompt for, and visit an existing snippet definition.
+     Prompt for, and visit an existing snippet definition.
 
 **** `yas-snippet-dirs'
 
-          The directory where user-created snippets are to be
-          stored.  Can also be a list of directories.  In that case,
-          when used for bulk (re)loading of snippets (at startup or
-          via `yas-reload-all'), directories appearing earlier in
-          the list shadow other dir's snippets.  Also, the first
-          directory is taken as the default for storing the user's
-          new snippets.
+     The directory where user-created snippets are to be
+     stored.  Can also be a list of directories.  In that case,
+     when used for bulk (re)loading of snippets (at startup or
+     via `yas-reload-all'), directories appearing earlier in
+     the list shadow other dir's snippets.  Also, the first
+     directory is taken as the default for storing the user's
+     new snippets.
 
-          The deprecated `yas/root-directory' aliases this variable
-          for backward-compatibility.
+     The deprecated `yas/root-directory' aliases this variable
+     for backward-compatibility.
 
 **** Major Commands
 
 *****      M-x yas-expand
 
-          Try to expand snippets before point.  In `yas-minor-mode',
-          this is normally bound to TAB, but you can customize it in
-          `yas-minor-mode-map'.
+      Try to expand snippets before point.  In `yas-minor-mode',
+      this is normally bound to TAB, but you can customize it in
+      `yas-minor-mode-map'.
 
 *****      M-x yas-load-directory
 
-          Prompts you for a directory hierarchy of snippets to load.
+      Prompts you for a directory hierarchy of snippets to load.
 
 *****      M-x yas-activate-extra-mode
 
-          Prompts you for an extra mode to add snippets for in the
-          current buffer.
+      Prompts you for an extra mode to add snippets for in the
+      current buffer.
 
 *****      M-x yas-insert-snippet
 
-          Prompts you for possible snippet expansion if that is
-          possible according to buffer-local and snippet-local
-          expansion conditions.  With prefix argument, ignore these
-          conditions.
+      Prompts you for possible snippet expansion if that is
+      possible according to buffer-local and snippet-local
+      expansion conditions.  With prefix argument, ignore these
+      conditions.
 
 *****      M-x yas-visit-snippet-file
 
-          Prompts you for possible snippet expansions like
-          `yas-insert-snippet', but instead of expanding it, takes
-          you directly to the snippet definition's file, if it
-          exists.
+      Prompts you for possible snippet expansions like
+      `yas-insert-snippet', but instead of expanding it, takes
+      you directly to the snippet definition's file, if it
+      exists.
 
 *****      M-x yas-new-snippet
 
-          Lets you create a new snippet file in the correct
-          subdirectory of `yas-snippet-dirs', according to the
-          active major mode.
+      Lets you create a new snippet file in the correct
+      subdirectory of `yas-snippet-dirs', according to the
+      active major mode.
 
 *****      M-x yas-load-snippet-buffer
 
-          When editing a snippet, this loads the snippet.  This is
-          bound to "C-c C-c" while in the `snippet-mode' editing
-          mode.
+      When editing a snippet, this loads the snippet.  This is
+      bound to "C-c C-c" while in the `snippet-mode' editing
+      mode.
 
 *****      M-x yas-tryout-snippet
 
-          When editing a snippet, this opens a new empty buffer,
-          sets it to the appropriate major mode and inserts the
-          snippet there, so you can see what it looks like.  This is
-          bound to "C-c C-t" while in `snippet-mode'.
+      When editing a snippet, this opens a new empty buffer,
+      sets it to the appropriate major mode and inserts the
+      snippet there, so you can see what it looks like.  This is
+      bound to "C-c C-t" while in `snippet-mode'.
 
 *****      M-x yas-describe-tables
 
-          Lists known snippets in a separate buffer.  User is
-          prompted as to whether only the currently active tables
-          are to be displayed, or all the tables for all major
-          modes.
+      Lists known snippets in a separate buffer.  User is
+      prompted as to whether only the currently active tables
+      are to be displayed, or all the tables for all major
+      modes.
 
-  If you have `dropdown-list' installed, you can optionally use it
-  as the preferred "prompting method", putting in your .emacs file,
-  for example:
+      If you have `dropdown-list' installed, you can optionally use it
+      as the preferred "prompting method", putting in your .emacs file,
+      for example:
 
       (require 'dropdown-list)
       (setq yas-prompt-functions '(yas-dropdown-prompt
-                                   yas-ido-prompt
-                                   yas-completing-prompt))
+      yas-ido-prompt
+      yas-completing-prompt))
 
-  Also check out the customization group
+      Also check out the customization group
 
-       M-x customize-group RET yasnippet RET
+      M-x customize-group RET yasnippet RET
 
-  If you use the customization group to set variables
-  `yas-snippet-dirs' or `yas-global-mode', make sure the path to
-  "yasnippet.el" is present in the `load-path' *before* the
-  `custom-set-variables' is executed in your .emacs file.
+      If you use the customization group to set variables
+      `yas-snippet-dirs' or `yas-global-mode', make sure the path to
+      "yasnippet.el" is present in the `load-path' *before* the
+      `custom-set-variables' is executed in your .emacs file.
 
-  For more information and detailed usage, refer to the project page:
-     http://github.com/capitaomorte/yasnippet
+      For more information and detailed usage, refer to the project page:
+      http://github.com/capitaomorte/yasnippet
 
 
 *****      M-x yas-activate-extra-mode
-          To load a specific directory mode
+      To load a specific directory mode
 
 
 
 
 *****      M-x yas-reload-all
-           reloads all snippets including modified. 
-           use after updating a snippet
+      reloads all snippets including modified.
+      use after updating a snippet
 
 
 
 ****       Snippet syntax:
 
-#key: 
-#group: 
-#binding: 
-#type: snippet or command
-           
-$1++ -> $0 for tab locations.
-use duplicates to mirror
+     #key:
+     #group:
+     #binding:
+     #type: snippet or command
 
-placeholders:
-${N:default value}
+     $1++ -> $0 for tab locations.
+     use duplicates to mirror
+
+     placeholders:
+     ${N:default value}
 
 ** Packages to install
-http://steckerhalter.co.vu/steckemacs.html#sec-2-11
-https://www.reddit.com/r/emacs/comments/1xjlrq/emacs_modes_that_are_worth_knowing_about/
-http://melpa.milkbox.net/#/
-http://emacsblog.org/2007/10/07/declaring-emacs-bankruptcy/#more-105
+   http://steckerhalter.co.vu/steckemacs.html#sec-2-11
+   https://www.reddit.com/r/emacs/comments/1xjlrq/emacs_modes_that_are_worth_knowing_about/
+   http://melpa.milkbox.net/#/
+   http://emacsblog.org/2007/10/07/declaring-emacs-bankruptcy/#more-105
 
 ** Evil Mode
 
 ***  LESSON 1 SUMMARY
 
 
-   1. The cursor is moved using either the arrow keys or the hjkl keys.
-          h (left)        j (down)       k (up)            l (right)
+    1. The cursor is moved using either the arrow keys or the hjkl keys.
+       h (left)        j (down)       k (up)            l (right)
 
-   2. To exit Emacs type:  <ESC> :qa! <ENTER>  to trash all changes.
-                 OR type:  <ESC> :wqa <ENTER>  to save the changes.
+    2. To exit Emacs type:  <ESC> :qa! <ENTER>  to trash all changes.
+       OR type:  <ESC> :wqa <ENTER>  to save the changes.
 
-   4. To delete a character under the cursor in normal state type:  x
+    4. To delete a character under the cursor in normal state type:  x
 
-   5. To insert text at the cursor while in normal state type:
-          i
-          type in text
-          <ESC>
+    5. To insert text at the cursor while in normal state type:
+       i
+       type in text
+       <ESC>
 
- NOTE: Pressing <ESC> will place you in normal state or will cancel
-       an unwanted and partially completed command.
+    NOTE: Pressing <ESC> will place you in normal state or will cancel
+    an unwanted and partially completed command.
 
 ***  LESSON 2 SUMMARY
 
 
-   1. To delete from the cursor to the end of a word type:  dw
+    1. To delete from the cursor to the end of a word type:  dw
 
-   2. To delete from the cursor to the end of a line type:  d$
+    2. To delete from the cursor to the end of a line type:  d$
 
-   3. To delete a whole line type:  dd
+    3. To delete a whole line type:  dd
 
-   4. The format for a command in normal state is:
+    4. The format for a command in normal state is:
 
-        [number]  command  object    OR    command  [number]  object
-      where:
-        number - is how many times to repeat the command
-        command - is what to do, such as  d  for delete
-        object - is what the command should act upon, such as  w  for word,
-                 $  for "to the end of line", etc.
+       [number]  command  object    OR    command  [number]  object
+       where:
+       number - is how many times to repeat the command
+       command - is what to do, such as  d  for delete
+       object - is what the command should act upon, such as  w  for word,
+       $  for "to the end of line", etc.
 
-   5. To undo previous actions, type:  u
-      To undo the undo's type:  CTRL-R
+    5. To undo previous actions, type:  u
+       To undo the undo's type:  CTRL-R
 
 ***  LESSON 3 SUMMARY
 
 
-   1. To replace text that has already been deleted, type  p  this puts the
-      deleted text AFTER the cursor (if a line was deleted it will go on the
-      line below the cursor).
+    1. To replace text that has already been deleted, type  p  this puts the
+       deleted text AFTER the cursor (if a line was deleted it will go on the
+       line below the cursor).
 
-   2. To replace the character under the cursor, type  r  and then the
-      character which will replace the original.
+    2. To replace the character under the cursor, type  r  and then the
+       character which will replace the original.
 
-   3. The change command allows you to change the specified object from the
-      cursor to the end of the object.  eg. Type  cw  to change from the
-      cursor to the end of the word,  c$  to change to the end of a line.
+    3. The change command allows you to change the specified object from the
+       cursor to the end of the object.  eg. Type  cw  to change from the
+       cursor to the end of the word,  c$  to change to the end of a line.
 
-   4. The format for change is:
+    4. The format for change is:
 
-           [number]  c  object    OR    c  [number]  object
+       [number]  c  object    OR    c  [number]  object
 
- Now go on to the next lesson.
- 
+    Now go on to the next lesson.
+
 ***  LESSON 4 SUMMARY
 
-  1. gg  moves to the beginning of the buffer.
-     G   moves to the end of the buffer.
-     :   followed by a line number then  <ENTER>  moves to that line number.
+    1. gg  moves to the beginning of the buffer.
+       G   moves to the end of the buffer.
+       :   followed by a line number then  <ENTER>  moves to that line number.
 
-  2. Typing  /  followed by a phrase searches FORWARD for the phrase.
-     Typing  ?  followed by a phrase searches BACKWARD for the phrase.
-     After a search type  n  to find the next occurrence in the same direction
-     or  N  to search in the opposite direction.
+    2. Typing  /  followed by a phrase searches FORWARD for the phrase.
+       Typing  ?  followed by a phrase searches BACKWARD for the phrase.
+       After a search type  n  to find the next occurrence in the same direction
+       or  N  to search in the opposite direction.
 
-  3. Typing  %  while the cursor is on a  (,),[,],{, or }  locates its
-     matching pair.
+    3. Typing  %  while the cursor is on a  (,),[,],{, or }  locates its
+       matching pair.
 
-  4. To substitute new for the first old on a line type  :s/old/new
-     To substitute new for all 'old's on a line type     :s/old/new/g
-     To substitute phrases between two line #'s type     :#,#s/old/new/g
-     To substitute all occurrences in the file type      :%s/old/new/g
-     To ask for confirmation each time add 'c'           :%s/old/new/gc
+    4. To substitute new for the first old on a line type  :s/old/new
+       To substitute new for all 'old's on a line type     :s/old/new/g
+       To substitute phrases between two line #'s type     :#,#s/old/new/g
+       To substitute all occurrences in the file type      :%s/old/new/g
+       To ask for confirmation each time add 'c'           :%s/old/new/gc
 
 ***  LESSON 5 SUMMARY
 
-  1.  :!command  executes an external command.
+    1.  :!command  executes an external command.
 
-      Some useful examples are:
-          :!ls  or  :!dir                 -  shows a directory listing.
-          :!rm  or  :!del FILENAME        -  removes file FILENAME.
+       Some useful examples are:
+       :!ls  or  :!dir                 -  shows a directory listing.
+       :!rm  or  :!del FILENAME        -  removes file FILENAME.
 
-  2.  :w FILENAME  writes the current buffer to disk with file name FILENAME.
+    2.  :w FILENAME  writes the current buffer to disk with file name FILENAME.
 
-  3.  :#,#w FILENAME  saves the lines # through # in file FILENAME.
+    3.  :#,#w FILENAME  saves the lines # through # in file FILENAME.
 
-  4.  :r FILENAME  retrieves disk file FILENAME and inserts it into the
-      current buffer following the cursor position.
+    4.  :r FILENAME  retrieves disk file FILENAME and inserts it into the
+       current buffer following the cursor position.
 
 ***  LESSON 6 SUMMARY
 
 
-  1. Typing  o        opens a line BELOW the cursor and places the cursor on the open
-     line in insert state.
-     Typing a capital  O  opens the line ABOVE the line the cursor is on.
+    1. Typing  o        opens a line BELOW the cursor and places the cursor on the open
+       line in insert state.
+       Typing a capital  O  opens the line ABOVE the line the cursor is on.
 
-  2. Type an  a  to insert text AFTER the character the cursor is on.
-     Typing a capital  A  automatically appends text to the end of the line.
+    2. Type an  a  to insert text AFTER the character the cursor is on.
+       Typing a capital  A  automatically appends text to the end of the line.
 
-  3. Typing a capital  R  enters Replace mode until  <ESC>  is pressed to exit.
+    3. Typing a capital  R  enters Replace mode until  <ESC>  is pressed to exit.
 
 ** [[https://github.com/auto-complete/auto-complete/blob/master/doc/manual.md][Auto-Complete]]
-   
-   
