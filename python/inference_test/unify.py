@@ -85,3 +85,27 @@ def apply_unifier(x, subst):
         return App(x.fname, newargs)
     else:
         return None
+
+
+
+class InferenceError:
+
+    def __init__(self):
+        return
+
+class CannotUnifyError(InferenceError):
+
+    def __init__(self, type1, type2):
+        self.t1 = type1
+        self.t2 = type2
+
+class OccursCheckFailedError(InferenceError):
+
+    def __init__(self, name, mtype):
+        self.name = name
+        self.mtype = mtype
+
+class UnknownIdentifierError(InferenceError):
+
+    def __init__(self, name):
+        self.name = name

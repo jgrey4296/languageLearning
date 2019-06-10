@@ -1,0 +1,51 @@
+
+// Type Definition 
+::types.Rule:
+  .queries.$x(::Query)
+  .transforms.$y(::Transform)
+   .actions.$z(::Action)
+END
+
+//Type Definition 2
+::types.Person:
+       .name!$x    (::String)
+       .age!$y     (::Number)
+       .location!$z(::Reference.Location)
+       .something.$a(::String).$b(::Number)
+END
+
+// Function definition
+::types.operator.+(::A -> ::A -> ::A)
+
+// Type Specalisation
+::types.Person.Special:
+        .allowed.$a::Action
+END 
+
+// Type Alias
+::types.Barber(::types.Person)
+
+// Type Declaration
+.a.b.bob(::types.Person)
+
+// Type Construction
+.a.b.bob(::types.Person):
+  .name!"bob"
+  .age!25
+  // Reference Usage
+  .location! &.places.kitchen
+END
+
+// Type Construction alt:
++(.a.b.bob(::types.Person).("bob" -> $x, 25 -> $y, &.places.kitchen -> $z))
+
+
+// Type Inference
+.a.rule(::Rule, ::types.Person -> ::types.Person):
+  .a.b.$x(::types.Person)?
+  $x.name!$y?
+
+  $y + "blah" -> $z
+
+  +(.a.b.$z(::types.Person))
+END

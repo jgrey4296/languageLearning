@@ -16,7 +16,6 @@ class MonoType:
         free += [x for x in self.components if not isinstance(x, MonoType)]
         return free
 
-
     #define how to apply a substitution
     def apply_substitution(self, sub):
         components = []
@@ -30,14 +29,14 @@ class MonoType:
 
     def unify(self, other):
         #TODO
-
+        return
 
     def __contains__(self, other):
-
+        return
 
     def bind(self, other):
         # name -> mtype -> subst
-
+        return
 
 #define Poly Type
 class PolyType:
@@ -79,10 +78,11 @@ class Environment:
 
     def infer(self, expression):
         #run the inference on the expression
-
+        return
 
     def unify(self, a, b):
         #run the unification
+        return
 
 #define a substitution
 class Substitution:
@@ -92,6 +92,7 @@ class Substitution:
 
     def apply_substitution(self, sub):
         #stack subs
+        return
 
     def __add__(self, sub):
         return self.apply_substitution(sub)
@@ -109,24 +110,3 @@ class Substitution:
 
 #--------------------------------------------------
 # ERRORS:
-class InferenceError:
-
-    def __init__(self):
-        return
-
-class CannotUnifyError(InferenceError):
-
-    def __init__(self, type1, type2):
-        self.t1 = type1
-        self.t2 = type2
-
-class OccursCheckFailedError(InferenceError):
-
-    def __init__(self, name, mtype):
-        self.name = name
-        self.mtype = mtype
-
-class UnknownIdentifierError(InferenceError):
-
-    def __init__(self, name):
-        self.name = name
