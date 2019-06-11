@@ -1,6 +1,7 @@
 from ex_types import TypeDefinition
 from terms import ExConst
 import trie as T
+import util as U
 import type_exceptions as te
 import logging as root_logger
 import IPython
@@ -10,15 +11,12 @@ logging = root_logger.getLogger(__name__)
 class Environment:
 
     def __init__(self, init_types):
-        # lookup trie of types
+        # defined types
         self.type_equations = T.Trie(node_type=T.TypeDefTrieNode)
-
-        # trie of current types
+        # currently known types
         self.type_assignments = T.Trie(node_type=T.TypeAssignmentTrieNode)
         # variable types
         self.var_types = T.Trie(node_type=T.VarTypeTrieNode)
-        # validation queue
-        self.validation_queue = []
 
         for x in init_types:
             self.add(x)
@@ -28,26 +26,39 @@ class Environment:
                                                                    len(self.type_equations),
                                                                    len(self.type_assignments))
 
-    def var_query(self, other):
-        queried = self.var_types.query(other)
-        return queried
+    def query(self, query):
+        """ Check a query type against assignments """
+        for line in query:
+            queried = self.type_assignments.query(line)
+            if queried._type != line[-1]._type:
+                raise te.TypeConflictException(line[-1]._type,
+                                               queried._type,
+                                               "".join([str(x) for x in line]))
+        return True
 
     def validate(self):
-        val_queue = set()
+        """ Infer and check types """
+
         #merge equivalent variables
-        # { str_path : [] }
-        equivalent = {}
+        parents_of_equiv_vars = self.type_assignments.get_nodes(U.has_equivalent_vars_pred)
+        if bool(parents_of_equiv_vars):
+            logging.info("Has Equivalent Vars")
+            for p in parents_of_equiv_vars:
+                var_nodes = {x.var_node for x in p._children.values() if x.is_var}
+                head = var_nodes.pop()
+                head.merge(var_nodes)
+                [self.var_types.remove(x.path) for x in var_nodes]
 
-
-        #Set up the Base Environment
+        #Get known variable types
+        val_queue = set()
         for x in self.var_types.get_nodes(lambda x: x._type is not None):
             x.propagate()
             val_queue.update(x.nodes)
-
+        #And known types generally
         val_queue.update({y for y in self.type_assignments.get_nodes(lambda x: x._type is not None)})
 
+        #Use known types to infer unknown types
         dealt_with = set()
-        #Now Loop over known types, to check and infer unknown types
         while bool(val_queue):
             head = val_queue.pop()
             if head in dealt_with:
@@ -58,10 +69,13 @@ class Environment:
             if head_type is None:
                 raise te.TypeUndefinedException(head._type, head)
 
+            #Apply a known type to a node, get back newly inferred types
             newly_typed = head_type.validate(head)
             for x in newly_typed:
                 val_queue.add(x)
                 if x.is_var:
+                    #If inferred the type of a variable,
+                    #apply it to the var_type node, then
                     x.var_node.type_match(x._type)
                     val_queue.update(x.var_node.nodes)
 

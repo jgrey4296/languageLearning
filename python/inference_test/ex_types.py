@@ -29,6 +29,7 @@ class TypeDefinition(Type):
     def build_type_declaration(self):
         return MonoTypeVar(self.name, self.path)
 
+
 class MonoTypeVar(Type):
     """ A MonoType Instance """
     TypeCounter = 0
@@ -44,6 +45,9 @@ class MonoTypeVar(Type):
             path = name
         self.name = name
         self.path = path
+
+    def __hash__(self):
+        return hash("".join([str(x) for x in self.path]))
 
     def __repr__(self):
         return "(:: {})".format(self.name)

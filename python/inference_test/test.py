@@ -179,7 +179,6 @@ class ParserTesting(unittest.TestCase):
         env = Environment(result[:])
         env.validate()
         queried = env.type_assignments.query(p.safeParse(p.MAIN, ".a.$x")[0])
-        IPython.embed(simple_prompt=True)
         self.assertEqual(queried._type, result[1][-1]._type)
 
     def test_infer_component(self):
@@ -195,6 +194,162 @@ class ParserTesting(unittest.TestCase):
         result = p.safeParse(p.MAIN, the_string)
         env = Environment(result[:])
         env.validate()
+        env.query(p.safeParse(p.MAIN, ".$x (::first)"))
+
+    def test_type_conflict(self):
+        the_string = """
+        ::String: END
+        ::Number: END
+        .a.$x(::String)
+        .a.$y(::Number)
+        """
+        result = p.safeParse(p.MAIN, the_string)
+        env = Environment(result[:])
+        with self.assertRaises(te.TypeConflictException):
+            env.validate()
+
+    def test_type_undefined(self):
+        the_string = """
+        ::String: END
+        ::Number: END
+        .a.$x(::String)
+        .b.$y(::Blah)
+        """
+        result = p.safeParse(p.MAIN, the_string)
+        env = Environment(result[:])
+        with self.assertRaises(te.TypeUndefinedException):
+            env.validate()
+
+    def test_type_redefinition(self):
+        the_string = """
+        ::String: END
+        ::String: END
+        .a.$x(::String)
+        """
+        result = p.safeParse(p.MAIN, the_string)
+        with self.assertRaises(te.TypeRedefinitionException):
+            env = Environment(result[:])
+
+    def test_variable_conflict(self):
+        the_string = """
+        ::String: END
+        ::Number: END
+        .a.$x(::String)
+        .b.$x(::Number)
+        """
+        result = p.safeParse(p.MAIN, the_string)
+        with self.assertRaises(te.TypeConflictException):
+            env = Environment(result[:])
+
+    def test_structure_mismatch(self):
+        the_string = """
+        ::String: END
+        ::Number: END
+        ::first:
+            .name.$x(::String)
+        END
+
+        .a(::first).b
+        """
+        result = p.safeParse(p.MAIN, the_string)
+        env = Environment(result[:])
+        with self.assertRaises(te.TypeStructureMismatch):
+            env.validate()
+
+    def test_structure_type_conflict(self):
+        the_string = """
+        ::String: END
+        ::Number: END
+        ::first:
+            .name.$x(::String)
+        END
+
+        .a(::first).name.$y(::Number)
+        """
+        result = p.safeParse(p.MAIN, the_string)
+        env = Environment(result[:])
+        with self.assertRaises(te.TypeConflictException):
+            env.validate()
+
+    def test_typing_1(self):
+        the_string = """
+        ::String: END
+        ::Number: END
+
+        ::a.test.type:
+            .name.$x(::String)
+            .age.$y(::Number)
+        END
+
+        ::second.type:
+            .name.$x(::String)
+            .age.$y(::String)
+        END
+
+        .bob(::a.test.type).age.$z
+        .bill(::second.type).age.$q
+        """
+        result = p.safeParse(p.MAIN, the_string)
+        env = Environment(result[:])
+        env.validate()
+        self.assertTrue(env.query(p.safeParse(p.MAIN, ".bob.age.$z(::Number)\n .bill.age.$q(::String)")))
+
+    def test_typing_nested_vars(self):
+        the_string = """
+        ::String: END
+        ::Number: END
+
+        ::a.test.type:
+            .name.$x(::String).$y(::Number)
+        END
+
+        .bob(::a.test.type).name.$z.$q
+        """
+        result = p.safeParse(p.MAIN, the_string)
+        env = Environment(result[:])
+        env.validate()
+        self.assertTrue(env.query(p.safeParse(p.MAIN, ".bob.name.$z(::String)\n .bob.name.$z.$q(::Number)")))
+
+    def test_typing_nested_types(self):
+        the_string = """
+        ::String: END
+        ::Number: END
+
+        ::small.type:
+            .name.$x(::String)
+        END
+
+        ::large.type:
+           .component.$x(::small.type)
+        END
+
+        .a(::large.type).component.$q.name.$w
+        """
+        result = p.safeParse(p.MAIN, the_string)
+        env = Environment(result[:])
+        env.validate()
+        self.assertTrue(env.query(p.safeParse(p.MAIN, ".a(::large.type)\n .a.component.$q(::small.type)\n .a.component.$q.name.$w(::String)")))
+
+    def test_typing_nested_types_fail(self):
+        the_string = """
+        ::String: END
+        ::Number: END
+
+        ::small.type:
+            .name.$x(::String)
+        END
+
+        ::large.type:
+           .component.$x(::small.type)
+        END
+
+        .a(::large.type).component.$q.name.$w
+        """
+        result = p.safeParse(p.MAIN, the_string)
+        env = Environment(result[:])
+        env.validate()
+        with self.assertRaises(te.TypeConflictException):
+            self.assertTrue(env.query(p.safeParse(p.MAIN, ".a(::large.type)\n .a.component.$q(::small.type)\n .a.component.$q.name.$w(::Number)")))
 
 if __name__ == "__main__":
     #use python $filename to use this logging setup

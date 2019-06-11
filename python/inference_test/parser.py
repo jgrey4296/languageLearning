@@ -51,7 +51,6 @@ def makeTypeDef(data):
 
     return TypeDefinition(baseName, path, data.Structure)
 
-
 def makeTypeDec(data):
     path = safeParse(SENTENCE, ".{}{}".format(data[0], data.SEN))[0]
     baseName = path[-1]

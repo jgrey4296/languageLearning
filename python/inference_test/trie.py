@@ -90,16 +90,10 @@ class TypeDefTrieNode(TrieNode):
             current_def, current_usage_set = queue.pop(0)
             logging.info("Current Definition to Validate: {} : {} : {}".format(current_def.path, current_def.name, current_def._type))
             logging.info("Current Usage Set: {}".format(", ".join([str(x) for x in current_usage_set])))
-            if not isinstance(current_def, BasicNode) and not current_def.is_var:
+            if current_def.name != "__root":
                 for x in current_usage_set:
                     if not x.is_var and current_def.name != x.name:
                         raise te.TypeStructureMismatch(current_def.name, [x.name])
-
-            equivalent_vars = {x.var_node for x in current_usage_set if x.is_var}
-            if bool(equivalent_vars):
-                first_var = equivalent_vars.pop()
-                first_var.merge(equivalent_vars)
-
 
             if not bool(current_def) and current_def._type is not None:
                 logging.info("Val: No Children, assigning type: {} to {}".format(current_def._type, ", ".join([str(x) for x in current_usage_set])))
@@ -151,6 +145,7 @@ class M_TypedNode(TrieNode):
             raise te.TypeConflictException(self._type,
                                            _type,
                                            self.path)
+        return None
 
 
 class TypeAssignmentTrieNode(M_TypedNode):
@@ -180,7 +175,6 @@ class TypeAssignmentTrieNode(M_TypedNode):
             self.var_node.add_var_name(node)
             self.var_node.type_match_wrapper(node)
 
-
     def has_child(self, node):
         return node.name in self._children
 
@@ -189,14 +183,8 @@ class TypeAssignmentTrieNode(M_TypedNode):
 
 
 class VarTypeTrieNode(M_TypedNode):
-    TypeCounter = 0
 
     def __init__(self, node, path):
-        # letter = ascii_lowercase[VarTypeTrieNode.TypeCounter % len(ascii_lowercase)]
-        # num = int(VarTypeTrieNode.TypeCounter / len(ascii_lowercase))
-        # name = "{}{}".format(letter,num)
-        # VarTypeTrieNode.TypeCounter += 1
-        # super().__init__(name, path + [{'name': name}])
         super().__init__(node, path)
         self._type = node._type
         self.nodes = set([])
@@ -212,18 +200,25 @@ class VarTypeTrieNode(M_TypedNode):
         if node.is_var():
             self.var_names.add(node.name)
 
+    def add_node(self, node):
+        self.nodes.add(node)
+        node.is_var = True
+        node.var_node = self
+
     def propagate(self):
         if self._type is not None:
             for n in self.nodes:
                 n.type_match(self._type)
 
-
     def merge(self, nodes):
         assert(all([isinstance(x, VarTypeTrieNode) for x in nodes]))
         logging.info("Merging Variables: {} into {}".format(", ".join([x.name for x in nodes]), self.name))
-        for node in nodes:
-            self.nodes.update(node.nodes)
-            #TODO: Cleanup
+        #Get the set of all types for the variables
+        all_types = {x._type for x in nodes if x._type is not None}
+        # update self to point to all assignment nodes
+        [self.add_node(y) for x in nodes for y in x.nodes]
+        [self.type_match(x) for x in all_types]
+        self.propagate()
 
 
 class Trie:
