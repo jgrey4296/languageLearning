@@ -28,13 +28,15 @@ class Environment:
 
     def query(self, query):
         """ Check a query type against assignments """
+        queries = []
         for line in query:
             queried = self.type_assignments.query(line)
-            if queried._type != line[-1]._type:
+            if line[-1]._type is not None and queried._type != line[-1]._type:
                 raise te.TypeConflictException(line[-1]._type,
                                                queried._type,
                                                "".join([str(x) for x in line]))
-        return True
+            queries.append(queried)
+        return queries
 
     def validate(self):
         """ Infer and check types """
@@ -42,7 +44,7 @@ class Environment:
         #merge equivalent variables
         parents_of_equiv_vars = self.type_assignments.get_nodes(U.has_equivalent_vars_pred)
         if bool(parents_of_equiv_vars):
-            logging.info("Has Equivalent Vars")
+            logging.debug("Has Equivalent Vars")
             for p in parents_of_equiv_vars:
                 var_nodes = {x.var_node for x in p._children.values() if x.is_var}
                 head = var_nodes.pop()
