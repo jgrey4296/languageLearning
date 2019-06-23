@@ -1,0 +1,5 @@
+(osc-source "4444")
+(define d "osc.udp://localhost:57120")
+(osc-destination d)
+(osc-send "/a" "i" (list 400))
+(osc-send "/b" "i" (list 554))
