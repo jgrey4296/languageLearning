@@ -1,321 +1,44 @@
 * Python notes
-** Spacy
-   Currently loaded en_core_web_sm
-   Might use:
-   en_core_web_md
-   Using:
-   python -m spacy download en_core..
-** OSC
-   use [[https://github.com/attwad/python-osc/tree/master/pythonosc][python-osc]]
-** Python 3 Experiments
-*** Beautiful Soup
-*** [[http://www.bogotobogo.com/python/python_fncs_map_filter_reduce.php][Functional Style]]
-*** Graphics
-**** GUI
-***** tkinter
-***** qt
-**** pygame
-**** pyglfw
-**** [[https://pillow.readthedocs.io/en/3.2.x/][Pillow]]
-     [[http://web.archive.org/web/20130115175340/http://nadiana.com/pil-tutorial-basic-advanced-drawing][Tutorial]]
-     from PIL import Image, ImageDraw etc
-**** cairo
-*** [[https://docs.python.org/3/library/inspect.html][inspection]]
-*** Libraries
-**** Libraries of interest
-***** altgraph
-      Graph node/edge lib
-***** astropy
-      Astronomy stuff?
-***** Blaze?
-***** Bokeh
-      d3 like graphics?
-***** cryptography
-***** cycler
-***** cython
-***** django
-***** flask
-***** heapdict
-***** imageio
-***** itsdangerous
-***** jedi
-      static analysis
-***** leftrb
-      red black tree
-***** markupsafe
-***** networkx
-      anasis of networks/graphs
-***** oauthlib
-***** pandas
-***** patsy
-      statistical modelling
-***** pep8
-      format checking
-***** pycosat
-      sat solving
-***** pyparsing
-***** qtpy
-***** rope
-      refactoring?
-***** semver
-***** distutils / setuptools
-***** sphinx
-      documentation
-***** statsmodels?
-***** sympy
-      symbolic mathematics
-***** toolz
-***** tornado
-      web server?
-***** werkzeug
-      web dev swiss army knife?
-**** Anaconda Packages
-***** Cubes
-      https://pythonhosted.org/cubes/
-
-***** Disco
-      http://disco.readthedocs.org/en/latest/intro.html
-
-***** HDF5
-      http://www.hdfgroup.org/HDF5/doc/
-      http://www.h5py.org/
-
-***** Pil
-      http://pythonware.com/library/pil/handbook/
-
-***** lxml
-      http://lxml.de/index.html***documentation
-
-***** matplotlib
-      http://matplotlib.org/contents.html
-
-***** MPI
-      mpi4py.scipy.org/docs/usrman/index.html
-
-***** networkX
-      https://networkx.github.io/documentation/latest/index.html
-
-***** numexpr
-      https://code.google.com/p/numexpr/
-
-***** biopython
-      http://biopython.org/wiki/Documentation
-
-***** numpy
-      http://docs.scipy.org/doc/
-
-***** pandas
-      http://pandas.pydata.org/pandas-docs/dev/
-
-***** opencv
-      http://docs.opencv.org/
-
-***** pysal
-      pysal.geodacenter.org/1.4/users/introduction.html
-
-***** pysam
-      http://pysam.readthedocs.org/en/latest/
-
-***** pytables
-      https://pytables.github.io/usersguide/index.html
-
-***** scipy
-      http://docs.scipy.org/doc/scipy/reference/
-
-***** skimage
-      scikit-image.org/docs/dev/
-
-***** scikit
-      scikit-learn.org/stable/user_guide.html
-
-***** spyder
-      https://pythonhosted.org/spyder/
-
-***** statsmodels
-      http://statsmodels.sourceforge.net/documentation.html
-
-***** sympy
-      http://docs.sympy.org/latest/index.html
-
-***** theano
-      http://deeplearning.net/software/theano/
-
-***** astropy
-      http://docs.astropy.org/en/stable/
-
-***** boto
-      http://boto.cloudhackers.com/en/latest/
-
-***** cython
-      http://docs.cython.org/
-
-***** python-util
-      http://labix.org/python-dateutil
-
-***** distribute / setuptools
-      https://pythonhosted.org/setuptools/
-      https://pythonhosted.org/distribute/
-
-***** docutils
-      http://docutils.sourceforge.net/
-
-***** flask
-      http://flask.pocoo.org/docs/0.10/
-
-***** gevent
-      http://www.gevent.org/contents.html
-      https://github.com/tmc/gevent-zeromq
-      https://bitbucket.org/Jeffrey/gevent-websocket
-
-***** googlecl
-      https://code.google.com/p/googlecl/wiki/Manual
-
-***** greenlet
-      http://greenlet.readthedocs.org/en/latest/
-
-***** grin
-      https://pypi.python.org/pypi/grin
-
-***** ipython
-      http://ipython.org/documentation.html
-
-***** jinja2
-      http://jinja.pocoo.org/docs/dev/
-
-***** pyflakes
-      http://divmod.readthedocs.org/en/latest/products/pyflakes.html
-
-***** pycurl
-      http://pycurl.sourceforge.net/
-
-***** pycairo
-      http://cairographics.org/documentation/pycairo/2/
-
-***** pylib
-      https://readthedocs.org/projects/pylib/
-
-***** psutil
-      https://code.google.com/p/psutil/wiki/Documentation
-
-***** ply
-      http://www.dabeaz.com/ply/ply.html
-
-***** pip
-      https://pip.pypa.io/en/latest/
-
-***** nose
-      https://nose.readthedocs.org/en/latest/
-
-***** nltk
-      http://www.nltk.org/
-
-***** intel math kernal
-      https://software.intel.com/en-us/articles/intel-math-kernel-library-documentation
-
-***** django
-      https://docs.djangoproject.com/en/dev/misc/
-
-***** mdp-toolkit
-      http://mdp-toolkit.sourceforge.net/documentation.html
-
-***** libpng
-      http://www.libpng.org/pub/png/libpng-1.2.5-manual.html
-
-***** libevent
-      http://libevent.org/
-
-***** pygments
-      http://pygments.org/docs/
-
-***** pyparsing
-      http://pyparsing.wikispaces.com/Documentation
-
-***** pytest
-      http://pytest.org/latest/contents.html
-
-***** pytz
-      http://pytz.sourceforge.net/
-
-***** pyyaml
-      http://pyyaml.org/wiki/PyYAMLDocumentation
-
-***** pyZMQ
-      https://zeromq.github.io/pyzmq/
-
-***** QT
-      qt-project.org/doc/
-
-***** redis-py
-      http://redis-py.readthedocs.org/en/latest/
-
-***** requests
-      http://docs.python-requests.org/en/latest/
-
-***** six
-      pythonhosted.org/six/
-
-***** sphinx
-      http://sphinx-doc.org/contents.html
-
-***** sqlalchemy
-      http://docs.sqlalchemy.org/en/rel_0_8/
-
-***** xlwt
-      https://secure.simplistix.co.uk/svn/xlwt/trunk/xlwt/doc/xlwt.html?p=4966
-
-***** Google Drive Api
-      https://developers.google.com/drive/web/quickstart/quickstart-python
+** [[https://www.crummy.com/software/BeautifulSoup/bs4/doc/][Beautiful Soup]]
+** [[https://wiki.python.org/moin/PythonDecoratorLibrary][Decorators]]
+** [[http://www.bogotobogo.com/python/python_fncs_map_filter_reduce.php][Functional Style]]
+** GUI
+*** [[https://wiki.python.org/moin/TkInter][tkinter]]
+*** [[https://www.qt.io/qt-for-python][qt]]
+*** [[https://www.pygame.org/news][pygame]]
+*** [[https://github.com/pyglfw/pyglfw][pyglfw]]
+*** [[https://pillow.readthedocs.io/en/3.2.x/][Pillow]]
+    [[http://web.archive.org/web/20130115175340/http://nadiana.com/pil-tutorial-basic-advanced-drawing][Tutorial]]
+    from PIL import Image, ImageDraw etc
+*** [[https://pycairo.readthedocs.io/en/latest/][cairo]]
+    [[https://www.cairographics.org/pycairo/][pycairo]]
 
 *** [[http://matplotlib.org/][Matplotlib]]
     [[https://github.com/rougier/matplotlib-tutorial][Tutorial]]
-*** [[http://docs.python-guide.org/en/latest/writing/structure/][Module Structure]]
-*** NLP
-**** [[http://textblob.readthedocs.io/en/dev/][TextBlob]]
-**** [[https://spacy.io/][Spacy]]
-*** [[http://ipython.org/ipython-doc/stable/notebook/notebook.html#introduction][Notebooks]]
-*** [[http://www.numpy.org/][Numpy]]
-*** scikit-learn
-*** [[https://www.scipy.org/][Scipy]]
-*** [[http://stackoverflow.com/questions/1261875/python-nonlocal-statement#1261961][Scoping]]
-    Use "nonlocal x" to modify variables from other scopes
-    and also "global x"
-*** [[https://docs.python.org/3/library/unittest.html][Testing]]
-** Language
 
+** [[https://docs.python.org/3/library/inspect.html][inspection]]
+** Language
    [[http://anandology.com/python-practice-book/getting-started.html][Python Practice]]
    [[https://docs.python.org/2/py-modindex.html][Module List]]
    [[http://www.tutorialspoint.com/python/python_lists.htm][List operations]]
    [[https://wiki.python.org/moin/HowTo/Sorting][Sorting]]
-
 *** Arithmetic
-**** Math is what you would expect
-     1 + 1  * => 2
-     8 - 1  * => 7
-     10 * 2  * => 20
-     35 / 5  * => 7
-
-     7 % 3 * => 1
-
-**** Division is a bit tricky. It is integer division and floors the results automatically.
+**** Division is integer division and floors the results automatically.
      5 / 2  * => 2
 
-     11.0 / 4.0  * => 2.75 ahhh...much better
+     11.0 / 4.0  * => 2.75
 
-**** random numbers:
-     https://docs.python.org/2/library/random.html
-
+**** [[https://docs.python.org/2/library/random.html][random numbers:]]
      random.seed([x])
      random.randint(a,b)
      random.random() *0.0 - 1.0
 
-**** random sequence choice:
-     random.choice(seq)
-     random.shuffle(x[,random])
-     random.sample(population, k)
+***** random sequence choice:
+      random.choice(seq)
+      random.shuffle(x[,random])
+      random.sample(population, k)
 
-*** Basic Data Types
-    https://docs.python.org/2/library/stdtypes.html
-
+*** [[https://docs.python.org/2/library/stdtypes.html][Basic Data Types]]
     numerics,
     sequences,
     mappings,
@@ -324,97 +47,10 @@
     instances,
     exceptions.
 
-*** Bitwise
-
-*** Booleans
-**** Boolean Operators
-     +* Note "and" and "or" are case-sensitive
-     +True and False *=> False
-     +False or True *=> True
-     +
-     +* Note using Bool operators with ints
-     +0 and 2 *=> 0
-     +-5 or 0 *=> -5
-     +0 == False *=> True
-     +2 == True *=> False
-     1 == True *=> True
-
-**** Comparisons and Logic
-     isinstance(var, list)
-
-
-**** negate with not
-     not True  * => False
-     not False  * => True
-
-**** Equality is ==
-     1 == 1  * => True
-     2 == 1  * => False
-
-**** Inequality is !=
-     1 != 1  * => False
-     2 != 1  * => True
-
-**** More comparisons
-     1 < 10  * => True
-     1 > 10  * => False
-     2 <= 2  * => True
-     2 >= 2  * => True
-
-**** Comparisons can be chained!
-     1 < 2 < 3  * => True
-     2 < 3 < 2  * => False
-
-*** Comments
-**** Single line comments start with a number symbol.
-
-     """ Multiline strings can be written
-     using three "'s, and are often used
-     as comments
-     """
-
-*** Compilation
-
-*** Control Structures
-
-**** IF
-     if some_var > 10:
-     print("some_var is totally bigger than 10.")
-     elif some_var < 10:    * This elif clause is optional.
-     print("some_var is smaller than 10.")
-     else:           * This is optional too.
-     print("some_var is indeed 10.")
-
-
-**** FOR
-     for animal in ["dog", "cat", "mouse"]:
-     * You can use % to interpolate formatted strings
-     print("%s is a mammal" % animal)
-
-**** RANGE
-     "range(number)" returns a list of numbers
-     from zero to the given number
-     prints:
-     0
-     1
-     2
-     3
-
-     for i in range(4):
-     print(i)
-
-**** WHILE
-     While loops go until a condition is no longer met.
-     prints:
-     0
-     1
-     2
-     3
-
-     x = 0
-     while x < 4:
-     print(x)
-     x += 1  * Shorthand for x = x + 1
+*** TODO Bitwise
+*** Comparisons can be chained!
+    1 < 2 < 3  * => True
+    2 < 3 < 2  * => False
 
 *** Data Structures
 
@@ -470,7 +106,6 @@
 
 ***** Examine the length with "len()"
       len(li)   * => 6
-
 
 **** Tuples
 **** Tuples are like lists but are immutable.
@@ -554,7 +189,6 @@
      2 in filled_set   *** => True
      10 in filled_set   *** => False
 
-
 **** Objects
 **** None is an object
      None  *** => None
@@ -624,170 +258,6 @@
 **** Call the static method
      Human.grunt()   *** => "***grunt***"
 
-*** Decorators
-    in this example beg wraps say
-    Beg will call say. If say_please is True then it will change the returned
-    message
-
-
-    from functools import wraps
-
-
-    def beg(target_function):
-    @wraps(target_function)
-    def wrapper(*args, **kwargs):
-    msg, say_please = target_function(*args, **kwargs)
-    if say_please:
-    return "{} {}".format(msg, "Please! I am poor :(")
-    return msg
-
-    return wrapper
-
-
-    @beg
-    def say(say_please=False):
-    msg = "Can you buy me a beer?"
-    return msg, say_please
-
-
-    print(say())  * Can you buy me a beer?
-    print(say(say_please=True))  * Can you buy me a beer? Please! I am poor :(
-
-*** decorators:
-    @staticmethod
-    @classmethod
-
-*** Examples
-
-*** Exceptions
-    https://docs.python.org/2/tutorial/errors.html
-
-**** Handle exceptions with a try/except block
-     >>> try:
-     ...    raise Exception('spam', 'eggs')
-     ... except Exception as inst:
-     ...    print type(inst)     * the exception instance
-     ...    print inst.args      * arguments stored in .args
-     ...    print inst           * __str__ allows args to be printed directly
-     ...    x, y = inst.args
-     ...    print 'x =', x
-     ...    print 'y =', y
-     ...
-     <type 'exceptions.Exception'>
-     ('spam', 'eggs')
-     ('spam', 'eggs')
-     x = spam
-     y = eggs
-
-
-**** Works on Python 2.6 and up:
-     try:
-     * Use "raise" to raise an error
-     raise IndexError("This is an index error")
-     except IndexError as e:
-     pass    * Pass is just a no-op. Usually you would do recovery here.
-     except (TypeError, NameError):
-     pass    * Multiple exceptions can be handled together, if required.
-     else:   * Optional clause to the try/except block. Must follow all except blocks
-     print "All good!"   * Runs only if the code in try raises no exceptions
-
-     Optional Parameters: info(something, spacings=10)
-
-*** Functions
-
-**** Use "def" to create new functions
-     def add(x, y):
-     print("x is %s and y is %s" % (x, y))
-     return x + y    *** Return values with a return statement
-
-**** Calling functions with parameters
-     add(5, 6)   *** => prints out "x is 5 and y is 6" and returns 11
-
-**** Another way to call functions is with keyword arguments
-     add(y=6, x=5)   *** Keyword arguments can arrive in any order.
-
-
-**** You can define functions that take a variable number of
-**** positional arguments
-     def varargs(***args):
-     return args
-
-     varargs(1, 2, 3)   *** => (1, 2, 3)
-
-
-**** You can define functions that take a variable number of
-**** keyword arguments, as well
-     def keyword_args(******kwargs):
-     return kwargs
-
-**** Let's call it to see what happens
-     keyword_args(big="foot", loch="ness")   *** => {"big": "foot", "loch": "ness"}
-
-
-**** You can do both at once, if you like
-     def all_the_args(***args, ******kwargs):
-     print(args)
-     print(kwargs)
-     """
-     all_the_args(1, 2, a=3, b=4) prints:
-     (1, 2)
-     {"a": 3, "b": 4}
-     """
-
-**** When calling functions, you can do the opposite of args/kwargs!
-**** Use *** to expand tuples and use ****** to expand kwargs.
-     args = (1, 2, 3, 4)
-     kwargs = {"a": 3, "b": 4}
-     all_the_args(***args)   *** equivalent to foo(1, 2, 3, 4)
-     all_the_args(******kwargs)   *** equivalent to foo(a=3, b=4)
-     all_the_args(***args, ******kwargs)   *** equivalent to foo(1, 2, 3, 4, a=3, b=4)
-
-**** Function Scope
-     x = 5
-
-     def setX(num):
-     *** Local var x not the same as global variable x
-     x = num *** => 43
-     print (x) *** => 43
-
-     def setGlobalX(num):
-     global x
-     print (x) *** => 5
-     x = num *** global var x is now set to 6
-     print (x) *** => 6
-
-     setX(43)
-     setGlobalX(6)
-
-**** Python has first class functions
-     def create_adder(x):
-     def adder(y):
-     return x + y
-     return adder
-
-     add_10 = create_adder(10)
-     add_10(3)   *** => 13
-
-**** There are also anonymous functions
-     (lambda x: x > 2)(3)   *** => True
-
-**** There are built-in higher order functions
-     map(add_10, [1, 2, 3])   *** => [11, 12, 13]
-     filter(lambda x: x > 5, [3, 4, 5, 6, 7])   *** => [6, 7]
-
-**** We can use list comprehensions for nice maps and filters
-     [add_10(i) for i in [1, 2, 3]]  *** => [11, 12, 13]
-     [x for x in [3, 4, 5, 6, 7] if x > 5]   *** => [6, 7]
-
-*** General Notes:
-    tuples use () and ','. Can't be changed after creation
-    dictionaries use {}
-    lists use []. append not push. pop.
-    all access through []
-    functions defined with 'def'
-
-    ",".join(["a","b","c"])
-
 *** Generators
     def double_numbers(iterable):
     for i in iterable:
@@ -810,33 +280,6 @@
      print(i)
      if i >= 30:
      break
-
-*** Good Style / unicode
-    # -*- coding: utf-8 -*-
-
-    #re.sub(ur'[\u064B-\u0652\u06D4\u0670\u0674\u06D5-\u06ED]+', '', ...)
-*** Imports
-**** You can import modules
-     import math
-     print(math.sqrt(16))  * => 4
-
-**** You can get specific functions from a module
-     from math import ceil, floor
-     print(ceil(3.7))  * => 4.0
-     print(floor(3.7))   * => 3.0
-
-**** You can import all functions from a module.
-     Warning: this is not recommended
-
-     from math import *
-
-**** You can shorten module names
-     import math as m
-     math.sqrt(16) == m.sqrt(16)   * => True
-
-**** You can find out which functions and attributes defines a module.
-     import math
-     dir(math)
 
 *** Input:
 
@@ -870,9 +313,7 @@
      for a in memberList:
      print a
 
-*** json:
-    https://docs.python.org/2/library/json.html
-
+*** [[https://docs.python.org/2/library/json.html][json:]]
     import json
     json.dumps([1,'simple','list'])
     json.dump(x,f) *if f is a file object for writing, serialises object x
@@ -886,7 +327,6 @@
     outputFile.close();
 
 *** Language Specific Concepts:
-
 **** Beautiful Soup
      http://www.crummy.com/software/BeautifulSoup/bs4/doc/
 
@@ -957,12 +397,7 @@
       soup.find_all(text="Elsie")
 
 *** Links
-    https://docs.python.org/2/library/json.html
-    https://docs.python.org/2/reference/
-    https://docs.python.org/2/tutorial/errors.html
-    https://docs.python.org/2/library/random.html
     https://wiki.python.org/moin/ParallelProcessing
-    https://docs.python.org/2/library/stdtypes.html
     http://www.tutorialspoint.com/python/python_overview.htm
     http://www.nltk.org/book/
     http://www.nltk.org/
@@ -974,8 +409,6 @@
     http://www.aaronstannard.com/post/2012/08/17/How-to-Setup-a-Proper-Python-Environment-on-Windows.aspx
     https://cloud.github.com/downloads/tartley/python-regex-cheatsheet/cheatsheet.pdf
     http://www.slideshare.net/Siddhi/creating-domain-specific-languages-in-python
-*** Memory Management
-
 *** None is an object
     None  * => None
 
@@ -993,9 +426,7 @@
       bool(0)  * => False
       bool("")  * => False
 
-*** Regex:
-    http://flockhart.virtualave.net/RBIF0100/regexp.html
-
+*** [[http://flockhart.virtualave.net/RBIF0100/regexp.html][Regex:]]
     import re
     p = re.compile(r"ab*", re.IGNORECASE)
 
@@ -1023,60 +454,271 @@
     except Error:
     *handle
 
-*** Scope
-
-*** Strings
-**** Strings are created with " or '
-     "This is a string."
-     'This is also a string.'
-
-**** Strings can be added too!
-     "Hello " + "world!"  * => "Hello world!"
-
-**** A string can be treated like a list of characters
-     "This is a string"[0]  * => 'T'
-
-**** % can be used to format strings, like this:
-     "%s can be %s" % ("strings", "interpolated")
-
-**** A newer way to format strings is the format method.
-     "{0} can be {1}".format("strings", "formatted")
-**** You can use keywords if you don't want to count.
-     "{name} wants to eat {food}".format(name="Bob", food="lasagna")
-
-
-**** Strip whitespace:
-     "a string     ".strip()
-
-**** also has rstrip and lstrip
-
+*** [[http://stackoverflow.com/questions/1261875/python-nonlocal-statement#1261961][Scoping]]
+    Use "nonlocal x" to modify variables from other scopes
+    and also "global x"
 *** Time / Sleeping
     import time
     time.sleep(5) * delays for 5 seconds
 
-*** URL requests
-    http://www.pythonforbeginners.com/python-on-the-web/how-to-use-urllib2-in-python/
-    ***urllib2:
-    response = urllib2.urlopen("url")
-    html = response.read()
+*** [[http://www.pythonforbeginners.com/python-on-the-web/how-to-use-urllib2-in-python/][URL requests]]
+** Anaconda Packages
+*** astropy
+    http://docs.astropy.org/en/stable/
 
-**** or with requests:
-     args = {'q':'query string','foo':'bar'}
-     data = urllib.urlencode(args)
-     request = urllib2.Request(url,data)
-     response = urllib2.urlopen(request)
+*** biopython
+    http://biopython.org/wiki/Documentation
 
-*** Value vs Reference
+*** boto
+    http://boto.cloudhackers.com/en/latest/
 
-*** Variables
+*** Cubes
+    https://pythonhosted.org/cubes/
 
-**** No need to declare variables before assigning to them.
-     some_var = 5    * Convention is to use lower_case_with_underscores
-     some_var  * => 5
+*** cython
+    http://docs.cython.org/
 
-**** Accessing a previously unassigned variable is an exception.
-     some_other_var  * Raises a name error
+*** Disco
+    http://disco.readthedocs.org/en/latest/intro.html
 
-*** Whitespace and Statements
-    Whitespace is important, maintain indentation
+*** distribute / setuptools
+    https://pythonhosted.org/setuptools/
+    https://pythonhosted.org/distribute/
 
+*** django
+    https://docs.djangoproject.com/en/dev/misc/
+
+*** docutils
+    http://docutils.sourceforge.net/
+
+*** flask
+    http://flask.pocoo.org/docs/0.10/
+
+*** gevent
+    http://www.gevent.org/contents.html
+    https://github.com/tmc/gevent-zeromq
+    https://bitbucket.org/Jeffrey/gevent-websocket
+
+*** Google Drive Api
+    https://developers.google.com/drive/web/quickstart/quickstart-python
+
+*** googlecl
+    https://code.google.com/p/googlecl/wiki/Manual
+
+*** greenlet
+    http://greenlet.readthedocs.org/en/latest/
+
+*** grin
+    https://pypi.python.org/pypi/grin
+
+*** HDF5
+    http://www.hdfgroup.org/HDF5/doc/
+    http://www.h5py.org/
+
+*** intel math kernal
+    https://software.intel.com/en-us/articles/intel-math-kernel-library-documentation
+
+*** ipython
+    http://ipython.org/documentation.html
+
+*** jinja2
+    http://jinja.pocoo.org/docs/dev/
+
+*** libevent
+    http://libevent.org/
+
+*** libpng
+    http://www.libpng.org/pub/png/libpng-1.2.5-manual.html
+
+*** lxml
+    http://lxml.de/index.html***documentation
+
+*** matplotlib
+    http://matplotlib.org/contents.html
+
+*** mdp-toolkit
+    http://mdp-toolkit.sourceforge.net/documentation.html
+
+*** MPI
+    mpi4py.scipy.org/docs/usrman/index.html
+
+*** networkX
+    https://networkx.github.io/documentation/latest/index.html
+
+*** nltk
+    http://www.nltk.org/
+
+*** nose
+    https://nose.readthedocs.org/en/latest/
+
+*** numexpr
+    https://code.google.com/p/numexpr/
+
+*** numpy
+    http://docs.scipy.org/doc/
+
+*** opencv
+    http://docs.opencv.org/
+
+*** pandas
+    http://pandas.pydata.org/pandas-docs/dev/
+
+*** Pil
+    http://pythonware.com/library/pil/handbook/
+
+*** pip
+    https://pip.pypa.io/en/latest/
+
+*** ply
+    http://www.dabeaz.com/ply/ply.html
+
+*** psutil
+    https://code.google.com/p/psutil/wiki/Documentation
+
+*** pycairo
+    http://cairographics.org/documentation/pycairo/2/
+
+*** pycurl
+    http://pycurl.sourceforge.net/
+
+*** pyflakes
+    http://divmod.readthedocs.org/en/latest/products/pyflakes.html
+
+*** pygments
+    http://pygments.org/docs/
+
+*** pylib
+    https://readthedocs.org/projects/pylib/
+
+*** pyparsing
+    http://pyparsing.wikispaces.com/Documentation
+
+*** pysal
+    pysal.geodacenter.org/1.4/users/introduction.html
+
+*** pysam
+    http://pysam.readthedocs.org/en/latest/
+
+*** pytables
+    https://pytables.github.io/usersguide/index.html
+
+*** pytest
+    http://pytest.org/latest/contents.html
+
+*** python-util
+    http://labix.org/python-dateutil
+
+*** pytz
+    http://pytz.sourceforge.net/
+
+*** pyyaml
+    http://pyyaml.org/wiki/PyYAMLDocumentation
+
+*** pyZMQ
+    https://zeromq.github.io/pyzmq/
+
+*** QT
+    qt-project.org/doc/
+
+*** redis-py
+    http://redis-py.readthedocs.org/en/latest/
+
+*** requests
+    http://docs.python-requests.org/en/latest/
+
+*** scikit
+    scikit-learn.org/stable/user_guide.html
+
+*** scipy
+    http://docs.scipy.org/doc/scipy/reference/
+
+*** six
+    pythonhosted.org/six/
+
+*** skimage
+    scikit-image.org/docs/dev/
+
+*** sphinx
+    http://sphinx-doc.org/contents.html
+
+*** spyder
+    https://pythonhosted.org/spyder/
+
+*** sqlalchemy
+    http://docs.sqlalchemy.org/en/rel_0_8/
+
+*** statsmodels
+    http://statsmodels.sourceforge.net/documentation.html
+
+*** sympy
+    http://docs.sympy.org/latest/index.html
+
+*** theano
+    http://deeplearning.net/software/theano/
+
+*** xlwt
+    https://secure.simplistix.co.uk/svn/xlwt/trunk/xlwt/doc/xlwt.html?p=4966
+
+** Libraries of interest
+*** altgraph
+    Graph node/edge lib
+*** astropy
+    Astronomy stuff?
+*** Blaze?
+*** Bokeh
+    d3 like graphics?
+*** cryptography
+*** cycler
+*** cython
+*** distutils / setuptools
+*** django
+*** flask
+*** heapdict
+*** imageio
+*** itsdangerous
+*** jedi
+    static analysis
+*** leftrb
+    red black tree
+*** markupsafe
+*** networkx
+    anasis of networks/graphs
+*** oauthlib
+*** pandas
+*** patsy
+    statistical modelling
+*** pep8
+    format checking
+*** pycosat
+    sat solving
+*** pyparsing
+*** qtpy
+*** rope
+    refactoring?
+*** semver
+*** sphinx
+    documentation
+*** statsmodels?
+*** sympy
+    symbolic mathematics
+*** toolz
+*** tornado
+    web server?
+*** werkzeug
+    web dev swiss army knife?
+** [[http://docs.python-guide.org/en/latest/writing/structure/][Module Structure]]
+** NLP
+*** [[https://spacy.io/][Spacy]]
+    Currently loaded en_core_web_sm
+    Might use:
+    en_core_web_md
+    Using:
+    python -m spacy download en_core..
+*** [[http://textblob.readthedocs.io/en/dev/][TextBlob]]
+*** [[https://spacy.io/][Spacy]]
+** [[http://ipython.org/ipython-doc/stable/notebook/notebook.html#introduction][Notebooks]]
+** [[http://www.numpy.org/][Numpy]]
+** [[https://github.com/attwad/python-osc/tree/master/pythonosc][python-osc]]
+** [[https://scikit-learn.org/stable/index.html][scikit-learn]]
+** [[https://www.scipy.org/][Scipy]]
+** [[https://docs.python.org/3/library/unittest.html][Testing]]

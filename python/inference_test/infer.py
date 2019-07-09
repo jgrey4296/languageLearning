@@ -2,16 +2,17 @@
 A Type Inference Algorithm
 """
 
-#Define base Mono Types (var, func, const, list...)
 class MonoType:
+    #Define base Mono Types (var, func, const, list...)
 
     def __init__(self, name, components):
         assert(isinstance(components, list))
         self.name = name
+        #Components is a list of: MonoTypes, Lists (for functions) and Tries (for structures)
         self.components = components
 
-    #define mono types' free variables
     def free_vars(self):
+        #define mono types' free variables
         free = [x.free_vars() for x in self.components if isinstance(x, MonoType)]
         free += [x for x in self.components if not isinstance(x, MonoType)]
         return free
@@ -38,8 +39,12 @@ class MonoType:
         # name -> mtype -> subst
         return
 
-#define Poly Type
+    def generalize(self, env):
+        return PolyType()
+
+
 class PolyType:
+    #define Poly Type
 
     def __init__(self, name, foralls, mType):
         self.name = name
@@ -58,8 +63,12 @@ class PolyType:
         new_mtype = self.mType.apply_substitution(new_sub)
         return PolyType(self.name, self.foralls, new_mtype)
 
-#Define an environment
+    def instantiate(self):
+        return MonoType()
+
+
 class Environment:
+    #Define an environment
 
     def __init__(self, components):
         assert(isinstance(components, dict))
@@ -84,8 +93,9 @@ class Environment:
         #run the unification
         return
 
-#define a substitution
+
 class Substitution:
+    #define a substitution
 
     def __init__(self, mapping):
         self.mapping = mapping

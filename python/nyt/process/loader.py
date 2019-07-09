@@ -21,7 +21,6 @@ def list_data(dir=DATA_DIR, filetype=DATA_TYPE):
     files_of_type = [splitext(x)[0] for x in files if splitext(x)[1] == filetype]
     return files_of_type
 
-
 def load_file(filename, dir=DATA_DIR, filetype=DATA_TYPE):
     """ load a nyt response json file and return the docs in the file  """
     file_loc = join(dir,(filename + filetype))
