@@ -3,24 +3,27 @@
   [[http://www.cs.utexas.edu/users/tag/mad/][MAD]]
   [[https://www.cs.utexas.edu/users/tag/cc/tutorial/toc.html][Online Tutorial]].
 
-** Using
+** Running
+   start swipl6 with ccal loaded:
+   swipl6 -f path/to/ccalc.pl
+
+** System Dependencies
    Needs swi-prolog < 7
-   So rebuild from the git ref 406202420c of [[https://github.com/SWI-Prolog/swipl][swipl]] 
+   So rebuild from the git ref 406202420c of [[https://github.com/SWI-Prolog/swipl][swipl]]
    You need to update submodules first *before* going off HEAD.
    Make sure to add the compiler flags *brew info readline* suggests.
-  
+
    Solvers need to be put in a *Darwin* solvers subdir.
    For Solvers, use [[https://github.com/roberto-bayardo/relsat][relsat]].
    [[https://gitlab.com/HenryKautz/Walksat][Walksat]] also compiles but doesn't output solutions.
 
 ** Syntax
-   
 *** Constants
     Types: fluent, intertialFluent, exogenousAction
 
     #+begin_src prolog
     :- constants
-    	p :: inertialFluent(0..3);
+      p :: inertialFluent(0..3);
         a :: exogenousAction.
     #+end_src
 
@@ -37,19 +40,19 @@
     Uppercase as standard in prolog.
     #+begin_src prolog
     :- variables
-    	I :: 0..2.
+      I :: 0..2.
 
     a causes c=I+1 if c=I.
     #+end_src
 
 *** Macros
-    
+
     #+begin_src prolog
     :- macros
-    	n -> 3.
+      n -> 3.
 
     :- constants
-    	p :: inertialFluent(0..n).
+      p :: inertialFluent(0..n).
     #+end_src
 
 *** Queries
@@ -58,11 +61,11 @@
     #+begin_src prolog
     %% Calls for finding paths of length 1.
     :- query
-    	maxstep :: 1.
+      maxstep :: 1.
     #+end_src
 
     Add requirements at particular nodes or edges.
-    #+begin_src prolog 
+    #+begin_src prolog
       :- query
          maxstep :: 2;
          0 : c=5; %% '& a'; or ', a;'
@@ -71,15 +74,94 @@
          maxstep :: 1.
     #+end_src
 
-** Examples
+** Sandbox
    [[https://www.cs.utexas.edu/users/tag/cc/examples/][Examples Source]]
 
-   To Run:
-   #+begin_src prolog
-   loadf [zoo, 'zoo-example', 'zoo-test1'].
-   query 0.
+   #+begin_src ccalc :results output :session test :as-file
+     :- macros
+        n -> 10.
+
+     :- constants
+        c :: inertialFluent(0..n);
+        a ,
+        b :: exogenousAction.
+
+     :- variables
+        I :: 0..n-1.
+
+
+     a causes c=I+1 if c=I.
+     b causes c=I+2 if c=I, I+2 < n.
+
+     nonexecutable a if c >= n.
+     nonexecutable b if c >= n-2.
+
+     :- query          % prediction
+        label :: 1;
+        maxstep :: 2;
+        0: c=5;
+        0: a;
+        1: a.
+
+     :- query          % postdiction
+        label :: 2;
+        maxstep :: 2;
+        maxstep: c=5;
+        0: a;
+        1: a.
+
+     :- query          % planning
+        label :: 3;
+        maxstep :: 0..infinity;
+        0: c=4;
+        maxstep: c=10.
    #+end_src
 
+   #+RESULTS:
+   : % loading file /Users/johngrey/github/otherlibs/ccalc/macros.std
+   : % loading file /var/folders/05/6hrrhxsn3j5b04g76y1zckbh0000gq/T/babel-E6eak2/ccalc-2B0UtQ.pl
+   : % in transition mode...
+   : % 24 atoms, 48 rules, 149 clauses (28 new atoms)
+   : % Grounding time: 0.02 seconds
+   : % Completion time: 0.00 seconds
+   : % Total time: 0.03 seconds
+   : true .
+
+   #+begin_src ccalc :results value :session test
+   loadf coins.
+   #+end_src
+
+   #+begin_src ccalc :results output :session test
+   query 1.
+   #+end_src
+
+   #+RESULTS:
+   #+begin_example
+   % Shifting atoms and clauses... done. (0.00 seconds)
+   % After shifting: 83 atoms (including new atoms), 257 clauses
+   % Writing input clauses... done.  (0.00 seconds)
+   % Calling relsat 2.0... done.
+   % Reading output file(s) from SAT solver... done.
+   % Solution time: 0 seconds (prep 0 seconds, search 0 seconds)
+
+   0:  c=5
+
+   ACTIONS:  a
+
+   1:  c=6
+
+   ACTIONS:  a
+
+   2:  c=7
+
+
+   true .
+   #+end_example
+
+
+
+
+** Zoo
    Giunchiglia et al:
    [[file:monkeys::%25%20Monkey%20and%20Bananas%20("Nonmonotonic%20Causal%20Theories,"%20Figures%2010-12)][Monkeys]]
    [[file:prediction][Prediction and Postdiction]]
