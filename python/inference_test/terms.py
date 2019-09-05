@@ -1,6 +1,7 @@
 from enum import Enum
 from string import ascii_lowercase
 from util import BasicNode
+import IPython
 import type_exceptions as te
 import logging as root_logger
 logging = root_logger.getLogger(__name__)
@@ -38,14 +39,11 @@ class ExConst(Term):
         if self.ex == ExOp.EX:
             exstr = "!"
         if self._type != None:
-            type_str = str(self._type)
+            type_str = repr(self._type)
         return "{}{}{}".format(exstr, self.name, type_str)
 
     def __str__(self):
-        exstr = "."
-        if self.ex == ExOp.EX:
-            exstr = "!"
-        return "{}{}".format(exstr, self.name)
+        return self.name
 
     def __eq__(self, other):
         type_match = type(self) == type(other)
@@ -70,10 +68,7 @@ class ExVar(ExConst):
         return "{}${}{}".format(exstr, self.name, type_str)
 
     def __str__(self):
-        exstr = "."
-        if self.ex == ExOp.EX:
-            exstr = "!"
-        return "{}${}".format(exstr, self.name)
+        return self.name
 
     def abs_var(self):
         exstr = "."
@@ -90,7 +85,6 @@ class ExVar(ExConst):
 
         return ExVar(self.ex, self.name, the_type)
 
-
     def is_var(self):
         return True
 
@@ -98,13 +92,14 @@ class ExVar(ExConst):
 class Rule(Term):
     """ A Simplified Rule: consists of a list of sentences """
 
-    def __init__(self, name, struct):
+    def __init__(self, name, path, struct):
         self.name = name
+        self.path = path
         self.struct = struct
         self._type = "Rule"
 
     def __repr__(self):
-        return "Rule: {}".format(self.name)
+        return "Rule: {}".format(repr(self.name))
 
     def __str__(self):
         return "{}:\n{}\nEND".format(self.name,

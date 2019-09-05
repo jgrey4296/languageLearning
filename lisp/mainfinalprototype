@@ -1,0 +1,240 @@
+;Setup:
+(clear) ;clear, get a clean slate
+(collisions 1) ;turn on physics
+;(ortho) ;ortho perspective is weird
+(set-max-physical 50) ;maximimum number of physical objects
+(gravity (vector 0 -1 0)) ;ensure gravity
+
+;Surface order: friction ? bounciness "spongyness"
+(surface-params 1 0.1 0.1 0.1) ;set bounciness and friction to 1000 and 2 if you like
+
+;The physical object to use: (edit these for easy changes)
+(define (physObject) (build-cylinder 10 10))
+(define (makePhysical x) (active-cylinder x))
+
+
+;a looping count to spread the amount of output OSC messages:
+(define OSCCount 0)
+(define OSCLoopSize 20)
+(define (OSCInc)
+    (cond [(< OSCCount OSCLoopSize) (set! OSCCount (+ OSCCount 1))]
+          [(>= OSCCount OSCLoopSize) (set! OSCCount 0)]))
+
+;can allow fog for ambience.
+(clear-colour (vector 0.0 0.0 0.0))
+;(fog (vector 0 0 0) 0.0 1000 1000)
+
+;set OSC stuff:
+(osc-source "4444")
+(define d "osc.udp://localhost:57120")
+(osc-destination d)
+
+;Global list of temporary objects
+(define objList (list)) ;a list of physical objects (created when u is pressed)
+(define nonPhyList (list)) ;a list of nonphysical objects (created when i is pressed)
+
+
+(define m (with-state
+        (translate (vector 2 0 0))
+        (build-sphere 30 30)))
+
+(active-sphere m)
+(set-mass m 0.5)
+
+
+;Setting up the camera
+(define camCube (with-state
+        ;(translate (vector 0 0 30))
+        ;comment this in for weirdness
+            ;(parent m)
+        (build-sphere 1 1)))
+(with-primitive camCube (hide 1))
+(lock-camera camCube)
+
+
+;extract position, return a vector
+(define (extPosVec a)
+    (with-primitive a
+        (vtransform (vector 0 0 0) (get-transform))))
+
+
+
+;light stuff:
+;turn off main light
+(light-diffuse 0 (vector 0 0 0))
+(light-specular 0 (vector 0 0 0))
+(light-ambient 0 (vector 0 0 0))
+
+(define mylight (make-light `spot `free))
+(light-position mylight (extPosVec camCube))
+(light-diffuse mylight (vector 1 1 1))
+(light-ambient mylight (vmul (rndvec) 0.1))
+(light-specular mylight (vmul (rndvec) 10))
+(light-spot-angle mylight 45)
+(light-spot-exponent mylight 500)
+(light-attenuation mylight `constant 1)
+(light-direction mylight (vector -1 0 -1))
+
+
+(define (updateLight)
+  (let [(camPos (extPosVec camCube))]
+    (vector-set! camPos 1 (+ (vector-ref camPos 1) 4))
+    (vector-set! camPos 2 (+ (vector-ref camPos 2) 5))
+    (light-position mylight camPos)
+    (let [(nDir (vsub (extPosVec m) camPos))]
+      (light-direction mylight nDir))))
+
+;Extract position from a primitives transform, returns a list
+(define (extPos t)
+    (with-primitive t
+        (let [(temp (vtransform (vector 0 0 0) (get-transform)))]
+        (list (vector-ref temp 0) (vector-ref temp 1) (vector-ref temp 2)))))
+
+;functions to move the cam cube in relation to an object
+(define (locdifference a b)
+    (let [(aLoc (extPosVec a)) (bLoc (extPosVec b))]
+      (let [(moveVec (vsub aLoc bLoc))]
+          (with-primitive b
+                (translate moveVec)
+		(translate (vector 0 3 -3))))))
+
+;The bounds of the world:
+;the floor
+(define floor (with-state 
+       (translate (vector 0 -10.1 0))
+       (rotate (vector 90 0 0))
+        (scale (vector 100 100 100))
+        (build-plane)))
+(ground-plane (vector 0 1 0) -10)
+
+;an unused wall function
+(define (wall x y z sx sy sz) (with-state
+    (translate (vector x y z))
+    (scale (vector sx sy sz))
+    (hint-wire)
+    (let [(a (build-cube))]
+    (passive-box a)
+    a)))
+
+;a room, with positions x and z, size of the walls, and a list of
+;which walls to render.
+(define (room x z s w)
+  (cond 
+   [(not (null? w))
+    (let [(a (with-state
+	      (translate (vector x 0 z))
+	      (rotate (vector 0 (* 90 (car w)) 0))
+	      (translate (vector s -10 0))
+	      (scale (vector 0.1 8 (* s 2)))
+	      (build-cube)))]
+      (with-primitive a
+		      (rotate (vector 0 (* 90 (car w)) 0)))
+      (passive-box a))
+
+    (room x z s (cdr w))]))
+
+;create the map
+(room 0 0 5 (list 2 3 4))
+(room 0 -10 5 (list 1))
+(room -10 -10 5 (list 1 3))
+(room -20 -10 5 (list 2 3))
+(room -20 -20 5 (list 1 2 4))
+
+(room 10 -10 5 (list 1 3))
+(room 20 -10 5 (list 3 4))
+(room 20 -20 5 (list 1 2 4))
+
+
+;change to hide the walls
+(define hideBool 0)
+;(with-primitive (wall 20 -10 0 1 40 40) (hide hideBool))
+;(with-primitive (wall -20 -10 0 1 40 40) (hide hideBool))
+;(with-primitive (wall 0 -10 -20 40 40 1) (hide hideBool))
+;(with-primitive (wall 0 10 0 40 1 40) (hide hideBool))
+;(define front (wall 0 -10 20 40 40 1))
+;(with-primitive front (hide 1))
+
+;The user interaction
+(define (kpress)
+    (cond
+        [(key-pressed "d") (kick m (vector 0.2 0 0))]
+        [(key-pressed "s") (kick m (vector 0 0.0 0.2))]
+        [(key-pressed "a") (kick m (vector -0.2 0.0 0))]
+        [(key-pressed "w") (kick m (vector 0 0.0 -0.2))]
+        [(key-pressed "q") (kick m (vector 0 0.2 0))]
+        [(key-pressed "e") (kick m (vector 0 -0.2 0))]
+        [(key-pressed "r") (physics-remove m) (active-sphere m)]))
+
+(define (add-phy-cube)
+    (let [(a (extPos m))] 
+    (with-state (translate (vector (car a) (car (cdr a)) (- (car (cdr
+								  (cdr
+								   a))) 3)))
+        (colour (rndvec))
+;edit these for different shapes
+    (let [(t (physObject))]
+    (makePhysical t)
+    (set! objList (cons t objList))))))
+
+(define (add-cube)
+    (concat (with-primitive m (get-transform)))
+    (with-state (translate (vector 0 0 -2))
+        (colour (rndvec))
+        (opacity 0.4)
+        ;(scale (vmul (rndvec) 2))
+;edit this for different shapes
+    (let [(t (build-sphere 5 5))]
+    (set! nonPhyList (cons t nonPhyList)))))
+
+(define (addbutton)
+    (cond [(key-pressed "u") (add-phy-cube)]
+          [(key-pressed "i") (add-cube)]))
+
+
+;what happens when something collides
+(define (coll)
+    (cond [(has-collided m) (with-primitive m (colour (rndvec)))
+                            (kick m (vector 0 0.01 0))
+			    (let [(mLoc (extPosVec m))]
+			      (with-state (colour (rndvec))
+			                  (translate mLoc)
+					  (translate (vector 0 -1.45 0))
+					  (rotate (vector 90 0 0))
+					  (scale (vector 3 3 3))
+					  (build-plane)))
+]))
+
+;manual cleanup of physical objects so the "player" isnt destroyed
+(define (cleanup)
+    (cond [(< OSCLoopSize (length objList))
+        (physics-remove (car (reverse objList)))
+        (destroy (car (reverse objList)))
+        (set! objList (reverse (cdr (reverse objList))))]))
+
+
+;recursive function to send OSC info for all physical objects
+(define (os-recur x)
+     (cond 
+        [(not (null? x)) 
+        (cond [(equal? (length x) OSCCount)
+            (osc-send "/phys" "ifff" (cons (length x) (extPos (car x))))])
+        (OSCInc)
+        (os-recur (cdr x))]))
+
+;An every-frame function to send OSC messages
+(define (osc-s)
+   (os-recur objList)
+)
+
+;Collect all things to run each frame
+(define (keys)
+    (kpress)
+    (coll)
+    (addbutton)
+    (cleanup)
+    (osc-s)
+    (locdifference m camCube)
+    (updateLight))
+
+;run every frame
+(every-frame (keys))

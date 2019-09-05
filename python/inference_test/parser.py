@@ -18,14 +18,13 @@ opLn = op(Ln)
 comment = s(pp.dblSlashComment)
 
 NAME = pp.Word(pp.alphas)
-LATER_PARSE_SEN = pp.Word(pp.alphas + ".!$")
 DOLLAR = s(pp.Literal('$'))
 DBLCOLON = s(pp.Literal('::'))
-COLON = s(pp.Literal(':'))
+COLON = s(pp.Keyword(':', ":"))
 EQUAL = s(pp.Keyword('='))
 VERT_LINE = s(pp.Keyword('|'))
-OBRACKET = s(pp.Keyword('['))
-CBRACKET = s(pp.Keyword(']'))
+OBRACKET = s(pp.Literal('['))
+CBRACKET = s(pp.Literal(']'))
 COMMA = s(pp.Keyword(','))
 ARROW = s(pp.Keyword('->'))
 OPAR = s(pp.Literal('('))
@@ -45,55 +44,79 @@ def N(name, parser):
 #Ctor utilities
 def makeTypeDef(data):
     #convert sentences of structure to name : typeOfLeaf
-    path = safeParse(SENTENCE, ".{}{}".format(data.TypeName[0],
-                                              data.SEN))[0]
+    path = data.SEN[:]
     baseName = path[-1]
-
-    return TypeDefinition(baseName, path, data.Structure)
+    tvars = []
+    if data.TVars:
+        tvars = data.TVars[:]
+    return TypeDefinition(baseName, path, data.Structure[:], tvars)
 
 def makeTypeDec(data):
-    path = safeParse(SENTENCE, ".{}{}".format(data[0], data.SEN))[0]
+    path = data.SEN[:]
     baseName = path[-1]
-    return MonoTypeVar(baseName, path)
+    args = []
+    if 'ARGS' in data:
+        args = data.ARGS[:]
+    elif baseName._type is not None:
+        args.append(baseName._type)
+        baseName._type = None
+    return MonoTypeVar(baseName, path, args)
 
 def makeRule(data):
-    name = "".join([str(x) for x in data.RuleName[0]])
-    return Rule(name, data.Structure[:])
+    name = "".join([repr(x) for x in data.RuleName])
+    return Rule(name, data.RuleName, data.Structure[:])
 
-def makeConst(data):
-    return ExConst(*data)
+def makeWord(data):
+    typedec = None
+    if "TypeDec" in data:
+        typedec = data.TypeDec[0]
+    if 'CONST' in data:
+        return ExConst(data[0], data[1], typedec)
+    else:
+        return ExVar(data[0], data[1], typedec)
+
 
 
 # Standard Language
 #todo: change NAME to include operators, then parse in type constructor
-TYPEDEC = OPAR + DBLCOLON + NAME + N("SEN", op(LATER_PARSE_SEN)) + CPAR
-CONST = OP + NAME + N("TypeDec", op(TYPEDEC))
-VAR = OP + DOLLAR + NAME + N("TypeDec", op(TYPEDEC))
+SENTENCE = pp.Forward()
+TYPEDEC_CORE = pp.Forward()
 
-WORD = pp.Or([VAR, CONST])
+CONST = NAME
+VAR = DOLLAR + NAME
 
-SENTENCE = pp.OneOrMore(WORD)
+TYPEDEC_CORE << DBLCOLON + N("SEN", op(SENTENCE)) + N("ARGS", op(OPAR + pp.delimitedList(TYPEDEC_CORE, delim=', ', combine=False) + CPAR))
 
-TYPEALIAS = DBLCOLON + NAME + op(SENTENCE) + TYPEDEC
+TYPEDEC = OPAR + TYPEDEC_CORE + CPAR
 
-TYPEDEF = DBLCOLON + NG("TypeName", NAME) + N("SEN", op(LATER_PARSE_SEN)) + COLON \
-    + opLn + NG("Structure", pp.ZeroOrMore(SENTENCE + Ln)) + s(pp.Keyword("END"))
+WORD = OP + pp.Or([VAR.setResultsName("VAR"),
+                   CONST.setResultsName("CONST")])+ N("TypeDec", op(TYPEDEC))
+
+SENTENCE << pp.OneOrMore(WORD)
+
+TYPEALIAS = DBLCOLON + SENTENCE
+
+VARLIST = OBRACKET + op(pp.delimitedList(VAR, delim=', ', combine=False)) + CBRACKET
+
+TYPEDEF = DBLCOLON + N("SEN", SENTENCE) \
+    + N("TVars", op(VARLIST)) + COLON  + opLn \
+    + N("Structure", pp.ZeroOrMore(SENTENCE + pp.Or([COMMA, Ln]))) \
+    + s(pp.Keyword("END"))
 
 # TODO: Type constructor
 
-RULE = NG("RuleName", SENTENCE) + COLON + opLn \
-    + NG("Structure", pp.OneOrMore(SENTENCE + opLn)) + s(pp.Keyword("END"))
+RULE = N("RuleName", SENTENCE) + COLON + opLn \
+    + N("Structure", pp.OneOrMore(SENTENCE + opLn)) + s(pp.Keyword("END"))
 
 MAIN = s(op(pp.White(ws=" \t\n\r"))) + \
-    pp.OneOrMore(pp.Or([TYPEDEF, RULE, TYPEALIAS, SENTENCE]) + \
+    pp.OneOrMore(pp.Or([TYPEDEF, RULE, SENTENCE]) + \
                  s(op(pp.White(ws=" \t\n\r"))))
 
 
 # Actions
 TYPEDEF.setParseAction(lambda t: makeTypeDef(t))
-TYPEDEC.setParseAction(lambda t: makeTypeDec(t))
-CONST.setParseAction(lambda t: makeConst(t))
-VAR.setParseAction(lambda t: ExVar(*t))
+TYPEDEC_CORE.setParseAction(lambda t: makeTypeDec(t))
+WORD.setParseAction(lambda t: makeWord(t))
 RULE.setParseAction(lambda t: makeRule(t))
 SENTENCE.setParseAction(lambda t: [t[:]])
 
