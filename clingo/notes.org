@@ -1,68 +1,217 @@
 * Answer Set Programming
-** CLI Usage:
-   clingo -Wall -n 1 --rand-freq=0.5 --verbose=3 test_map.lp 
+  #+STARTUP: content
+  [[https://potassco.org/][Potassco]]
+
+** Examples                                                                     :sandbox:
+   #+NAME: Example
+   #+begin_src clingo :results output
+   n(4).
+   sizes((rows;columns), N) :- n(N).
+   board(X,Y) :- sizes(rows,A), sizes(columns,B), X=1..A, Y=1..4.
+   %boardSize(S) :- n(Q), NS=Q*Q, S=#count { board(X,Y) : board(X,Y) }, S=NS.
+   boardSize(S) :- S= #count { board(X,Y) : board(X,Y) }.
+   :- not boardSize(_).
+   :- boardSize(S), n(N), NS=N*N, S!=NS.
+   #show boardSize/1.
+   #+end_src
+
+   #+NAME: for testing ob-clingo
+   #+HEADER: :clingo-args -n 4
+   #+begin_src clingo :results output
+   1{a(1..5)}2.
+
+   #+end_src
+
+** Syntax
+   Syntax is a DSL of prolog
+*** Facts                                                                       :syntax:
+    Simple values:
+    a. b. c.
+    Compound:
+    a(1). something(else).
+    Ranges:
+    a(1..3).
+*** Constraints                                                                 :syntax:
+    lowNum { fact } highNum.
+
+    Generate only one from a selection
+    { facts } = 1 :- facts.
+
+    Create n variations of 'test(x, Y).' to fill with all values of Y
+    results in size(y) * n facts
+    { test(X, Y) : a(X) } = n :- b(Y).
+
+    x(1..3).
+    y(1..3).
+    loc(X,Y) :- x(X), y(Y).
+    time(5).
+    for each T, create a single move, fill with X,Y where x > Y
+    { move(X,Y,T) : x(X), y(Y), X > Y } = 1 :- time(Q), T=1..Q.
+
+*** Rules                                                                       :syntax:
+    head :- body.
+    then : if.
+
+    Conjunctions:
+    head :- body, body, body.
+    Disjunctions:
+    head :- body; body.
+
+    Exclusions:
+    :- body.
+
+    Conditions ':' provide OR on lsh, AND on rhs.
+    meet :- available(X) : person(X).
+    on(X) : day(X) :- meet.
+
+    becomes:
+    meet :- available(jane), available(john).
+    on(mon) | on(tue) | on(wed) | on(thu) | on(fri) :- meet.
+
+*** Aggregates:                                                                 :syntax:
+    count all a's. As between the {} is a set, make sure each entry is unique
+    a(1..4).
+    count(X) :- X = #count { Y : a(Y) }.
+
+    a(3).
+    b(X,Y) :- a(S), X = 1..S, Y= 1..S.
+    count(X) :- X = #count { temp(Q,R) : b(Q,R) }.
+
+*** Display                                                                     :syntax:
+    use (specifying fact type and size).
+    #show something/2.
+
+** Heuristics                                                                   :guidelines:
+   gringo expects rules to be safe
+   all variables that appear in a rule have to appear in some positive literal
+   in the body, thus binding the variable to some existing constant.
+
+   only atoms appearing in some head can appear in answer sets.
+
+   there are no answer sets that satisfy all literals an integrity constraint.
+   thus you are defining situations you don't want.
+
+   Try not to use Or: "|"
+** CLI Usage:                                                                   :reference:
+   clingo -Wall -n 1 --rand-freq=0.5 --verbose=3 test_map.lp
    clingo -n 100 --restart-on-model --heu=vsids --rand-freq=0.01
    clingo --time-limit=10 ...
-*** CLI JSON
+*** CLI JSON                                                                    :json:
     clingo -outf=2 -n5 * > *.out
-** Facts
-   Simple values:
-   a. b. c.
-   Compound:
-   a(1). something(else).
-   Ranges:
-   a(1..3).
-** Constraints
-   lowNum { fact } highNum.
+*** Exit Codes                                                                  :exit_codes:cli:
+    Based  on [[https://www.mat.unical.it/aspcomp2013/files/aspoutput.txt][ASP Output]]
 
-   %Generate only one from a selection
-   { facts } = 1 :- facts.
+    Solvers produce output using two channels:
+    exit codes and
+    standard output.
 
-   %Create n variations of 'test(x, Y).' to fill with all values of Y
-   %results in size(y) * n facts
-   { test(X, Y) : a(X) } = n :- b(Y).
+    Exit codes are used primarly to distinguish succesful runs from
+    unsuccesful ones; in case a run was successful, the exit code provides
+    semantic information about the run.  On the other hand, standard output
+    is used to report answer(s) to the given problem instance, e.g.,
+    solutions to problems, enumerations thereof, etc.  Solvers may write
+    warnings, statistics, debug and any additional information on stdout
+    using comment lines.
 
-   x(1..3).
-   y(1..3).
-   loc(X,Y) :- x(X), y(Y).
-   time(5).
-   % for each T, create a single move, fill with X,Y where x > Y
-   { move(X,Y,T) : x(X), y(Y), X > Y } = 1 :- time(Q), T=1..Q.
+**** Output of an Answer Set Solver *
+     |--------------+-------------------------------------------------------------------------------|
+     | Delimiter    | Meaning                                                                       |
+     |--------------+-------------------------------------------------------------------------------|
+     | ANSWER       | Solution found, next line(s) contains answer (+ costs)                        |
+     |--------------+-------------------------------------------------------------------------------|
+     | COST         | The cost of the solution in the previous line                                 |
+     |--------------+-------------------------------------------------------------------------------|
+     | INCONSISTENT | Program is inconsistent                                                       |
+     |--------------+-------------------------------------------------------------------------------|
+     | UNKNOWN      | No solution has been found yet                                                |
+     |--------------+-------------------------------------------------------------------------------|
+     | OPTIMUM      | The solution preceding and the solutions succeeding this delimiter are optima |
+     |--------------+-------------------------------------------------------------------------------|
+     | %            | The rest of the line is a uninterpreted comment                               |
+     |--------------+-------------------------------------------------------------------------------|
 
+**** Exit Code Bit Encoding
+     Each exit code represents a possibly successful run of a
+     solver/grounder: based on the exit status, the end user should be able
+     to answer decision problems without parsing the output, or decide
+     whether something went wrong or no solution could be found.
 
+     Exit codes must fit within the lowest 8 bits of an integer.
 
-** Rules
-   head :- body.
-   then : if.
+     The status values 10 and 20 encode satisfiable and unsatisfiable instances.
 
-   Conjunctions:
-   head :- body, body, body.
-   Disjunctions:
-   head :- body; body.
+     This gives the following bit patterns for satisfiable and unsatisfiable
+     runs: 00001010 resp. 00010100.  Furthermore, SAT/QBF solvers may exit
+     without a known solution (e.g., when they have hit the time/memory
+     limit), but their exit status do not agree with these kind of runs.
 
-   Exclusions:
-   :- body.
+     As ASP solvers usually implement many different computational problems,
+     three exit codes are not enough to give us all information on the exit
+     status of a solver.  For this reason, we use the following bit scheme to
+     encode the status of a ground/solver run.
 
-** Aggregates:
-   %count all a's. As between the {} is a set, make sure each entry is unique
-   a(1..4).
-   count(X) :- X = #count { Y : a(Y) }.
+     |-------+-------+--------+---------+-------+---------+-------+-------|
+     | bit 7 | bit 6 | bit 5  | bit 4   | bit 3 | bit 2   | bit 1 | bit 0 |
+     |-------+-------+--------+---------+-------+---------+-------+-------|
+     | NORUN | RES   | ALLOPT | EXHAUST | SAT   | EXHAUST | SAT   | INT   |
+     |-------+-------+--------+---------+-------+---------+-------+-------|
 
-   a(3).
-   b(X,Y) :- a(S), X = 1..S, Y= 1..S.
-   count(X) :- X = #count { temp(Q,R) : b(Q,R) }.
+     NORUN signals the computation was not started. eg: Syntax error.
+     Thus EC is 128
 
-** Display
-   use (specifying fact type and size).
-   #show something/2.
-   
+     INT encodes termination by signal. ie: Interrupted.
 
-** Examples
-n(4).
-sizes((rows;columns), N) :- n(N).
-board(X,Y) :- sizes(rows,A), sizes(columns,B), X=1..A, Y=1..4.
-%boardSize(S) :- n(Q), NS=Q*Q, S=#count { board(X,Y) : board(X,Y) }, S=NS.
-boardSize(S) :- S= #count { board(X,Y) : board(X,Y) }.
-:- not boardSize(_).
-:- boardSize(S), n(N), NS=N*N, S!=NS.
-#show boardSize/1.
+     Successful grounding runs have exit code 0.
+
+     SAT bit encodes that the solver found at least one solution.
+
+     EXHAUST flag signals the solver exhaustively went through the search space.
+
+     ALLOPT flag signals all optimal solutions have been found.
+
+     RES is not specified, it is reserved for future use,
+     and must be set to 0 whenever INT is 0.
+
+     |-----------+-------------------------------------------------------------------------------------------|
+     | Exit code | Meaning                                                                                   |
+     |-----------+-------------------------------------------------------------------------------------------|
+     |         1 | Run interrupted: No solution has been found so far                                        |
+     |-----------+-------------------------------------------------------------------------------------------|
+     |        10 | Program is consistent / some consequences exist / query is true                           |
+     |-----------+-------------------------------------------------------------------------------------------|
+     |        11 | Run interrupted: Program is consistent / some consequences exist                          |
+     |-----------+-------------------------------------------------------------------------------------------|
+     |        20 | Program is inconsistent / query is false                                                  |
+     |-----------+-------------------------------------------------------------------------------------------|
+     |        30 | Program is consistent, all possible solutions/consequences enumerated / some optima found |
+     |-----------+-------------------------------------------------------------------------------------------|
+     |        31 | Run interrupted: Program is consistent / some optima found                                |
+     |-----------+-------------------------------------------------------------------------------------------|
+     |        62 | Program is consistent / all possible optima found                                         |
+     |-----------+-------------------------------------------------------------------------------------------|
+     |       128 | Syntax error / command line arguments error                                               |
+     |-----------+-------------------------------------------------------------------------------------------|
+
+     The following table summarises the expected behaviour of a solver when
+     interrupted by one of the following (standard) termination signals:
+
+     |-------------+------------------+---------------------------------+-------------|
+     | Reason      | Default action   | Expected action                 | Description |
+     |-------------+------------------+---------------------------------+-------------|
+     | SIGHUP (1)  | exit(129)        | exit(1) or exit(11) or exit(31) | kill -HUP   |
+     | SIGINT (2)  | exit(130)        | exit(1) or exit(11) or exit(31) | Ctrl-C      |
+     | SIGQUIT (3) | exit(131) + core | exit(1) or exit(11) or exit(31) | Ctrl-\      |
+     |-------------+------------------+---------------------------------+-------------|
+
+     Further signals are relevant in the context of the ASP Competition 2013.
+     Here, different signals encode the reason for solver termination.
+
+     |--------------+------------------+---------------------------------+-----------------------------------------------------|
+     | Reason       | Default action   | Expected action                 | Description                                         |
+     |--------------+------------------+---------------------------------+-----------------------------------------------------|
+     | SIGKILL (9)  | exit(137)        | cannot be changed               | sent when process(es) continue to run after timeout |
+     | SIGSEGV (11) | exit(139)        | exit(1) or exit(11) or exit(31) | sent when memout is reached, or programming error   |
+     | SIGTERM (15) | exit(143)        | exit(1) or exit(11) or exit(31) | sent at most 10 secs after timeout                  |
+     | SIGXCPU (24) | exit(152) + core | exit(1) or exit(11) or exit(31) | sent when timeout is reached                        |
+     | SIGXFSZ (25) | exit(153) + core | exit(1) or exit(11) or exit(31) | sent when max filesize is reached                   |
+     |--------------+------------------+---------------------------------+-----------------------------------------------------|
