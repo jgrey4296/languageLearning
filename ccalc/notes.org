@@ -75,7 +75,6 @@
     #+end_src
 
 ** Sandbox
-   [[https://www.cs.utexas.edu/users/tag/cc/examples/][Examples Source]]
 
    #+begin_src ccalc :results output :session test :as-file
      :- macros
@@ -160,8 +159,9 @@
 
 
 
-
 ** Zoo
+   [[https://www.cs.utexas.edu/users/tag/cc/examples/][Examples Source]]
+
    Giunchiglia et al:
    [[file:monkeys::%25%20Monkey%20and%20Bananas%20("Nonmonotonic%20Causal%20Theories,"%20Figures%2010-12)][Monkeys]]
    [[file:prediction][Prediction and Postdiction]]
