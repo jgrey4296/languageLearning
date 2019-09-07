@@ -15,6 +15,21 @@
    #show boardSize/1.
    #+end_src
 
+   #+RESULTS: Example
+   #+begin_example
+   clingo version 5.3.0
+   Reading from ...kbh0000gq/T/babel-ayz92g/clingo-5uKmGL
+   Solving...
+   Answer: 1
+   boardSize(16)
+   SATISFIABLE
+
+   Models       : 1
+   Calls        : 1
+   Time         : 0.053s (Solving: 0.00s 1st Model: 0.00s Unsat: 0.00s)
+   CPU Time     : 0.006s
+   #+end_example
+
    #+NAME: for testing ob-clingo
    #+HEADER: :clingo-args -n 4
    #+begin_src clingo :results output
@@ -25,73 +40,213 @@
 ** Syntax
    Syntax is a DSL of prolog
 *** Facts                                                                       :syntax:
-    Simple values:
+    #+NAME: Facts
+    #+begin_src clingo :results output
+    %%Simple values:
     a. b. c.
-    Compound:
+    %%Compound:
     a(1). something(else).
-    Ranges:
+    %%Ranges:
     a(1..3).
-*** Constraints                                                                 :syntax:
-    lowNum { fact } highNum.
+    #+end_src
+    #+RESULTS: Facts
+    #+begin_example
+    clingo version 5.3.0
+    Reading from ...kbh0000gq/T/babel-ayz92g/clingo-6Qwxke
+    Solving...
+    Answer: 1
+    a(1) a(2) a(3) a b c something(else)
+    SATISFIABLE
 
-    Generate only one from a selection
+    Models       : 1
+    Calls        : 1
+    Time         : 0.001s (Solving: 0.00s 1st Model: 0.00s Unsat: 0.00s)
+    CPU Time     : 0.001s
+    #+end_example
+*** Negation                                                                    :syntax:
+    #+NAME: Negation Examples
+    #+begin_src clingo :results output
+    a.
+
+    %% Default Negation:
+    c :- not b.
+
+    %% Classical Negation:
+    d :- -b.
+
+    #+end_src
+
+    #+RESULTS: Negation Examples
+    #+begin_example
+    clingo version 5.3.0
+    Reading from ...kbh0000gq/T/babel-ayz92g/clingo-0nCn06
+    Solving...
+    Answer: 1
+    c a
+    SATISFIABLE
+
+    Models       : 1
+    Calls        : 1
+    Time         : 0.001s (Solving: 0.00s 1st Model: 0.00s Unsat: 0.00s)
+    CPU Time     : 0.001s
+    #+end_example
+
+*** Rules                                                                       :syntax:
+    #+NAME:
+    #+begin_src clingo :results output
+    %% then : if.
+    head :- body.
+
+    %% Conjunctions:
+    head :- body, body, body.
+    %% Disjunctions:
+    head :- body; body.
+
+    %% Exclusions:
+    :- body.
+
+    %% Conditions ':' provide OR on lsh, AND on rhs.
+    meet :- available(X) : person(X).
+    on(X) : day(X) :- meet.
+
+    %% becomes:
+    meet :- available(jane), available(john).
+    on(mon) | on(tue) | on(wed) | on(thu) | on(fri) :- meet.
+
+    #+end_src
+
+*** Constraints                                                                 :syntax:
+    #+NAME: Constraints
+    #+begin_src clingo :results output
+    %% lowNum { fact } highNum.
+
+    %% Generate only one from a selection
     { facts } = 1 :- facts.
 
-    Create n variations of 'test(x, Y).' to fill with all values of Y
-    results in size(y) * n facts
+    %% Create n variations of 'test(x, Y).'
+    %% to fill with all values of Y results in size(y) * n facts
     { test(X, Y) : a(X) } = n :- b(Y).
 
     x(1..3).
     y(1..3).
     loc(X,Y) :- x(X), y(Y).
     time(5).
-    for each T, create a single move, fill with X,Y where x > Y
+    %% for each T, create a single move, fill with X,Y where x > Y
     { move(X,Y,T) : x(X), y(Y), X > Y } = 1 :- time(Q), T=1..Q.
+    #+end_src
 
-*** Rules                                                                       :syntax:
-    head :- body.
-    then : if.
+    #+RESULTS: Constraints
+    #+begin_example
+    clingo version 5.3.0
+    Reading from ...kbh0000gq/T/babel-ayz92g/clingo-n62wE8
+    Solving...
+    Answer: 1
+    x(1) x(2) x(3) y(1) y(2) y(3) loc(1,1) loc(2,1) loc(3,1) loc(1,2) loc(2,2) loc(3,2) loc(1,3) loc(2,3) loc(3,3) time(5) move(3,1,1) move(2,1,2) move(2,1,3) move(2,1,4) move(2,1,5)
+    SATISFIABLE
 
-    Conjunctions:
-    head :- body, body, body.
-    Disjunctions:
-    head :- body; body.
+    Models       : 1+
+    Calls        : 1
+    Time         : 0.003s (Solving: 0.00s 1st Model: 0.00s Unsat: 0.00s)
+    CPU Time     : 0.003s
+    #+end_example
 
-    Exclusions:
-    :- body.
-
-    Conditions ':' provide OR on lsh, AND on rhs.
-    meet :- available(X) : person(X).
-    on(X) : day(X) :- meet.
-
-    becomes:
-    meet :- available(jane), available(john).
-    on(mon) | on(tue) | on(wed) | on(thu) | on(fri) :- meet.
-
-*** Aggregates:                                                                 :syntax:
-    count all a's. As between the {} is a set, make sure each entry is unique
+*** Aggregates                                                                  :syntax:
+    #+NAME: Aggregates
+    #+begin_src clingo :results output
+    %% count all a's.
+    %% As between the {} is a set, make sure each entry is unique
     a(1..4).
-    count(X) :- X = #count { Y : a(Y) }.
+    a_count(X) :- X = #count { Y : a(Y) }.
 
     a(3).
     b(X,Y) :- a(S), X = 1..S, Y= 1..S.
-    count(X) :- X = #count { temp(Q,R) : b(Q,R) }.
+    b_count(X) :- X = #count { temp(Q,R) : b(Q,R) }.
+
+    #+end_src
+
+    #+RESULTS: Aggregates
+    #+begin_example
+    clingo version 5.3.0
+    Reading from ...kbh0000gq/T/babel-ayz92g/clingo-ZF9LMT
+    Solving...
+    Answer: 1
+    a(3) a(1) a(2) a(4) a_count(4) b(1,1) b(2,1) b(3,1) b(1,2) b(2,2) b(3,2) b(1,3) b(2,3) b(3,3) b(4,1) b(4,2) b(4,3) b(1,4) b(2,4) b(3,4) b(4,4) b_count(16)
+    SATISFIABLE
+
+    Models       : 1
+    Calls        : 1
+    Time         : 0.002s (Solving: 0.00s 1st Model: 0.00s Unsat: 0.00s)
+    CPU Time     : 0.002s
+    #+end_example
+
+    #+NAME: Sum example
+    #+begin_src clingo :results output
+    node(1). node(3). node(5).
+    weight(1..5).
+    summed(X) :- X = #sum{ Y, weight(Y) : node(Y) }.
+
+    #show summed/1.
+    #+end_src
+
+    #+RESULTS: Sum example
+    #+begin_example
+    clingo version 5.3.0
+    Reading from ...kbh0000gq/T/babel-ayz92g/clingo-1tNp1W
+    Solving...
+    Answer: 1
+    summed(9)
+    SATISFIABLE
+
+    Models       : 1
+    Calls        : 1
+    Time         : 0.002s (Solving: 0.00s 1st Model: 0.00s Unsat: 0.00s)
+    CPU Time     : 0.002s
+    #+end_example
+
+
 
 *** Display                                                                     :syntax:
-    use (specifying fact type and size).
-    #show something/2.
+    #+NAME: Display examples
+    #+begin_src clingo :results output
+    a. b. c.
+    test(X,Y) :- X = a, Y = b.
+
+    %%use #show, and specify predicate and arity:
+    #show a/0.
+    #show test/2.
+
+    #+end_src
+
+    #+RESULTS: Display examples
+    #+begin_example
+    clingo version 5.3.0
+    Reading from ...kbh0000gq/T/babel-ayz92g/clingo-hAYYaA
+    Solving...
+    Answer: 1
+    a test(a,b)
+    SATISFIABLE
+
+    Models       : 1
+    Calls        : 1
+    Time         : 0.001s (Solving: 0.00s 1st Model: 0.00s Unsat: 0.00s)
+    CPU Time     : 0.001s
+    #+end_example
 
 ** Heuristics                                                                   :guidelines:
-   gringo expects rules to be safe
-   all variables that appear in a rule have to appear in some positive literal
-   in the body, thus binding the variable to some existing constant.
-
    only atoms appearing in some head can appear in answer sets.
 
    there are no answer sets that satisfy all literals an integrity constraint.
    thus you are defining situations you don't want.
 
    Try not to use Or: "|"
+
+   #minimize optimize a set
+
+*** Safety                                                                      :safety:
+    gringo expects rules to be safe.
+    ALL VARIABLES that appear in a rule have to appear in some POSITIVE LITERAL
+    in the body, thus binding the variable to some existing constant.
+
 ** CLI Usage:                                                                   :reference:
    clingo -Wall -n 1 --rand-freq=0.5 --verbose=3 test_map.lp
    clingo -n 100 --restart-on-model --heu=vsids --rand-freq=0.01
@@ -215,3 +370,65 @@
      | SIGXCPU (24) | exit(152) + core | exit(1) or exit(11) or exit(31) | sent when timeout is reached                        |
      | SIGXFSZ (25) | exit(153) + core | exit(1) or exit(11) or exit(31) | sent when max filesize is reached                   |
      |--------------+------------------+---------------------------------+-----------------------------------------------------|
+** Sandbox
+
+
+   #+NAME: Test
+   #+begin_src clingo :results output
+   a(1..5).
+   b(3..10).
+
+   x(X) :- a(X), b(X).
+
+   #+end_src
+
+   #+RESULTS: Test
+   #+begin_example
+   clingo version 5.3.0
+   Reading from ...kbh0000gq/T/babel-ayz92g/clingo-XTzfsE
+   Solving...
+   Answer: 1
+   a(1) a(2) a(3) a(4) a(5) b(3) b(4) b(5) b(6) b(7) b(8) b(9) b(10) x(3) x(4) x(5)
+   SATISFIABLE
+
+   Models       : 1
+   Calls        : 1
+   Time         : 0.001s (Solving: 0.00s 1st Model: 0.00s Unsat: 0.00s)
+   CPU Time     : 0.001s
+   #+end_example
+
+   #+NAME: node colour test
+   #+HEADER: :c-n 5
+   #+begin_src clingo :results output
+   node(1..3).
+   color(green). color(red). color(blue).
+
+   1{ colouring(X,C) : color(C) }1 :- node(X).
+
+   #show colouring/2.
+   #+end_src
+
+   #+RESULTS: node colour test
+   #+begin_example
+   clingo version 5.3.0
+   Reading from ...kbh0000gq/T/babel-ayz92g/clingo-uhvatt
+   Solving...
+   Answer: 1
+   colouring(1,red) colouring(2,green) colouring(3,green)
+   Answer: 2
+   colouring(1,blue) colouring(2,green) colouring(3,green)
+   Answer: 3
+   colouring(1,red) colouring(2,red) colouring(3,green)
+   Answer: 4
+   colouring(1,blue) colouring(2,red) colouring(3,green)
+   Answer: 5
+   colouring(1,red) colouring(2,blue) colouring(3,green)
+   SATISFIABLE
+
+   Models       : 5+
+   Calls        : 1
+   Time         : 0.004s (Solving: 0.00s 1st Model: 0.00s Unsat: 0.00s)
+   CPU Time     : 0.004s
+   #+end_example
+
+
