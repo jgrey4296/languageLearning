@@ -204,7 +204,6 @@
     #+end_example
 
 
-
 *** Display                                                                     :syntax:
     #+NAME: Display examples
     #+begin_src clingo :results output
@@ -431,4 +430,36 @@
    CPU Time     : 0.004s
    #+end_example
 
+
+
+   #+NAME: Graph Test
+   #+HEADER: :c-n 5
+   #+begin_src clingo :results output
+   node(1..5). edge(1,2).
+   { edge(X,Y) : node(X) } :- node(Y).
+
+   correct(X,Y) :- edge(X,Y), Y=X+1.
+
+   :- edge(X,X).
+   :- edge(X,Y), not correct(X,Y).
+   :- Y < 5, edge(_,Y), not edge(Y,_).
+
+   #show edge/2.
+   %%#show correct/2.
+   #+end_src
+
+   #+RESULTS: Graph Test
+   #+begin_example
+   clingo version 5.3.0
+   Reading from ...kbh0000gq/T/babel-ayz92g/clingo-4fIffV
+   Solving...
+   Answer: 1
+   edge(1,2) edge(2,3) edge(3,4) edge(4,5)
+   SATISFIABLE
+
+   Models       : 1
+   Calls        : 1
+   Time         : 0.002s (Solving: 0.00s 1st Model: 0.00s Unsat: 0.00s)
+   CPU Time     : 0.002s
+   #+end_example
 
