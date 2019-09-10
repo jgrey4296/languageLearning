@@ -722,3 +722,7 @@
 ** [[https://scikit-learn.org/stable/index.html][scikit-learn]]
 ** [[https://www.scipy.org/][Scipy]]
 ** [[https://docs.python.org/3/library/unittest.html][Testing]]
+** Environments
+   [[https://realpython.com/python-virtual-environments-a-primer/][PyEnv Primer]]  [[https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html][Conda Environment management]]
+
+   
