@@ -59,14 +59,19 @@
    |*| multiplies them
 
 ** Midi
-   #+begin_src haskell
-   import Sound.Tidal.MIDI.Context
-   displayOutputDevices >>= putStrLn
-   devices <- midiDevices
-   m1 <- midiStream devices "USB MIDI Device" 1 synthController
-   the "1" is the channel. 
-   "USB MIDI Device" is the name reported in displayOutputDevices
+   use: [[https://tidalcycles.org/index.php/SuperDirt_MIDI_Tutorial][SuperDirt Midi]]
+
+   #+NAME: Midi Example
+   #+begin_src tidal :results value
+   d1 $ n "[c3 c3, ~ c5, e7*6]" # s "midi"
+
+   -- Sending CC params:
+   d2 $ ccv 64 # ccn 20 # s "midi"
    #+end_src
+
+
+
+
 ** Misc Notes
    #+begin_src tidal
      -- Polyrhythm:
