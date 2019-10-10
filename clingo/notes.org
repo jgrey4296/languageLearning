@@ -1,68 +1,465 @@
 * Answer Set Programming
-** CLI Usage:
-   clingo -Wall -n 1 --rand-freq=0.5 --verbose=3 test_map.lp 
+  #+STARTUP: content
+  [[https://potassco.org/][Potassco]]
+
+** Examples                                                                     :sandbox:
+   #+NAME: Example
+   #+begin_src clingo :results output
+   n(4).
+   sizes((rows;columns), N) :- n(N).
+   board(X,Y) :- sizes(rows,A), sizes(columns,B), X=1..A, Y=1..4.
+   %boardSize(S) :- n(Q), NS=Q*Q, S=#count { board(X,Y) : board(X,Y) }, S=NS.
+   boardSize(S) :- S= #count { board(X,Y) : board(X,Y) }.
+   :- not boardSize(_).
+   :- boardSize(S), n(N), NS=N*N, S!=NS.
+   #show boardSize/1.
+   #+end_src
+
+   #+RESULTS: Example
+   #+begin_example
+   clingo version 5.3.0
+   Reading from ...kbh0000gq/T/babel-ayz92g/clingo-5uKmGL
+   Solving...
+   Answer: 1
+   boardSize(16)
+   SATISFIABLE
+
+   Models       : 1
+   Calls        : 1
+   Time         : 0.053s (Solving: 0.00s 1st Model: 0.00s Unsat: 0.00s)
+   CPU Time     : 0.006s
+   #+end_example
+
+   #+NAME: for testing ob-clingo
+   #+HEADER: :clingo-args -n 4
+   #+begin_src clingo :results output
+   1{a(1..5)}2.
+
+   #+end_src
+
+** Syntax
+   Syntax is a DSL of prolog
+*** Facts                                                                       :syntax:
+    #+NAME: Facts
+    #+begin_src clingo :results output
+    %%Simple values:
+    a. b. c.
+    %%Compound:
+    a(1). something(else).
+    %%Ranges:
+    a(1..3).
+    #+end_src
+    #+RESULTS: Facts
+    #+begin_example
+    clingo version 5.3.0
+    Reading from ...kbh0000gq/T/babel-ayz92g/clingo-6Qwxke
+    Solving...
+    Answer: 1
+    a(1) a(2) a(3) a b c something(else)
+    SATISFIABLE
+
+    Models       : 1
+    Calls        : 1
+    Time         : 0.001s (Solving: 0.00s 1st Model: 0.00s Unsat: 0.00s)
+    CPU Time     : 0.001s
+    #+end_example
+*** Negation                                                                    :syntax:
+    #+NAME: Negation Examples
+    #+begin_src clingo :results output
+    a.
+
+    %% Default Negation:
+    c :- not b.
+
+    %% Classical Negation:
+    d :- -b.
+
+    #+end_src
+
+    #+RESULTS: Negation Examples
+    #+begin_example
+    clingo version 5.3.0
+    Reading from ...kbh0000gq/T/babel-ayz92g/clingo-0nCn06
+    Solving...
+    Answer: 1
+    c a
+    SATISFIABLE
+
+    Models       : 1
+    Calls        : 1
+    Time         : 0.001s (Solving: 0.00s 1st Model: 0.00s Unsat: 0.00s)
+    CPU Time     : 0.001s
+    #+end_example
+
+*** Rules                                                                       :syntax:
+    #+NAME:
+    #+begin_src clingo :results output
+    %% then : if.
+    head :- body.
+
+    %% Conjunctions:
+    head :- body, body, body.
+    %% Disjunctions:
+    head :- body; body.
+
+    %% Exclusions:
+    :- body.
+
+    %% Conditions ':' provide OR on lsh, AND on rhs.
+    meet :- available(X) : person(X).
+    on(X) : day(X) :- meet.
+
+    %% becomes:
+    meet :- available(jane), available(john).
+    on(mon) | on(tue) | on(wed) | on(thu) | on(fri) :- meet.
+
+    #+end_src
+
+*** Constraints                                                                 :syntax:
+    #+NAME: Constraints
+    #+begin_src clingo :results output
+    %% lowNum { fact } highNum.
+
+    %% Generate only one from a selection
+    { facts } = 1 :- facts.
+
+    %% Create n variations of 'test(x, Y).'
+    %% to fill with all values of Y results in size(y) * n facts
+    { test(X, Y) : a(X) } = n :- b(Y).
+
+    x(1..3).
+    y(1..3).
+    loc(X,Y) :- x(X), y(Y).
+    time(5).
+    %% for each T, create a single move, fill with X,Y where x > Y
+    { move(X,Y,T) : x(X), y(Y), X > Y } = 1 :- time(Q), T=1..Q.
+    #+end_src
+
+    #+RESULTS: Constraints
+    #+begin_example
+    clingo version 5.3.0
+    Reading from ...kbh0000gq/T/babel-ayz92g/clingo-n62wE8
+    Solving...
+    Answer: 1
+    x(1) x(2) x(3) y(1) y(2) y(3) loc(1,1) loc(2,1) loc(3,1) loc(1,2) loc(2,2) loc(3,2) loc(1,3) loc(2,3) loc(3,3) time(5) move(3,1,1) move(2,1,2) move(2,1,3) move(2,1,4) move(2,1,5)
+    SATISFIABLE
+
+    Models       : 1+
+    Calls        : 1
+    Time         : 0.003s (Solving: 0.00s 1st Model: 0.00s Unsat: 0.00s)
+    CPU Time     : 0.003s
+    #+end_example
+
+*** Aggregates                                                                  :syntax:
+    #+NAME: Aggregates
+    #+begin_src clingo :results output
+    %% count all a's.
+    %% As between the {} is a set, make sure each entry is unique
+    a(1..4).
+    a_count(X) :- X = #count { Y : a(Y) }.
+
+    a(3).
+    b(X,Y) :- a(S), X = 1..S, Y= 1..S.
+    b_count(X) :- X = #count { temp(Q,R) : b(Q,R) }.
+
+    #+end_src
+
+    #+RESULTS: Aggregates
+    #+begin_example
+    clingo version 5.3.0
+    Reading from ...kbh0000gq/T/babel-ayz92g/clingo-ZF9LMT
+    Solving...
+    Answer: 1
+    a(3) a(1) a(2) a(4) a_count(4) b(1,1) b(2,1) b(3,1) b(1,2) b(2,2) b(3,2) b(1,3) b(2,3) b(3,3) b(4,1) b(4,2) b(4,3) b(1,4) b(2,4) b(3,4) b(4,4) b_count(16)
+    SATISFIABLE
+
+    Models       : 1
+    Calls        : 1
+    Time         : 0.002s (Solving: 0.00s 1st Model: 0.00s Unsat: 0.00s)
+    CPU Time     : 0.002s
+    #+end_example
+
+    #+NAME: Sum example
+    #+begin_src clingo :results output
+    node(1). node(3). node(5).
+    weight(1..5).
+    summed(X) :- X = #sum{ Y, weight(Y) : node(Y) }.
+
+    #show summed/1.
+    #+end_src
+
+    #+RESULTS: Sum example
+    #+begin_example
+    clingo version 5.3.0
+    Reading from ...kbh0000gq/T/babel-ayz92g/clingo-1tNp1W
+    Solving...
+    Answer: 1
+    summed(9)
+    SATISFIABLE
+
+    Models       : 1
+    Calls        : 1
+    Time         : 0.002s (Solving: 0.00s 1st Model: 0.00s Unsat: 0.00s)
+    CPU Time     : 0.002s
+    #+end_example
+
+
+*** Display                                                                     :syntax:
+    #+NAME: Display examples
+    #+begin_src clingo :results output
+    a. b. c.
+    test(X,Y) :- X = a, Y = b.
+
+    %%use #show, and specify predicate and arity:
+    #show a/0.
+    #show test/2.
+
+    #+end_src
+
+    #+RESULTS: Display examples
+    #+begin_example
+    clingo version 5.3.0
+    Reading from ...kbh0000gq/T/babel-ayz92g/clingo-hAYYaA
+    Solving...
+    Answer: 1
+    a test(a,b)
+    SATISFIABLE
+
+    Models       : 1
+    Calls        : 1
+    Time         : 0.001s (Solving: 0.00s 1st Model: 0.00s Unsat: 0.00s)
+    CPU Time     : 0.001s
+    #+end_example
+
+** Heuristics                                                                   :guidelines:
+   only atoms appearing in some head can appear in answer sets.
+
+   there are no answer sets that satisfy all literals an integrity constraint.
+   thus you are defining situations you don't want.
+
+   Try not to use Or: "|"
+
+   #minimize optimize a set
+
+*** Safety                                                                      :safety:
+    gringo expects rules to be safe.
+    ALL VARIABLES that appear in a rule have to appear in some POSITIVE LITERAL
+    in the body, thus binding the variable to some existing constant.
+
+** CLI Usage:                                                                   :reference:
+   clingo -Wall -n 1 --rand-freq=0.5 --verbose=3 test_map.lp
    clingo -n 100 --restart-on-model --heu=vsids --rand-freq=0.01
    clingo --time-limit=10 ...
-*** CLI JSON
+*** CLI JSON                                                                    :json:
     clingo -outf=2 -n5 * > *.out
-** Facts
-   Simple values:
-   a. b. c.
-   Compound:
-   a(1). something(else).
-   Ranges:
-   a(1..3).
-** Constraints
-   lowNum { fact } highNum.
+*** Exit Codes                                                                  :exit_codes:cli:
+    Based  on [[https://www.mat.unical.it/aspcomp2013/files/aspoutput.txt][ASP Output]]
 
-   %Generate only one from a selection
-   { facts } = 1 :- facts.
+    Solvers produce output using two channels:
+    exit codes and
+    standard output.
 
-   %Create n variations of 'test(x, Y).' to fill with all values of Y
-   %results in size(y) * n facts
-   { test(X, Y) : a(X) } = n :- b(Y).
+    Exit codes are used primarly to distinguish succesful runs from
+    unsuccesful ones; in case a run was successful, the exit code provides
+    semantic information about the run.  On the other hand, standard output
+    is used to report answer(s) to the given problem instance, e.g.,
+    solutions to problems, enumerations thereof, etc.  Solvers may write
+    warnings, statistics, debug and any additional information on stdout
+    using comment lines.
 
-   x(1..3).
-   y(1..3).
-   loc(X,Y) :- x(X), y(Y).
-   time(5).
-   % for each T, create a single move, fill with X,Y where x > Y
-   { move(X,Y,T) : x(X), y(Y), X > Y } = 1 :- time(Q), T=1..Q.
+**** Output of an Answer Set Solver *
+     |--------------+-------------------------------------------------------------------------------|
+     | Delimiter    | Meaning                                                                       |
+     |--------------+-------------------------------------------------------------------------------|
+     | ANSWER       | Solution found, next line(s) contains answer (+ costs)                        |
+     |--------------+-------------------------------------------------------------------------------|
+     | COST         | The cost of the solution in the previous line                                 |
+     |--------------+-------------------------------------------------------------------------------|
+     | INCONSISTENT | Program is inconsistent                                                       |
+     |--------------+-------------------------------------------------------------------------------|
+     | UNKNOWN      | No solution has been found yet                                                |
+     |--------------+-------------------------------------------------------------------------------|
+     | OPTIMUM      | The solution preceding and the solutions succeeding this delimiter are optima |
+     |--------------+-------------------------------------------------------------------------------|
+     | %            | The rest of the line is a uninterpreted comment                               |
+     |--------------+-------------------------------------------------------------------------------|
+
+**** Exit Code Bit Encoding
+     Each exit code represents a possibly successful run of a
+     solver/grounder: based on the exit status, the end user should be able
+     to answer decision problems without parsing the output, or decide
+     whether something went wrong or no solution could be found.
+
+     Exit codes must fit within the lowest 8 bits of an integer.
+
+     The status values 10 and 20 encode satisfiable and unsatisfiable instances.
+
+     This gives the following bit patterns for satisfiable and unsatisfiable
+     runs: 00001010 resp. 00010100.  Furthermore, SAT/QBF solvers may exit
+     without a known solution (e.g., when they have hit the time/memory
+     limit), but their exit status do not agree with these kind of runs.
+
+     As ASP solvers usually implement many different computational problems,
+     three exit codes are not enough to give us all information on the exit
+     status of a solver.  For this reason, we use the following bit scheme to
+     encode the status of a ground/solver run.
+
+     |-------+-------+--------+---------+-------+---------+-------+-------|
+     | bit 7 | bit 6 | bit 5  | bit 4   | bit 3 | bit 2   | bit 1 | bit 0 |
+     |-------+-------+--------+---------+-------+---------+-------+-------|
+     | NORUN | RES   | ALLOPT | EXHAUST | SAT   | EXHAUST | SAT   | INT   |
+     |-------+-------+--------+---------+-------+---------+-------+-------|
+
+     NORUN signals the computation was not started. eg: Syntax error.
+     Thus EC is 128
+
+     INT encodes termination by signal. ie: Interrupted.
+
+     Successful grounding runs have exit code 0.
+
+     SAT bit encodes that the solver found at least one solution.
+
+     EXHAUST flag signals the solver exhaustively went through the search space.
+
+     ALLOPT flag signals all optimal solutions have been found.
+
+     RES is not specified, it is reserved for future use,
+     and must be set to 0 whenever INT is 0.
+
+     |-----------+-------------------------------------------------------------------------------------------|
+     | Exit code | Meaning                                                                                   |
+     |-----------+-------------------------------------------------------------------------------------------|
+     |         1 | Run interrupted: No solution has been found so far                                        |
+     |-----------+-------------------------------------------------------------------------------------------|
+     |        10 | Program is consistent / some consequences exist / query is true                           |
+     |-----------+-------------------------------------------------------------------------------------------|
+     |        11 | Run interrupted: Program is consistent / some consequences exist                          |
+     |-----------+-------------------------------------------------------------------------------------------|
+     |        20 | Program is inconsistent / query is false                                                  |
+     |-----------+-------------------------------------------------------------------------------------------|
+     |        30 | Program is consistent, all possible solutions/consequences enumerated / some optima found |
+     |-----------+-------------------------------------------------------------------------------------------|
+     |        31 | Run interrupted: Program is consistent / some optima found                                |
+     |-----------+-------------------------------------------------------------------------------------------|
+     |        62 | Program is consistent / all possible optima found                                         |
+     |-----------+-------------------------------------------------------------------------------------------|
+     |       128 | Syntax error / command line arguments error                                               |
+     |-----------+-------------------------------------------------------------------------------------------|
+
+     The following table summarises the expected behaviour of a solver when
+     interrupted by one of the following (standard) termination signals:
+
+     |-------------+------------------+---------------------------------+-------------|
+     | Reason      | Default action   | Expected action                 | Description |
+     |-------------+------------------+---------------------------------+-------------|
+     | SIGHUP (1)  | exit(129)        | exit(1) or exit(11) or exit(31) | kill -HUP   |
+     | SIGINT (2)  | exit(130)        | exit(1) or exit(11) or exit(31) | Ctrl-C      |
+     | SIGQUIT (3) | exit(131) + core | exit(1) or exit(11) or exit(31) | Ctrl-\      |
+     |-------------+------------------+---------------------------------+-------------|
+
+     Further signals are relevant in the context of the ASP Competition 2013.
+     Here, different signals encode the reason for solver termination.
+
+     |--------------+------------------+---------------------------------+-----------------------------------------------------|
+     | Reason       | Default action   | Expected action                 | Description                                         |
+     |--------------+------------------+---------------------------------+-----------------------------------------------------|
+     | SIGKILL (9)  | exit(137)        | cannot be changed               | sent when process(es) continue to run after timeout |
+     | SIGSEGV (11) | exit(139)        | exit(1) or exit(11) or exit(31) | sent when memout is reached, or programming error   |
+     | SIGTERM (15) | exit(143)        | exit(1) or exit(11) or exit(31) | sent at most 10 secs after timeout                  |
+     | SIGXCPU (24) | exit(152) + core | exit(1) or exit(11) or exit(31) | sent when timeout is reached                        |
+     | SIGXFSZ (25) | exit(153) + core | exit(1) or exit(11) or exit(31) | sent when max filesize is reached                   |
+     |--------------+------------------+---------------------------------+-----------------------------------------------------|
+** Sandbox
+
+
+   #+NAME: Test
+   #+begin_src clingo :results output
+   a(1..5).
+   b(3..10).
+
+   x(X) :- a(X), b(X).
+
+   #+end_src
+
+   #+RESULTS: Test
+   #+begin_example
+   clingo version 5.3.0
+   Reading from ...kbh0000gq/T/babel-ayz92g/clingo-XTzfsE
+   Solving...
+   Answer: 1
+   a(1) a(2) a(3) a(4) a(5) b(3) b(4) b(5) b(6) b(7) b(8) b(9) b(10) x(3) x(4) x(5)
+   SATISFIABLE
+
+   Models       : 1
+   Calls        : 1
+   Time         : 0.001s (Solving: 0.00s 1st Model: 0.00s Unsat: 0.00s)
+   CPU Time     : 0.001s
+   #+end_example
+
+   #+NAME: node colour test
+   #+HEADER: :c-n 5
+   #+begin_src clingo :results output
+   node(1..3).
+   color(green). color(red). color(blue).
+
+   1{ colouring(X,C) : color(C) }1 :- node(X).
+
+   #show colouring/2.
+   #+end_src
+
+   #+RESULTS: node colour test
+   #+begin_example
+   clingo version 5.3.0
+   Reading from ...kbh0000gq/T/babel-ayz92g/clingo-uhvatt
+   Solving...
+   Answer: 1
+   colouring(1,red) colouring(2,green) colouring(3,green)
+   Answer: 2
+   colouring(1,blue) colouring(2,green) colouring(3,green)
+   Answer: 3
+   colouring(1,red) colouring(2,red) colouring(3,green)
+   Answer: 4
+   colouring(1,blue) colouring(2,red) colouring(3,green)
+   Answer: 5
+   colouring(1,red) colouring(2,blue) colouring(3,green)
+   SATISFIABLE
+
+   Models       : 5+
+   Calls        : 1
+   Time         : 0.004s (Solving: 0.00s 1st Model: 0.00s Unsat: 0.00s)
+   CPU Time     : 0.004s
+   #+end_example
 
 
 
-** Rules
-   head :- body.
-   then : if.
+   #+NAME: Graph Test
+   #+HEADER: :c-n 5
+   #+begin_src clingo :results output
+   node(1..5). edge(1,2).
+   { edge(X,Y) : node(X) } :- node(Y).
 
-   Conjunctions:
-   head :- body, body, body.
-   Disjunctions:
-   head :- body; body.
+   correct(X,Y) :- edge(X,Y), Y=X+1.
 
-   Exclusions:
-   :- body.
+   :- edge(X,X).
+   :- edge(X,Y), not correct(X,Y).
+   :- Y < 5, edge(_,Y), not edge(Y,_).
 
-** Aggregates:
-   %count all a's. As between the {} is a set, make sure each entry is unique
-   a(1..4).
-   count(X) :- X = #count { Y : a(Y) }.
+   #show edge/2.
+   %%#show correct/2.
+   #+end_src
 
-   a(3).
-   b(X,Y) :- a(S), X = 1..S, Y= 1..S.
-   count(X) :- X = #count { temp(Q,R) : b(Q,R) }.
+   #+RESULTS: Graph Test
+   #+begin_example
+   clingo version 5.3.0
+   Reading from ...kbh0000gq/T/babel-ayz92g/clingo-4fIffV
+   Solving...
+   Answer: 1
+   edge(1,2) edge(2,3) edge(3,4) edge(4,5)
+   SATISFIABLE
 
-** Display
-   use (specifying fact type and size).
-   #show something/2.
-   
+   Models       : 1
+   Calls        : 1
+   Time         : 0.002s (Solving: 0.00s 1st Model: 0.00s Unsat: 0.00s)
+   CPU Time     : 0.002s
+   #+end_example
 
-** Examples
-n(4).
-sizes((rows;columns), N) :- n(N).
-board(X,Y) :- sizes(rows,A), sizes(columns,B), X=1..A, Y=1..4.
-%boardSize(S) :- n(Q), NS=Q*Q, S=#count { board(X,Y) : board(X,Y) }, S=NS.
-boardSize(S) :- S= #count { board(X,Y) : board(X,Y) }.
-:- not boardSize(_).
-:- boardSize(S), n(N), NS=N*N, S!=NS.
-#show boardSize/1.

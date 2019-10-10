@@ -1,43 +1,392 @@
 * Prolog Notes
-  [[http://www.swi-prolog.org/][Swipl]]
-  [[http://www.swi-prolog.org/pldoc/doc_for?object=manual][Swipl Manual]]
-  [[http://lpn.swi-prolog.org/lpnpage.php?pagetype=html&pageid=lpn-html][Learn Prolog]]
+  #+STARTUP: hideblocks content
+  [[http://www.swi-prolog.org/][Swipl]] [[http://www.swi-prolog.org/pldoc/doc_for?object=manual][Swipl Manual]] [[http://lpn.swi-prolog.org/lpnpage.php?pagetype=html&pageid=lpn-html][Learn Prolog]]
+  [[http://www.cs.oswego.edu/~odendahl/coursework/notes/prolog/synopsis/con.html][Synopsis]]
+  TERMINAL: use "swipl -tty" in emacs
+** Basic Patterns
+*** Accumulator
 
-  *use "swipl -tty" in emacs*
+    #+NAME: accumulator
+    #+HEADER: :goal main
+    #+begin_src prolog :results value
+    list([1,2,3,4,5]).
 
-** Heuristics 
-   Never write as the leftmost goal of the body something that is 
-   identical with the goal given in the head, place those clauses
-   as far right as possible.
-
-   Use Tail Recursion
-
-   Arithmetic comparisons implicitly evaluate both sides.
+    accum([], A, A).
+    accum([H|T], C, L) :- D is H+C, accum(T, D, L).
 
 
-   #+begin_src prolog
-   4 = 4.     %% True
-   2+2 = 4.   %% False
-   2+2 =:= 4. %% True
+    main :- list(X), accum(X, 0, Y), print(Y), format(" True").
+    main :- format("False").
+    #+end_src
+
+    #+RESULTS: accumulator
+    : 15 True
+
+*** Arithmetic
+
+    #+NAME: Arithmetic
+    #+HEADER: :goal main
+    #+begin_src prolog :results value
+    test(A) :- A = 2 + 3.
+
+
+    main :- test(A), B is A, format("True: ~p", B).
+    main :- format("False").
+    #+end_src
+
+    #+RESULTS: Arithmetic
+    : True: 5
+
+    #+NAME: arithmetic all
+    #+HEADER: :goal main
+    #+begin_src prolog :results value
+    test(A) :- A = 2 + 3.
+    test(A) :- A = 2 * 3.
+    test(B) :- B = 10 / 2.
+
+    eval([], []).
+    eval([test(X)|T], Y) :- Z is X, eval(T, Q), Y = [Z|Q].
+
+    main :- findall(test(A), test(A), B), eval(B,C), print(C), format(" True: ~p", C).
+    main :- format("False").
+    #+end_src
+
+    #+RESULTS: arithmetic all
+    | [5 | 6 | 5] True: 5 |
+
+
+    #+NAME: arithmetic list
+    #+HEADER: :goal main
+    #+begin_src prolog :results value
+      a :- 2 < 3, 2 =< 3, 3 > 2, 3 >= 1.
+      b :- 2 =:= 2.
+      %% operators force evaluation, unlike =
+      c :- 3+1 =\= 3.
+
+      main :- a, b, c, format("True").
+      main :- format("False").
+    #+end_src
+
+    #+RESULTS: arithmetic list
+    : True
+
+*** Difference Lists
+    Use the difference between two lists for information
+    Similar to parser combinators
+
+    Instead of:
+    #+begin_src prolog :results value :goal main
+     s(Z) :- np(X), vp(Y), append(X,Y,Z).
+     np(Z) :- det(X), n(Y), append(X,Y,Z).
+     vp(Z) :- v(X), np(Y), append(X,Y,Z).
+     vp(Z) ;- v(Z).
+
+     det([the]). det([a]).
+     n([woman]). n([man]).
+     v([shoots]).
+
+     main :- s([a, woman, shoots, a, man]), format("True").
+     %% main :- findall(s(X), s(X), Y), format("Result: ~p", [Y]).
+     main :- format("False").
+    #+end_src
+
+    Use:
+    #+begin_src prolog :results value :goal main
+      s(X,Z):- np(X,Y), vp(Y,Z).
+      np(X,Z):- det(X,Y), n(Y,Z).
+
+      vp(X,Z):-  v(X,Y), np(Y,Z).
+
+      vp(X,Z):-  v(X,Z).
+
+      det([the|W],W). det([a|W],W).
+      n([woman|W],W). n([man|W],W).
+      v([shoots|W],W).
+
+      main :- np([the,man|W], W), format("true").
+      main :- format("false").
+    #+end_src
+
+    #+RESULTS:
+    : True
+
+*** Find all Solutions
+    #+NAME: jealousy
+    #+HEADER: :goal main
+    #+begin_src prolog :results value
+    loves(vincent, mia).
+    loves(marcellus, mia).
+    jealous(A,B) :- loves(A,C), loves(B,C), A \= B.
+
+    main :-  findall(jealous(X,Y), jealous(X,Y), Z), print(Z).
+    #+end_src
+
+    #+RESULTS: jealousy
+    | [jealous(vincent | marcellus) | jealous(marcellus | vincent)] |
+
+*** Lists
+    #+begin_src prolog
+    [name(bob), name(bill), [1,2,3,4]]
+    %% Prolog has a separation operator
+    [Head|Tail] = [mia, vincent, jules, yolanda].
+    #+end_src
+
+    #+NAME:lists
+    #+HEADER: :goal main
+    #+begin_src prolog :results value
+    list([aweg, bloo, blee]).
+
+    main :-  list(Y), [aweg | Z] = Y, format("True ~p : ~p", [aweg, Z]).
+    main :- format("False").
+    #+end_src
+
+    #+NAME:membership
+    #+HEADER: :goal main(e)
+    #+begin_src prolog :results value
+    list([a,b,c,d,e]).
+
+    member(X, [X|T]).
+    member(X, [H|T]) :- member(X, T).
+
+    main(A) :- list(X), member(A, X), format("True ~a in ~p", [A, X]) ; format("False ~p", A).
+    #+end_src
+
+    #+NAME: list 2
+    #+HEADER: :goal main
+    #+begin_src prolog :results value
+    list([a,b,c,d,e]).
+    list2([a,b,c]).
+
+    eq([], []).
+    eq([_|Ta], [_| Tb]) :- eq(Ta, Tb).
+
+    main :- list(L), list2(L2), eq(L,L2), format("True").
+    main :- format("False").
+    #+end_src
+
+*** Negation
+    #+NAME: Negation
+    #+HEADER: :goal main
+    #+begin_src prolog :results value
+      person(mia).
+      person(sue).
+      person(vincent).
+
+      woman(mia).
+      woman(sue).
+      man(X) :- person(X), \+ woman(X).
+
+      main :- man(X), format(true) ; format(false).
+    #+end_src
+*** Recursion
+    #+NAME: recursion
+    #+HEADER: :goal main
+    #+begin_src prolog :results value
+      is_digesting(X,Y) :- just_ate(X,Y).
+      is_digesting(X,Y) :- just_ate(X,Z), is_digesting(Z,Y).
+
+      just_ate(mosquito, blood(john)).
+      just_ate(frog, mosquito).
+      just_ate(stork, frog).
+
+      main :- is_digesting(stork, mosquito), format("True").
+      main :- format("False").
+    #+end_src
+
+*** Syntax
+    3 basic constructs: Facts, Rules, and Queries
+    #+begin_src prolog
+      %% Facts start lower case.
+      a_face.
+      %% Variables start Upper case.
+      %% Statements conclude with '.'.
+      %% if (body) then (head).
+      head :- body.
+      %% AND two conditions using a comma: (cond1), (cond2).
+      head :- body1, body2.
+
+      %% OR two conditions using a semicolon: (cond1); (cond2).
+      head :- body1 ; body2.
+    #+end_src
+
+*** Unification
+
+    If term1 and term2 are *constants*, then term1 and term2 unify if
+    and only if they are the same atom, or the same number.
+
+    If term1 is a *variable* and term2 is any type of term, then term1
+    and term2 unify, and term1 is instantiated to term2 . Similarly,
+    if term2 is a variable and term1 is any type of term, then term1
+    and term2 unify, and term2 is instantiated to term1 . (So if they
+    are both variables, they’re both instantiated to each other, and
+    we say that they share values.)
+
+    If term1 and term2 are complex terms, then they unify if and only if:
+    1) They have the same functor and arity, and
+    2) All their corresponding arguments unify, and
+    3) The variable instantiations are compatible.
+       (For example, it is not possible to instantiate variable X to mia when
+       unifying one pair of arguments, and to instantiate X to vincent when
+       unifying another pair of arguments .)
+
+       Two terms unify if and only if it follows from the previous three clauses that they unify.
+
+       Prolog unification skips occur check.
+       (So does not guard against variables unifying with terms that contain the variable).
+
+*** Defining Operators
+    :operator_types:
+    infix : xfx, xfy, yfx
+    prefix: fx, fy,
+    suffix: xf, yf
+    :END:
+
+
+    #+NAME: operator test
+    #+HEADER: :goal main
+    #+begin_src prolog :results value
+    :- op(500, xfy, test).
+    test(X,Y) :- name(X), name(Y).
+    name(bob).
+    name(bill).
+
+    main :- bob test bill, format("True").
+    main :- format("False").
+    #+end_src
+
+    #+RESULTS: operator test
+    : True
+
+*** Cuts
+    "!" is an atom. Always succeeds.
+    Side effect is to block backtracking.
+    Enables mutually exclusive rules by putting a cut at the end of one.
+
+    #+NAME: Basic Cut
+    #+HEADER: :goal main
+    #+begin_src prolog :results output
+    s(X,Y) :- q(X,Y).
+    s(0,0).
+    %% ! blocks attempts of i(2).
+    q(X,Y) :- i(X), !, j(Y).
+
+    i(1). i(2).
+    j(1). j(2). j(3).
+
+    main :- findall(s(X,Y), s(X,Y), Z), format("True: ~p", [Z]).
+    main :- format("False").
+    #+end_src
+
+    #+RESULTS: Basic Cut
+    : True: [s(1,1),s(1,2),s(1,3),s(0,0)]
+
+
+**** Fail-Cut
+     "b(X) :- a(X), !, fail."
+
+     
+     #+NAME: Negation as failure
+     #+HEADER: :goal main
+     #+begin_src prolog :results value
+     neg(X) :- X, !, fail.
+     neg(X).
+
+     a(1).
+
+     main :- neg(a(2)), format("True").
+     main :- format("False").
+     #+end_src
+
+     #+RESULTS: Negation as failure
+     : True
+
+
+*** Modules
+    #+NAME: module syntax
+    #+HEADER: :goal main
+    #+begin_src prolog :results value
+    :- module(ModuleName, [exports]).
+    #+end_src
+
+    #+NAME: Module Load
+    #+HEADER: :goal main
+    #+begin_src prolog :results value
+    :- use_module(moduleName).
+    #+end_src
+** DCGs
+   #+NAME: Basic DCG
+   #+HEADER: :goal main
+   #+begin_src prolog :results output
+   s --> np, vp.
+   np --> det, n. vp --> v, np.
+   vp --> v.
+   det --> [the]. det--> [a].
+   n --> [woman]. n --> [man].
+   v --> [shoots].
+
+   main :- s([a, woman, shoots, the, woman], []), format("True ~p", a).
+   main :- format("False").
    #+end_src
+*** DCGs can have extra arguments, and can call additional code.
+    #+NAME: DCG with arguments
+    #+HEADER: :goal listing
+    #+begin_src prolog :results output
+      s --> np(subject),vp.
+      np(_) --> det,n.
+      np(X) --> pro(X).
+      vp --> v,np(object).
+      vp --> v.
+      det --> [the]. det --> [a].
+      n --> [woman]. n --> [man].
+      pro(subject) --> [he]. pro(subject) --> [she].
+      pro(object) --> [him]. pro(object) --> [her].
+      v --> [shoots].
 
-
-*** Instantiation error
-    From trying to do 12 is (X+3)*2
-    Where uninstantiated variables are on the right of 'is'.
-
-*** Multiple Files:
-    Module:
-    #+begin_src prolog
-    :- module(MODULE_NAME, [MODULE_EXPORTS/0]).
+      main :- format("True").
+      main :- format("False").
     #+end_src
-    And use:
-    #+begin_src prolog
-    :- use_module(MODULE_NAME).
-    MODULE_NAME:MODULE_EXPORTS.
+
+*** Use Curly braces to write normal prolog
+    #+begin_src
+    a(Count) --> [b], { Count = 1 }.
     #+end_src
+
+*** Which can allow separation of lexicon from the rules:
+    #+begin_src prolog
+    np --> det, n.
+    vp --> v, np.
+    vp --> v.
+
+    det --> [Word],{lex(Word,det)}.
+    n --> [Word],{lex(Word,n)}.
+    v --> [Word],{lex(Word,v)}.
+
+    lex(the,det).
+    lex(a,det).
+    lex(woman,n).
+    lex(man,n).
+    lex(shoots,v).
+    #+end_src
+
+*** Can create parse trees:
+    #+NAME: Parse Tree
+    #+HEADER: :goal main
+    #+begin_src prolog :results value
+      s(s(NP,VP)) --> np(NP),vp(VP).
+      np(np(DET,N)) --> det(DET),n(N).
+      vp(vp(V,NP)) --> v(V),np(NP).
+      vp(vp(V))    --> v(V).
+      det(det(the)) --> [the].
+      det(det(a))   --> [a].
+      n(n(woman)) --> [woman].
+      n(n(man))   --> [man].
+      v(v(shoots)) --> [shoots].
+      main :- format("True").
+      main :- format("False").
+    #+end_src
+
 ** Debugging
-   See swipl [[http://www.swi-prolog.org/pldoc/man?section=debugoverview][debugger]] and the gnu prolog [[http://gprolog.univ-paris1.fr/manual/gprolog.html#Running-and-stopping-the-debugger][debugger]] 
+   See swipl [[http://www.swi-prolog.org/pldoc/man?section=debugoverview][debugger]] and the gnu prolog [[http://gprolog.univ-paris1.fr/manual/gprolog.html#Running-and-stopping-the-debugger][debugger]]
    #+begin_src prolog
      %% Debugger ports are: call, exit, redo, fail.
      %% Which to show:
@@ -53,99 +402,94 @@
    g : goals
    C : show context
    A : alternatives
-   
+
    Also print all listings with:
    #+begin_src prolog
    listing.
    #+end_src
 
-** Syntax
-   3 basic constructs: Facts, Rules, and Queries
-   #+begin_src prolog
-     %% Facts start lower case.
-     a_face.
-     %% Variables start Upper case.
-     %% Statements conclude with '.'.
-     %% if (body) then (head).
-     head :- body.
-     %% AND two conditions using a comma: (cond1), (cond2).
-     head :- body1, body2.
+** Heuristics
+   Never write as the leftmost goal of the body something that is
+   identical with the goal given in the head, place those clauses
+   as far right as possible.
 
-     %% OR two conditions using a semicolon: (cond1); (cond2).
-     head :- body1 ; body2.
+   Use Tail Recursion
+
+   Arithmetic comparisons implicitly evaluate both sides.
+   #+begin_src prolog
+   4 = 4.     %% True
+   2+2 = 4.   %% False
+   2+2 =:= 4. %% True
    #+end_src
 
-** Unification
+*** Instantiation error
+    From trying to do 12 is (X+3)*2
+    Where uninstantiated variables are on the right of 'is'.
 
-    If term1 and term2 are constants, then term1 and term2 unify if
-    and only if they are the same atom, or the same number.
-
-    If term1 is a variable and term2 is any type of term, then term1
-    and term2 unify, and term1 is instantiated to term2 . Similarly,
-    if term2 is a variable and term1 is any type of term, then term1
-    and term2 unify, and term2 is instantiated to term1 . (So if they
-    are both variables, they’re both instantiated to each other, and
-    we say that they share values.)
-
-    If term1 and term2 are complex terms, then they unify if and only if:
-        They have the same functor and arity, and
-        all their corresponding arguments unify, and
-        the variable instantiations are compatible.
-        (For example, it is not possible to instantiate variable X to mia when unifying one pair of arguments, and to instantiate X to vincent when unifying another pair of arguments .)
-    Two terms unify if and only if it follows from the previous three clauses that they unify.
-
-    Prolog unification skips occur check. (So does not guard against variables unifying with terms that 
-    contain the variable).
-
+*** Multiple Files:
+    Module:
+    #+begin_src prolog
+    :- module(MODULE_NAME, [MODULE_EXPORTS/0]).
+    #+end_src
+    And use:
+    #+begin_src prolog
+    :- use_module(MODULE_NAME).
+    MODULE_NAME:MODULE_EXPORTS.
+    #+end_src
 ** Predicates
-   is/2
-   =/2
-   unify_with_occurs_check/2
-   addLen/3
 
-** Lists
-   #+begin_src prolog
-   [name(bob), name(bill), [1,2,3,4]]
-   %% Prolog as a separation operator
-   [Head|Tail] = [mia, vincent, jules, yolanda].
+   | Predicate                 | Notes                                  |
+   |---------------------------+----------------------------------------|
+   | is/2                      | performs arithmetic                    |
+   | "==/2"                    | does not unify, strict comparison      |
+   | "=/2"                     | unifies                                |
+   | \=/2                      | unification failure                    |
+   | unify_with_occurs_check/2 |                                        |
+   | addLen/3                  |                                        |
+   | findall/3                 | finds all unifications                 |
+   | bagof/3                   | doesn't flatten results of findall     |
+   | setof/3                   | returns lists with no redundancies     |
+   | fail/0                    | force backtracking.                    |
+   | assert/1, retract/1       | add and remove facts and rules from kb |
+   | asserta/1                 | add to beginning of kb                 |
+   | assertz/1                 | add to end of kb                       |
+   |                           |                                        |
+
+
+   | Typing:   |                                                 |
+   |-----------+-------------------------------------------------|
+   | atom/1    |                                                 |
+   | integer/1 |                                                 |
+   | float/1   |                                                 |
+   | number/1  |                                                 |
+   | atomic/1  |                                                 |
+   | var/1     |                                                 |
+   | nonvar/1  |                                                 |
+   | functor/3 | functor(f(a,b), F, A) : gives functor and arity |
+   | arg/3     | arg(2, loves(vincent,mia), X). : X -> mia       |
+   | "=../2"   | turns the given arg into a list [head, terms] |
+
+** Proof Search
+   #+NAME: proof_search
+   #+HEADER: :goal main
+   #+begin_src prolog :results value
+   f(a). f(b). g(a). g(b).
+   h(b).
+
+   k(X) :- f(X), g(X), h(X).
+
+   main :- k(X), format("Result: ~a", X).
    #+end_src
 
+** Sandbox
+   #+NAME: test
+   #+HEADER: :goal main
+   #+begin_src prolog :results values
+   woman(mia).
+   woman(yolanda).
+   legs(mia).
+   tall(X) :- woman(X), legs(X).
 
-** DCGs
-   #+begin_src prolog
-   a --> b, c.
-   b --> [hello].
-   c --> [bob].
-   c --> [bill].
+
+   main :- tall(X), format("test ~a", X).
    #+end_src
-   Is syntactic sugar for difference list rules:
-   #+begin_src prolog
-   a(X,Y) --> b(X,Z),(Z,Y).
-   b(X,[]) --> [bob].
-   b(X,[]) --> [bill].
-   #+end_src
-   DCGs can have extra arguments, and can call additional code.
-   #+begin_src 
-   a(Count) --> [b], { Count = 1 }.
-   #+end_src
-   Which can allow separation of lexicon from the rules:
-   #+begin_src prolog
-   np --> det, n.
-   vp --> v, np.
-   vp --> v.
-
-   det --> [Word],{lex(Word,det)}.
-   n --> [Word],{lex(Word,n)}.
-   v --> [Word],{lex(Word,v)}.
-
-   lex(the,det).
-   lex(a,det).
-   lex(woman,n).
-   lex(man,n).
-   lex(shoots,v).
-   #+end_src
-
-
-
-
-

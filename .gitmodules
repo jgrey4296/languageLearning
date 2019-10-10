@@ -1,0 +1,6 @@
+[submodule "python/machine_learning/pybrain"]
+	path = python/machine_learning/pybrain
+	url = https://github.com/jgrey4296/jgPyBrain_Exploration.git
+[submodule "python/machine_learning/theanoTests"]
+	path = python/machine_learning/theanoTests
+	url = https://github.com/jgrey4296/theanoTests.git
