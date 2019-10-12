@@ -2,6 +2,10 @@
 ** [[https://www.crummy.com/software/BeautifulSoup/bs4/doc/][Beautiful Soup]]
 ** [[https://wiki.python.org/moin/PythonDecoratorLibrary][Decorators]]
 ** [[http://www.bogotobogo.com/python/python_fncs_map_filter_reduce.php][Functional Style]]
+** GTK3 + PYGObject
+   [[https://pygobject.readthedocs.io/en/latest/getting_started.html#macosx-getting-started][Installation]]
+   Use homebrew, not anaconda
+
 ** GUI
 *** [[https://wiki.python.org/moin/TkInter][tkinter]]
 *** [[https://www.qt.io/qt-for-python][qt]]
@@ -47,7 +51,7 @@
     instances,
     exceptions.
 
-*** TODO Bitwise
+*** Bitwise
 *** Comparisons can be chained!
     1 < 2 < 3  * => True
     2 < 3 < 2  * => False
@@ -682,7 +686,7 @@
     red black tree
 *** markupsafe
 *** networkx
-    anasis of networks/graphs
+    analysis of networks/graphs
 *** oauthlib
 *** pandas
 *** patsy
@@ -725,4 +729,5 @@
 ** Environments
    [[https://realpython.com/python-virtual-environments-a-primer/][PyEnv Primer]]  [[https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html][Conda Environment management]]
 
+   
    
