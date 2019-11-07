@@ -1,0 +1,55 @@
+* SKLearn / Statistics org practice file
+** Linear Regression
+
+   #+NAME: Linear Regression
+   #+begin_src python :results output :session linreg
+     import numpy as np
+     import matplotlib
+     import matplotlib.pyplot as plt
+
+     def linear_regression(data):
+         """ Acting on a ndarray of shape (n, 2) """
+         means = data.mean(axis=0)
+         errors = data - means
+
+         error_sq = (pow(errors[:,0],2)).sum()
+         errors = (errors[:,0] * errors[:,1]).sum()
+
+         coefficient = errors / error_sq
+         y_intercept = means[1] - (coefficient * means[0])
+         return (y_intercept, coefficient)
+   #+end_src
+
+   #+RESULTS: Linear Regression
+
+   #+NAME: Lin Reg Test
+   #+begin_src python :results output :session linreg
+     data1 = np.random.random((20,2))
+     data2 = np.random.random((20,2)) * 10
+     data = np.row_stack((data1, data2))
+     reg1 = linear_regression(data1)
+     reg2 = linear_regression(data2)
+     print("Regression: {},{}".format(*reg))
+     plt.figure()
+     plt.style.use('classic')
+     plt.plot([0, 10], [reg1[0], reg1[0] + reg1[1]])
+     plt.plot([0, 10], [reg2[0], reg2[0] + reg2[1]])
+     plt.plot(data[:,0], data[:,1], 'ro')
+     plt.show()
+   #+end_src
+
+   #+NAME: Variance
+   #+begin_src python :results output
+   import numpy as np
+   a = np.random.random((5,2))
+   variance = a.var()
+   assert(variance == pow((a - a.mean()),2).mean())
+   #+end_src
+
+   #+NAME: CoVariance
+   #+begin_src python :results output
+	 import numpy as np
+   a = np.random.random((5,2))
+   covar = ((a[:,0]-m[0])*(a[:,1]-m[1])).mean()
+   #+end_src
+

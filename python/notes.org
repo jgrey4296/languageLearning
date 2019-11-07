@@ -57,7 +57,6 @@
     2 < 3 < 2  * => False
 
 *** Data Structures
-
 **** Lists
 ***** Lists store sequences
       li = []
@@ -242,7 +241,6 @@
      @staticmethod
      def grunt():
      return "***grunt***"
-
 
 **** Instantiate a class
      i = Human(name="Ian")
