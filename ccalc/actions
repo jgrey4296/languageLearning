@@ -20,18 +20,18 @@
      [\/ANML \/P | #1==getOff(#2,ANML,P)] ++
      [\/H | #1==throwOff(#2,H)]).
 
-% A failed mount is not subject to the usual, rather strict, 
+% A failed mount is not subject to the usual, rather strict,
 %  movement restriction on large animals
 mount(H,ANML) causes ab(H).
 
-% If the position a large human is thrown into was previously 
+% If the position a large human is thrown into was previously
 %  occupied by another large animal, the usual movement restric-
 %  tion doesn't apply
 throwOff(ANML,H) causes ab(H).
 
 % Every animal can execute only one action at a time
-nonexecutable A & A1 if doneBy(A,ANML1) & doneBy(A1,ANML1) 
-                                              where A@<A1. 
+nonexecutable A & A1 if doneBy(A,ANML1) & doneBy(A1,ANML1)
+                                              where A@<A1.
 
 % Direct effect of move action
 move(ANML,P) causes pos(ANML)=P.
@@ -70,7 +70,7 @@ nonexecutable close(H,G) if mounted(H,ANML).
 % A human cannot close a gate if it is already closed
 nonexecutable close(H,G) if -opened(G).
 
-% When a human rides an animal, his position is the same as the 
+% When a human rides an animal, his position is the same as the
 %  animal's position while the animal moves (lmw)
 caused pos(H)=P if mounted(H,ANML) & pos(ANML)=P.
 
@@ -79,8 +79,8 @@ caused pos(H)=P if mounted(H,ANML) & pos(ANML)=P.
 caused mounted(H,ANML) if pos(ANML)=P
                        after pos(ANML)=P & mount(H,ANML).
 
-% The action fails if the animal changes position, and in this 
-%  case the result of the action is that the human ends up in 
+% The action fails if the animal changes position, and in this
+%  case the result of the action is that the human ends up in
 %  the position where the animal was (lmw)
 caused pos(H)=P if pos(ANML)\=P
                 after pos(ANML)=P & mount(H,ANML).
@@ -110,14 +110,14 @@ nonexecutable mount(H,ANML) if mounted(H1,ANML).
 % A human cannot be mounted on a human who is mounted
 constraint -(mounted(H,H1) & mounted(H1,ANML)).
 
-% A human cannot attempt to mount an animal if the human is 
+% A human cannot attempt to mount an animal if the human is
 %  already mounted by a human
 nonexecutable mount(H,ANML) if mounted(H1,H).
 
 % A human cannot attempt to mount a human who is mounted
 nonexecutable mount(H,H1) if mounted(H1,ANML).
 
-% The getOff action is successful provided that the animal does 
+% The getOff action is successful provided that the animal does
 %  not move at the same time.  It fails if the animal moves, and
 %  in this case the rider stays on the animal (lmw)
 caused pos(H)=P if pos(ANML)=P1
@@ -134,24 +134,24 @@ nonexecutable getOff(H,ANML,P) if -mounted(H,ANML).
 %  accessible from the current position
 nonexecutable getOff(H,ANML,P) if -accessible(pos(ANML),P).
 
-% The throwOff action results in the human no longer riding the 
-%  animal and ending in a position adjacent to the animal's 
-%  present position. It is nondeterministic since the rider may 
+% The throwOff action results in the human no longer riding the
+%  animal and ending in a position adjacent to the animal's
+%  present position. It is nondeterministic since the rider may
 %  end up in any position adjacent to the animal's present posi-
 %  tion (lmw)
 throwOff(ANML,H) may cause pos(H)=P.
 throwOff(ANML,H) causes -mounted(H,ANML).
 
-% If the resultant position is occupied by another large animal 
-%  then the human will result in riding that animal instead 
+% If the resultant position is occupied by another large animal
+%  then the human will result in riding that animal instead
 %  (lmw)
 caused mounted(H,ANML1) if pos(H)=pos(ANML1) & large(ANML1)
    after throwOff(ANML,H) where H\=ANML1.
 
-% The action cannot be performed by an animal not ridden by a 
+% The action cannot be performed by an animal not ridden by a
 %  human  (lmw)
 nonexecutable throwOff(ANML,H) if -mounted(H,ANML).
 
-% The actions getOff and throwOff cannot be executed 
+% The actions getOff and throwOff cannot be executed
 %  concurrently
 nonexecutable getOff(H,ANML,P) & throwOff(ANML,H).

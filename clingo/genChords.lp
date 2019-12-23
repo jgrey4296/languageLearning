@@ -13,7 +13,7 @@
 % Test: Number of chord repeats
 
 %%----------Inputs
-#const numSteps = 8. 
+#const numSteps = 8.
 #const numCadences = 1.
 #const finalCadence = 5.
 #const maxChordRepeats = 2.

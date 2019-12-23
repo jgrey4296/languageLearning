@@ -493,3 +493,6 @@
 
    main :- tall(X), format("test ~a", X).
    #+end_src
+
+   #+RESULTS: test
+   : test mia
