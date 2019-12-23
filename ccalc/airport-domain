@@ -1,17 +1,17 @@
-% File 'airport-domain'
+ % File 'airport-domain'
 
-:- macros 
+:- macros
   disjoint(#1,#2) -> (-((#1)=(#2)) & -at(#1,#2) & -at(#2,#1)).
 
 :- sorts
-  object >> region; 
+  object >> region;
   mode.
 
 :- variables
   X,Y,Z                    :: object;
   U,V                      :: region;
   M                        :: mode.
-   
+
 :- objects
   i, car, desk             :: object;
   home, airport, county    :: region;
@@ -19,11 +19,11 @@
 
 :- constants
   at(object,object)        :: inertialFluent;
-  walkable(region), 
+  walkable(region),
   drivable(region)         :: boolean;
   go(object,mode)          :: exogenousAction.
 
-exogenous walkable(U), drivable(U). 
+exogenous walkable(U), drivable(U).
 
 % Properties of at
 
@@ -44,10 +44,10 @@ nonexecutable go(X,driving) if -at(i,car).
 
 nonexecutable go(X,walking)
     if -[\/U | walkable(U) & at(i,U) & at(X,U)].
-                            
+
 nonexecutable go(X,driving)
     if -[\/U | drivable(U) & at(i,U) & at(X,U)].
-                            
+
 % Restrictions on the concurrent execution of actions
 
 nonexecutable go(X,walking), go(Y,driving).
@@ -58,8 +58,8 @@ nonexecutable go(X,M), -go(Y,M) if at(X,Y) & -at(i,Y).
 
 constraint -at(car,desk).
 
-constraint walkable(home). 
+constraint walkable(home).
 constraint -walkable(county).
 
-constraint -drivable(home). 
+constraint -drivable(home).
 constraint drivable(county).

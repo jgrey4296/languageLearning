@@ -251,7 +251,6 @@
           fold(F, T, F(H,Start)).
     #+end_src
 
-
 ** Modules
    #+begin_src erlang
      %%To define attributes:
@@ -344,7 +343,7 @@
     "head mismatch" - inconsistent arity on functions.
     "variable unsafe in case" - use of a variable declared inside a branch, outside. 
 *** Runtime Errors
-    "no Function clause matchin" - failing all pattern matches or guards.
+    "no Function clause matching" - failing all pattern matches or guards.
     "no case clause matching" - forgotten a case, sent wrong data, or need a catchall.
     "no match of right hand side value" - bad pattern matching
     "bad function" - using a non-function variable as a function
@@ -421,8 +420,6 @@
      Load Records from a module in shell: rr(records). rr(*,[module1, module2...]).
      Define a Record in the Shell: rd(Name,Definition).
      Unload records: rf(). rf(Name). rf([Names]).
-
-
 
 
 
