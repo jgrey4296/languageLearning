@@ -201,7 +201,7 @@
 
 
    % loading file /Users/jgrey/github/otherlibs/ccalc/macros.std
-   % loading file /var/folders/9k/kt7tw9c53zq0mgj4rwyd6cqc0000gn/T/babel-8N3Xln/ccalc-d1DO1o.pl
+   % loading file /var/folders/9k/kt7tw9c53zq0mgj4rwyd6cqc0000gn/T/babel-8N3Xln/ccalc-XixKaC.pl
    % in transition mode...
    % 24 atoms, 48 rules, 149 clauses (28 new atoms)
    % Grounding time: 0.02 seconds
@@ -214,23 +214,18 @@
    % Reading output file(s) from SAT solver... done.
    % Solution time: 0 seconds (prep 0 seconds, search 0 seconds)
 
-   0:  c=5
+   0:  c=5  
 
-   ACTIONS:  a
+   ACTIONS:  a  
 
-   1:  c=6
+   1:  c=6  
 
-   ACTIONS:  a
+   ACTIONS:  a  
 
-   2:  c=7
+   2:  c=7  
 
 
    #+end_example
-
-
-
-
-
 
 ** Sandbox Session
    #+begin_src ccalc :results output :session test :as-file

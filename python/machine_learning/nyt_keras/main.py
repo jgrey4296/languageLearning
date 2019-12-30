@@ -89,7 +89,7 @@ if not exists("{}.json".format(MODEL_FILE)):
 else:
     logging.info("Loading Model from File")
     model = utils.nn_load_model(MODEL_FILE)
-    
+
 optimizer = RMSprop(lr=LEARN_RATE)
 model.compile(loss='categorical_crossentropy', optimizer=optimizer)
 
@@ -105,7 +105,7 @@ def generate_text():
             logging.info("\n---------- Diversity: {}".format(diversity))
 
             generated = []
-            #Get the real text 
+            #Get the real text
             sentence = all_titles[random.randrange(0, len(all_titles))][:MAXLEN]
             generated += sentence
 
@@ -131,7 +131,7 @@ def generate_text():
                 sentence += next_char
 
             logging.info("Generated:\n{}\n".format("".join(generated)))
-        
+
             with open(OUTPUT, 'a') as f:
                 f.write("{}\n".format("".join(generated)))
 
@@ -154,16 +154,11 @@ else:
                                                    MAXLEN=MAXLEN,
                                                    STEP=STEP,
                                                    vocab_file=VOCAB_FILE)
-                                                                         
+
         model.fit(X,y,
                   batch_size=BATCH_SIZE,
                   epochs=EPOCHS)
         utils.nn_save_model(model, MODEL_FILE)
-    
+
         #After Each Training Epoch, try out the model:
         generate_text()
-
-
-
-
-    
