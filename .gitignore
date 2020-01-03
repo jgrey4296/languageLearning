@@ -14,3 +14,4 @@ log.*
 *.jpg
 python/scrapers/sfam_scraper/data/*
 python/scrapers/sfam_scraper/imgs/*
+python/code_analysis/data

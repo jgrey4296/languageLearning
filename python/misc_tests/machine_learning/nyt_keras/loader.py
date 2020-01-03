@@ -48,8 +48,8 @@ def get_title_and_paragraph(dir, num=None, rand=False):
             alt_title = doc['headline']['print_headline']
         else:
             alt_title = ''
-                
-        if 'abstract' in doc and doc['abstract'] is not None: 
+
+        if 'abstract' in doc and doc['abstract'] is not None:
             abstract = doc['abstract']
         else:
             abstract = ''
@@ -73,4 +73,3 @@ def get_title_and_paragraph(dir, num=None, rand=False):
         if len(chosen_title) > 0 and len(chosen_text) > 0:
             pairs.append((chosen_title, chosen_text))
     return pairs
-

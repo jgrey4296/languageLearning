@@ -1,0 +1,82 @@
+* Data Notes
+** Abl
+   Get registered acts, wmes, behaviors.
+*** Eisbot
+*** Grace
+*** SSim
+*** Trip
+** lua
+   Get Functions, Classes
+*** df9
+*** Don't Starve 
+**** Behaviours
+     {} = Class(..)
+
+     function {}:{}(..)
+
+**** Brains
+     require "behaviours/{}"
+   
+     local? function {}(..)
+
+**** Stategraphs
+     ActionHandler({}...
+     EventHandler({}...
+
+
+     State{
+     name= "{}",
+     tags = {"{}"},
+     events = { EventHandler("{}"...
+
+**** Components
+     local? {} = Class(..
+
+     function {}:{}(..)..
+
+**** Map
+**** Prefabs
+**** Actions
+     Actions = { {} = Action...,
+**** Cooking
+     AddIngredientValues
+**** Worldgen main
+     function ...
+** tables
+*** d3
+    Get policies, policy/pressure groups,
+    simulation categories, voter types
+**** d3 africa
+*** prom week speech acts
+    get variables, speech act types
+** txt
+*** Narratives
+    Get Characters, positions in story
+**** 40k
+**** Discworld
+*** 4X
+    Get types, events, categories, ai, names etc
+**** Crusader kings 2
+**** EU 4
+**** distant worlds
+**** stellaris
+*** Rules
+    Get Rules, names, sizes, sequence,
+    Get deontics, sanctions
+**** nomic
+**** emily post
+**** roberts rules
+** versu
+   Get Characters, fields, rules, speech act types
+** witcher 3
+   Clean up, get components, get actions, objcts
+** xml
+*** CiF
+    Get Rules
+*** Redshirt
+    Get Categories, names, activites, jobs
+*** USC
+    Get Categories, rules, deontics, sanctions,
+    sections, lengths, cross references
+*** KJV
+    Get sections, names, deontics, grammar

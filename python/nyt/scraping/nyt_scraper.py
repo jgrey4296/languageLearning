@@ -72,7 +72,6 @@ def prep_request(session, url, params={}, headers={}, data={}):
     print('Prepared Request: {}'.format(prepped))
     return prepped
 
-
 def perform_request_then_wait(session, request):
     """ Request information, get the data or deal with the failure  """
     global total_requests_performed_in_session
@@ -90,7 +89,6 @@ def perform_request_then_wait(session, request):
     elif 200 <= response.status_code < 300:
         logging.info('Response Received')
     return response
-
 
 def check_response_header(response):
     """ Check for X-RateLimit fields """
