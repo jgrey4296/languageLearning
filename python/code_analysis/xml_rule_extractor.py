@@ -12,6 +12,11 @@ from os import listdir
 from random import shuffle
 import pyparsing as pp
 
+#Choose:
+#https://docs.python.org/3/library/xml.etree.elementtree.html
+import lxml
+from bs4 import BeautifulSoup
+
 # Setup root_logger:
 from os.path import splitext, split
 import logging as root_logger

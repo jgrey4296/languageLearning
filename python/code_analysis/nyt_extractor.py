@@ -5,6 +5,7 @@ output to similarly named files in analysis directory
 """
 import utils
 import spacy
+import json
 import IPython
 from enum import Enum
 from os.path import join, isfile, exists, abspath
