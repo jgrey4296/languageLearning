@@ -3,6 +3,8 @@ Get DwarfFortress files from data dir,
 extract names of behaviours mentioned
 output to similarly named files in analysis directory
 """
+import datetime
+import re
 import IPython
 from enum import Enum
 from os.path import join, isfile, exists, abspath
@@ -27,122 +29,94 @@ logging = root_logger.getLogger(__name__)
 ##############################
 # Enums:
 
-obj_e = Enum('Parse Objects', 'ENT ACT WME BEH COM SPAWN MENTAL PRECON SPEC INIT STEP')
-
-class DwarfFortressEnt(utils.ParseBase):
-
-    def __init__(self, name):
-        super().__init__()
-        self._type = obj_e.ENT
-        self._name = name
-
-class DwarfFortressRegistration(utils.ParseBase):
-
-    def __init__(self, _type, name):
-        super().__init__()
-        assert(_type in [obj_e.WME, obj_e.ACT])
-        self._type = _type
-        self._name = name
-
-class DwarfFortressBehavior(utils.ParseBase):
-
-    def __init__(self, name, args, init=False):
-        super().__init__()
-        self._type = obj_e.BEH
-        self._init = init
-        self._name = name
-        self._args += args
-
-    def add_component(self, comp):
-        self._components.append(comp)
-
-class DwarfFortressComponent(utils.ParseBase):
-
-    def __init__(self, _type, name=None, args=None):
-        super().__init__()
-        assert(_type in [obj_e.SPAWN, obj_e.MENTAL, obj_e.PRECON, obj_e.SPEC, obj_e.STEP])
-        self._type = _type
-        self._name = name
-        if args:
-            self._args += args
-
-    def __str__(self):
-        _type = ""
-        if self._type == obj_e.MENTAL:
-            _type = "MentalAct"
-        elif self._type == obj_e.PRECON:
-            _type = "Precondition"
-        elif self._type == obj_e.STEP:
-            _type = "Step"
-        elif self._type == obj_e.SPEC:
-            _type = "Specificity"
-        elif self._type == obj_e.SPAWN and 'subgoal' in self._args:
-            _type = "SubGoal"
-        elif self._type == obj_e.SPAWN and 'act' in self._args:
-            _type = "Act"
-        else:
-            _type = "SpawnGoal"
-
-        name = ""
-        if self._name is not None:
-            name = "{}".format(self._name)
-
-        args = ", ".join([str(x) for x in self._args if x not in ["act", "spawngoal", "subgoal"]])
-
-        return "[{}: {} ({})]".format(_type, name, args)
-
-
-def build_parser():
-    return
-def extract_from_file(filename, DwarfFortress_parser, com_parser):
+def extract_from_file(filename):
     logging.info("Extracting from: {}".format(filename))
-    data = { 'behaving_entity' : "",
-             'registrations' : [],
-             'behaviors' : [],
-             'comments' : 0
-    }
-    lines = []
-    with open(filename,'r') as f:
-        lines = f.readlines()
+    data = {}
+    soup = None
+    with open(filename,'rb') as f:
+        text = f.read().decode('utf-8', 'ignore')
+        soup = BeautifulSoup(text, features='lxml')
 
+    assert(soup is not None)
     state = { 'bracket_count' : 0,
               'current' : None,
               'line' : 0}
-    while bool(lines):
-        state['line'] += 1
-        current = lines.pop(0)
 
-        try:
-            comment = com_parser.parseString(current)
-            data['comments'] += 1
-        except pp.ParseException:
-            result = DwarfFortress_parser.parseString(current)[0]
-            #Get open and close brackets
-            #handle result:
-            if not result:
+    if soup.find('h1') is not None:
+        data = extract_from_release_info(soup)
+    else:
+        data = extract_from_dev_log(soup)
+
+    return data
+
+def extract_from_release_info(soup):
+    data = {}
+    title = soup.find('h1')
+    release_date = soup.find('p')
+    blockquote = soup.find('blockquote')
+
+    headings = soup.find_all('h2')
+    queue = headings[:]
+    while bool(queue):
+        current = queue.pop(0)
+        if current.find_next_sibling('ul') is None:
+            continue
+        curr_string = current.string
+        if curr_string is None:
+            curr_string = current.get_text()
+        curr_string = curr_string.replace("[edit]","")
+        data[curr_string] = [x for x in current.find_next_sibling('ul').strings if re.match('\n',x) is None]
+
+    data['version'] = title.string
+
+    release_match = None
+    if release_date is not None:
+        release_match = re.search('was released on (.+?)\.', release_date.get_text())
+
+    if release_match is not None:
+        release_string = release_match.group(1)
+    else:
+        release_string = "UNKNOWN"
+
+    data['release_date' ] = release_string
+
+    if blockquote is not None:
+        the_string = blockquote.get_text().replace('\n',' ')
+        data['release_quote' ] = the_string
+
+    return data
+
+def extract_from_dev_log(soup):
+    dev_list = soup.find('ul')
+
+    data = {}
+    try:
+        for li in dev_list.children:
+            span = li.find('span')
+            if span is None or span == -1:
                 continue
-
-            result._line_no = state['line']
-
-            if isinstance(result, DwarfFortressEnt):
-                data['behaving_entity'] = result
-            elif isinstance(result, DwarfFortressRegistration):
-                data['registrations'].append(result)
-            elif isinstance(result, DwarfFortressBehavior):
-                state['current'] = result
-                data['behaviors'].append(state['current'])
-            elif isinstance(result, DwarfFortressComponent):
-                state['current'].add_component(result)
-            elif not isinstance(result, utils.ParseBase):
-                logging.warning("Unrecognised parse result: {}".format(result))
+            date = span.string
+            text = li.get_text()
+            text = text.replace(date,"")
+            text = text.replace('\n',' ')
+            data[date] = text
+    except AttributeError:
+        breakpoint()
 
     return data
 
 
 if __name__ == "__main__":
-    DwarfFortress_parser, com_parser = build_parser()
-    files = utils.get_data_files([join("data","DwarfFortress")], ".DwarfFortress")
+    import argparse
+    parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
+                                     epilog = "\n".join([""]))
+    parser.add_argument('-t', '--target')
+    args = parser.parse_args()
+    if args.target is not None:
+        files = [args.target]
+    else:
+        files = utils.get_data_files([join("data","dwarf_fortress")], ".html")
     for f in files:
-        data = extract_from_file(f, DwarfFortress_parser, com_parser)
-        data_str = utils.convert_data_to_output_format(data, ["registrations", "behaviors"])
+        data = extract_from_file(f)
+        data_str = utils.convert_data_to_output_format(data, [])
         utils.write_output(f, data_str, ".DwarfFortress_analysis")

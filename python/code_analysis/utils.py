@@ -53,6 +53,7 @@ def get_data_files(initial, ext):
 
 def convert_data_to_output_format(data, loop_on_keys=None):
     logging.info("Converting to output format")
+    #expect a dictionary for data
     output_str = ""
     if not loop_on_keys:
         loop_on_keys = []
