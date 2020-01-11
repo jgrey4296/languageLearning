@@ -1,5 +1,5 @@
 """
-Get abl files from data dir,
+Get csv tables from data dir,
 extract names of behaviours mentioned
 output to similarly named files in analysis directory
 """
@@ -26,55 +26,38 @@ logging = root_logger.getLogger(__name__)
 ##############################
 # Enums:
 
-behavior_type_e = Enum("Behaviour Type", "SEQ PAR")
-obj_e = Enum('Parse Objects', 'ENT ACT WME BEH COM SPAWN MENTAL PRECON SPEC')
-
 def extract_from_file(filename):
     logging.info("Extracting from: {}".format(filename))
-    data = { 'behaving_entity' : "",
-             'acts' : [],
-             'wmes' : [],
-             'behaviors' : [],
-             'comments' : 0
-    }
-    lines = []
-    with open(filename,'r') as f:
-        lines = f.readlines()
+    data = { }
 
-    state = { 'bracket_count' : 0,
-              'current' : None,
-              'line' : 0}
-    while bool(lines):
-        state['line'] += 1
-        current = lines.pop(0)
+    with open(filename, 'rb') as f:
+        text = [x.decode('utf-8','ignore') for x in f.readlines()]
 
-        try:
-            comment = com_parser.parseString(current)
-            data['comments'] += 1
-        except pp.ParseException:
-            result = abl_parser.parseString(current)
-            #Get open and close brackets
-            #handle result:
-            if not result:
-                continue
-            result_type = result[0]['type']
-            result[0]['line_no'] = state['line']
-            if result_type == obj_e.ENT:
-                data['behaving_entity'] = result[0]
-            elif result_type == obj_e.ACT:
-                data['acts'].append(result[0])
-            elif result_type == obj_e.WME:
-                data['wmes'].append(result[0])
-            elif result_type == obj_e.BEH:
-                data['behaviors'].append(result[0])
-            else:
-                logging.warning("Unrecognised parse result: {}".format(result[0]))
+    csv_obj = csv.DictReader(text, restkey="remaining", quotechar='"')
+
+    rows = [x for x in csv_obj]
+
+    keys = [x for x in rows[0].keys()]
+    data['keys'] = keys
+    data['length'] = len(rows)
+
+    if 'name' in keys:
+        data['names'] = [x['name'] for x in rows]
 
     return data
 
 
 if __name__ == "__main__":
-    files = utils.get_data_files([join("data","tables")], ".csv")
+    import argparse
+    parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
+                                     epilog = "\n".join([""]))
+    parser.add_argument('-t', '--target')
+    args = parser.parse_args()
+    if args.target is not None:
+        files = [args.target]
+    else:
+        files = utils.get_data_files([join("data","tables")], ".csv")
+
     for f in files:
         data = extract_from_file(f)
         data_str = utils.convert_data_to_output_format(data, [])

@@ -119,4 +119,4 @@ if __name__ == "__main__":
     for f in files:
         data = extract_from_file(f)
         data_str = utils.convert_data_to_output_format(data, [])
-        utils.write_output(f, data_str, ".DwarfFortress_analysis")
+        utils.write_output(f, data_str, ".dwarf_analysis")

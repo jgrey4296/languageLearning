@@ -1,17 +1,16 @@
 """
-Get setup scripts from 4x games from data dir,
+Get ini files from data dir,
 
 output to similarly named files in analysis directory
 """
-import IPython
+import utils
+import configparser
 from enum import Enum
 from os.path import join, isfile, exists, abspath
 from os.path import split, isdir, splitext, expanduser
 from os import listdir
 from random import shuffle
 import pyparsing as pp
-import utils
-
 
 # Setup root_logger:
 from os.path import splitext, split
@@ -27,24 +26,22 @@ logging = root_logger.getLogger(__name__)
 ##############################
 # Enums:
 
-
-def build_parser():
-
-    return None
-
-def extract_from_file(filename, main_parser):
+def extract_from_file(filename):
     logging.info("Extracting from: {}".format(filename))
     data = { }
-    lines = []
-    with open(filename,'r') as f:
-        lines = f.readlines()
+    config = configparser.ConfigParser(allow_no_value=True)
+    with open(filename, 'rb') as f:
+        text = f.read().decode('utf-8','ignore')
 
-    state = { 'bracket_count' : 0,
-              'current' : None,
-              'line' : 0}
-    while bool(lines):
-        state['line'] += 1
-        current = lines.pop(0)
+    try:
+        config.read_string(text)
+        data['keys'] = config.sections()
+
+
+
+    except configparser.ParsingError as e:
+        logging.warning("Parse Error: {}".format(str(e)))
+        data['parse_error'] = str(e)
 
     return data
 
@@ -58,11 +55,10 @@ if __name__ == "__main__":
     if args.target is not None:
         files = [args.target]
     else:
-        base = join("data", "txt")
-        queue = [join(base, x) for x in ["CK2", "EUIV", "distant worlds", "stellaris"]]
-        files = utils.get_data_files(queue, ".txt")
+        files = utils.get_data_files([join("data","tables")], ".ini")
+        files += utils.get_data_files([join("data","tables")], ".txt")
 
     for f in files:
         data = extract_from_file(f)
         data_str = utils.convert_data_to_output_format(data, [])
-        utils.write_output(f, data_str, ".4x_analysis)
+        utils.write_output(f, data_str, ".config_analysis")
