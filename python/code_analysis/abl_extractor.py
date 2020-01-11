@@ -217,8 +217,17 @@ def extract_from_file(filename, abl_parser, com_parser):
 
 
 if __name__ == "__main__":
+    import argparse
+    parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
+                                     epilog = "\n".join([""]))
+    parser.add_argument('-t', '--target')
+    args = parser.parse_args()
+    if args.target is not None:
+        files = [args.target]
+    else:
+        files = utils.get_data_files([join("data","abl")], ".abl")
+
     abl_parser, com_parser = build_parser()
-    files = utils.get_data_files([join("data","abl")], ".abl")
     for f in files:
         data = extract_from_file(f, abl_parser, com_parser)
         data_str = utils.convert_data_to_output_format(data, ["registrations", "behaviors"])

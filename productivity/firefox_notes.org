@@ -1,0 +1,9 @@
+* Reminders about firefox
+
+  Get to configs with about:about
+  Use: reader.parse-on-load.force-enabled
+  for reader view force
+
+  Set: browser.bookmarks.editDialog.firstEditField
+  to: tagsField
+  for a better bookmarking default

@@ -1,17 +1,17 @@
 """
-Get setup scripts from 4x games from data dir,
+Get tsv files from data dir,
 
 output to similarly named files in analysis directory
 """
-import IPython
+import utils
+import re
+import csv
 from enum import Enum
 from os.path import join, isfile, exists, abspath
 from os.path import split, isdir, splitext, expanduser
 from os import listdir
 from random import shuffle
 import pyparsing as pp
-import utils
-
 
 # Setup root_logger:
 from os.path import splitext, split
@@ -27,24 +27,24 @@ logging = root_logger.getLogger(__name__)
 ##############################
 # Enums:
 
-
-def build_parser():
-
-    return None
-
-def extract_from_file(filename, main_parser):
+def extract_from_file(filename):
     logging.info("Extracting from: {}".format(filename))
     data = { }
-    lines = []
-    with open(filename,'r') as f:
-        lines = f.readlines()
 
-    state = { 'bracket_count' : 0,
-              'current' : None,
-              'line' : 0}
-    while bool(lines):
-        state['line'] += 1
-        current = lines.pop(0)
+    with open(filename, 'rb') as f:
+        text = [x.decode('utf-8','ignore') for x in f.readlines()]
+
+    csv_obj = csv.reader(text, delimiter="\t", quotechar='"')
+
+    rows = [x for x in csv_obj]
+
+    variables = list(set([y[0] for x in rows for y in re.findall("%(\w+)(\([\w,]*\))?%", x[0])]))
+
+    data['length'] = len(rows)
+    data['speech_acts'] = list(set([y for x in rows for y in x[1].split(',') if bool(y)]))
+    data['num_speech_acts'] = len(data['speech_acts'])
+    data['variables'] = variables
+
 
     return data
 
@@ -58,11 +58,9 @@ if __name__ == "__main__":
     if args.target is not None:
         files = [args.target]
     else:
-        base = join("data", "txt")
-        queue = [join(base, x) for x in ["CK2", "EUIV", "distant worlds", "stellaris"]]
-        files = utils.get_data_files(queue, ".txt")
+        files = utils.get_data_files([join("data","tables")], ".tsv")
 
     for f in files:
         data = extract_from_file(f)
         data_str = utils.convert_data_to_output_format(data, [])
-        utils.write_output(f, data_str, ".4x_analysis)
+        utils.write_output(f, data_str, ".tsv_analysis")
