@@ -1,83 +1,85 @@
 * Data Notes
 ** Abl
-   Get registered acts, wmes, behaviors.
-*** Eisbot
-*** Grace
-*** SSim
-*** Trip
+   Parser extracts:
+   Abl Entities,
+   Action and WME Registrations
+   Behaviours
+   Mental Acts, Preconditions, Steps,
+   Specificity, Subgoal and Spawngoals,
+   and acts.
+*** Sources
+**** Eisbot
+**** SSim
+**** Facade
+***** Grace
+***** Trip
 ** Dwarf Fortress
-** lua
-   Get Functions, Classes
-*** df9
-*** Don't Starve 
-**** Behaviours
-     {} = Class(..)
+   Extracts patch note and dev logs from
+   html from [[https://dwarffortresswiki.org/][DF Wiki]]
+*** Sources
+**** Patch Notes
+     Covers DF 0.21.93.19a to 0.28.181.40d
+**** Dev Logs
+     Covers 2004 - 2020 from [[http://www.bay12games.com/dwarves/index.html][Bay 12 games]]
+** Lua
+   Extracts Classes, Functions,
+   and Don't Start Recipes from lua files
+*** Sources
+**** df9
+     Lua Source for DoubleFine's Spacebase DF-9
+**** Don't Starve 
+     Lua Source for Klei's Don't Starve
+** Tables
+   Loads csv files and summarizes them  
+*** Sources
+**** Democracy 3 and D3 Africa
 
-     function {}:{}(..)
-
-**** Brains
-     require "behaviours/{}"
-   
-     local? function {}(..)
-
-**** Stategraphs
-     ActionHandler({}...
-     EventHandler({}...
-
-
-     State{
-     name= "{}",
-     tags = {"{}"},
-     events = { EventHandler("{}"...
-
-**** Components
-     local? {} = Class(..
-
-     function {}:{}(..)..
-
-**** Map
-**** Prefabs
-**** Actions
-     Actions = { {} = Action...,
-**** Cooking
-     AddIngredientValues
-**** Worldgen main
-     function ...
-** tables
-*** d3
-    Get policies, policy/pressure groups,
-    simulation categories, voter types
-**** d3 africa
-*** prom week speech acts
-    get variables, speech act types
-** txt
-*** Narratives
-    Get Characters, positions in story
+** TODO Natural Langauge Text
+   Get Characters, positions in story
+*** Sources
 **** 40k
 **** Discworld
-*** 4X
-    Get types, events, categories, ai, names etc
+** TODO Non-Specific Game Scripts
+
+*** Sources
 **** Crusader kings 2
 **** EU 4
 **** distant worlds
 **** stellaris
-*** Rules
-    Get Rules, names, sizes, sequence,
-    Get deontics, sanctions
+
+** TODO Natural Language Deontic Rules
+   
+*** Sources
 **** nomic
 **** emily post
 **** roberts rules
-** versu
-   Get Characters, fields, rules, speech act types
-** witcher 3
-   Clean up, get components, get actions, objcts
-** xml
-*** CiF
-    Get Rules
-*** Redshirt
-    Get Categories, names, activites, jobs
-*** USC
-    Get Categories, rules, deontics, sanctions,
-    sections, lengths, cross references
-*** KJV
-    Get sections, names, deontics, grammar
+** Versu
+   Parses Praxis files (data/type/praxis extensions)
+   Extracts Types, Proesses, Functions,
+   Calls, Actions, States, Inserts
+*** Sources
+**** Linden Lab Versu scripts
+
+** TODO Witcher 3
+   Parses witcherscript files (.ws) from the Witcher 3
+
+*** Sources
+**** Witcher Script files
+
+** XML rules
+   Produces summaries from CiF and Promweek xml files
+*** Sources
+**** CiF
+     Get Rules
+** TODO XML Text
+   Produce Summaries of Text wrapped in XML
+*** Sources
+**** Redshirt
+     Of particular interest: the Jobs file
+**** USC
+     Get Categories, rules, deontics, sanctions,
+     sections, lengths, cross references
+**** KJV
+     Get sections, names, deontics, grammar
+** TODO NYT Natural Language
+   Processes for dealing with New York Times Archive Snippets
