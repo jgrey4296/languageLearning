@@ -4,7 +4,9 @@ Get headlines from nyt jsons from data dir,
 output to similarly named files in analysis directory
 """
 import utils
+import datetime
 import spacy
+from textblob import TextBlob
 import json
 from random import choice
 from enum import Enum
@@ -16,7 +18,6 @@ import pyparsing as pp
 from os.path import splitext, split
 import logging as root_logger
 
-nlp = spacy.load("en_core_web_sm")
 
 # Setup root_logger:
 LOGLEVEL = root_logger.DEBUG
@@ -29,7 +30,10 @@ root_logger.getLogger('').addHandler(console)
 logging = root_logger.getLogger(__name__)
 ##############################
 
+nlp = spacy.load("en_core_web_sm")
 
+only_allow = ["article"]
+date_fmt = "%Y-%m-%dT%H:%M:%SZ"
 
 class NYT_Entry(utils.ParseBase):
 
@@ -54,12 +58,41 @@ class NYT_Entry(utils.ParseBase):
 
         return s
 
+    def parse_date(self):
+        date_str = self._date
+        the_date = datetime.datetime.strptime(date_str, date_fmt)
+        return the_date
+
+
+def make_entry(data):
+    lookup_keys = ['document_type', 'pub_date', 'web_url', 'lead_paragraph', 'print_page', '_id']
+    lookup_values = [current[x] if x in current else "missing"  for x in lookup_keys]
+
+    desk_keys = ['news_desk','section_name','subsection_name']
+    q = [current[x] for x in desk_keys]
+    w = [x for x in q if x is not None]
+    desk_value = ".".join(w)
+
+    if 'headline' in current and 'main' in current['headline']:
+        headline = current['headline']['main']
+    elif 'headline' in current and 'print_headline' in current['headline']:
+        headline = current['headline']['print_headline']
+    else:
+        headline = "missing"
+
+    entry = NYT_Entry(*lookup_values,
+                      headline=headline,
+                      desk=desk_value.replace(' ','_'))
+
+    return entry
 
 def extract_from_file(filename):
     logging.info("Extracting from: {}".format(filename))
     data = { 'key_set' : set(),
              'document_type_set' : set(),
-             'entries' : [] }
+             'entity_set' : set(),
+             'entries' : [],
+             }
     raw_json = []
     with open(filename,'r') as f:
         raw_json = json.load(f)
@@ -77,35 +110,22 @@ def extract_from_file(filename):
         data['key_set'].update(current.keys())
         data['document_type_set'].add(current['document_type'])
 
-        lookup_keys = ['document_type', 'pub_date', 'web_url', 'lead_paragraph', 'print_page', '_id']
-        desk_keys = ['news_desk','section_name','subsection_name']
-
-        lookup_values = [current[x] if x in current else "missing"  for x in lookup_keys]
-        try:
-            q = [current[x] for x in desk_keys]
-            w = [x for x in q if x is not None]
-            desk_value = ".".join(w)
-        except TypeError:
-            breakpoint()
-
-        if 'headline' in current and 'main' in current['headline']:
-            headline = current['headline']['main']
-        elif 'headline' in current and 'print_headline' in current['headline']:
-            headline = current['headline']['print_headline']
-        else:
-            headline = "missing"
-
-        entry = NYT_Entry(*lookup_values,
-                          headline=headline,
-                          desk=desk_value.replace(' ','_'))
+        entry = make_entry(data)
         entry._line_no = state['entry']
 
-        data['entries'].append(entry)
+        parsed_headline = nlp(entry._headline)
+        parsed_paragraph = nlp(entry._paragraph)
+
+        data['entity_set'].update([x for x in parsed_headline.ents])
+
+        if entry._type in only_allow:
+            data['entries'].append(entry)
 
 
     data['key_set'] = list(data['key_set'])
     data['document_type_set'] = list(data['document_type_set'])
     return data
+
 
 
 if __name__ == "__main__":
@@ -119,4 +139,3 @@ if __name__ == "__main__":
                         extract_from_file,
                         output_lists,
                         output_ext)
-
