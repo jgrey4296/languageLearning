@@ -39,6 +39,8 @@ def get_data_files(initial, ext):
     logging.info("Getting Data Files")
     if not isinstance(ext, list):
         ext = [ext]
+    if not isinstance(initial, list):
+        initial = [initial]
     files = []
     queue = initial[:]
     while bool(queue):
