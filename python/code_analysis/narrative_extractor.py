@@ -58,9 +58,7 @@ if __name__ == "__main__":
     if args.target is not None:
         files = [args.target]
     else:
-        base = ["data", "txt"]
-        queue = [join(*base, x) for x in ["40k txts", "Discworld"]]
-        files = utils.get_text_files(queue, ".txt")
+        files = utils.get_text_files(join("data", "fiction"), ".txt")
 
     for f in files:
         data = extract_from_file(f)

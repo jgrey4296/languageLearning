@@ -58,11 +58,9 @@ if __name__ == "__main__":
     if args.target is not None:
         files = [args.target]
     else:
-        base = join("data", "txt")
-        queue = [join(base, x) for x in ["CK2", "EUIV", "distant worlds", "stellaris"]]
-        files = utils.get_data_files(queue, ".txt")
+        files = utils.get_data_files(join("data","game_config_text"), ".txt")
 
     for f in files:
         data = extract_from_file(f)
         data_str = utils.convert_data_to_output_format(data, [])
-        utils.write_output(f, data_str, ".4x_analysis)
+        utils.write_output(f, data_str, ".game_analysis)

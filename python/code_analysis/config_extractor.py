@@ -55,8 +55,7 @@ if __name__ == "__main__":
     if args.target is not None:
         files = [args.target]
     else:
-        files = utils.get_data_files([join("data","tables")], ".ini")
-        files += utils.get_data_files([join("data","tables")], ".txt")
+        files = utils.get_data_files([join("data","config_files")], [".ini", ".txt"])
 
     for f in files:
         data = extract_from_file(f)

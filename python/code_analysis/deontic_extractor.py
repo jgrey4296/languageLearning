@@ -57,11 +57,9 @@ if __name__ == "__main__":
     if args.target is not None:
         files = [args.target]
     else:
-        base = ["data", "txt"]
-        queue = [join(*base, x) for x in ["nomic", "emily_post_ettiquete.txt", "roberts_rules.txt"]]
-        files = utils.get_data_files(queue, ".txt")
+        files = utils.get_data_files(join("data","natural_langauge_deontics"), ".txt")
 
     for f in files:
         data = extract_from_file(f)
         data_str = utils.convert_data_to_output_format(data, [])
-        utils.write_output(f, data_str, ".rule_analysis")
+        utils.write_output(f, data_str, ".deontic_analysis")

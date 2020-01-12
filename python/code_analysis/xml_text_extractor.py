@@ -60,7 +60,12 @@ if __name__ == "__main__":
         files = [args.target]
     else:
         base = ["data", "xml"]
-        queue = [join(*base, x) for x in ["uscode", "king_james_bible", "red_shirt"]]
+        queue = [join(*base, x) for x in ["uscode",
+                                          "king_james_bible",
+                                          "red_shirt",
+                                          "king_dragon_pass",
+                                          "unrest",
+                                          "twine"]]
         files = utils.get_data_files(queue, ".xml")
 
     for f in files:

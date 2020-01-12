@@ -115,8 +115,8 @@ if __name__ == "__main__":
     if args.target is not None:
         files = [args.target]
     else:
-        files = utils.get_data_files([join("data","dwarf_fortress")], ".html")
+        files = utils.get_data_files([join("data","dev_logs")], ".html")
     for f in files:
         data = extract_from_file(f)
         data_str = utils.convert_data_to_output_format(data, [])
-        utils.write_output(f, data_str, ".dwarf_analysis")
+        utils.write_output(f, data_str, ".dev_log_analysis")
