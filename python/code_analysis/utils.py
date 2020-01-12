@@ -94,12 +94,12 @@ def standard_main(sources, exts, extractor, output_lists, output_ext):
     if args.target is not None:
         files = [args.target]
     else:
-        files = utils.get_data_files(sources, exts)
+        files = get_data_files(sources, exts)
 
     if args.rand:
         files = [choice(files) for x in range(int(args.rand))]
 
     for f in files:
         data = extractor(f)
-        data_str = utils.convert_data_to_output_format(data, output_lists)
-        utils.write_output(f, data_str, output_ext)
+        data_str = convert_data_to_output_format(data, output_lists)
+        write_output(f, data_str, output_ext)
