@@ -13,14 +13,28 @@
 **** Facade
 ***** Grace
 ***** Trip
-** Dwarf Fortress
-   Extracts patch note and dev logs from
-   html from [[https://dwarffortresswiki.org/][DF Wiki]]
+** C Sharp
 *** Sources
-**** Patch Notes
-     Covers DF 0.21.93.19a to 0.28.181.40d
-**** Dev Logs
+**** Rimworld
+** Config Files
+*** Sources
+**** Democracy 3 and Democracy 3 Africa
+** CSV
+   Loads csv files and summarizes them  
+*** Sources
+**** Democracy 3 and D3 Africa
+**** Reality Commons
+***** Badge
+***** SQF
+***** Social Evolution
+**** BBC Sound Effects
+** Dev Logs
+*** Sources
+**** Dwarf Fortress
      Covers 2004 - 2020 from [[http://www.bay12games.com/dwarves/index.html][Bay 12 games]]
+** Json
+*** Sources
+**** Sunless Sea
 ** Lua
    Extracts Classes, Functions,
    and Don't Start Recipes from lua files
@@ -29,30 +43,41 @@
      Lua Source for DoubleFine's Spacebase DF-9
 **** Don't Starve 
      Lua Source for Klei's Don't Starve
-** Tables
-   Loads csv files and summarizes them  
-*** Sources
-**** Democracy 3 and D3 Africa
-
-** TODO Natural Langauge Text
+**** Invisible Inc
+**** Prison Architect
+**** The Guild 2
+** Natural Langauge Fiction
    Get Characters, positions in story
 *** Sources
 **** 40k
 **** Discworld
-** TODO Non-Specific Game Scripts
+** Natural Language Deontic Rules
+   
+*** Sources
+**** nomic
+**** emily post
+**** roberts rules
+** Non-Specific Game Scripts
 
 *** Sources
 **** Crusader kings 2
 **** EU 4
 **** distant worlds
 **** stellaris
-
-** TODO Natural Language Deontic Rules
-   
+**** Democracy 3 and Democracy 3 Africa
+**** Prison Architect
+** NYT Natural Language
+   Processes for dealing with New York Times Archive Snippets
+** Patch Notes
+   Extracts dev logs from html of [[https://dwarffortresswiki.org/][DF Wiki]] and Dota Wiki
 *** Sources
-**** nomic
-**** emily post
-**** roberts rules
+**** Dwarf Fotress
+     Covers DF 0.21.93.19a to 0.28.181.40d
+**** Dota 2 from Dota Wiki
+** TSV
+*** Sources
+**** WoW wiki Quests
+**** Prom Week Dialogue Acts
 ** Versu
    Parses Praxis files (data/type/praxis extensions)
    Extracts Types, Proesses, Functions,
@@ -60,7 +85,7 @@
 *** Sources
 **** Linden Lab Versu scripts
 
-** TODO Witcher 3
+** Witcher 3
    Parses witcherscript files (.ws) from the Witcher 3
 
 *** Sources
@@ -71,7 +96,7 @@
 *** Sources
 **** CiF
      Get Rules
-** TODO XML Text
+** XML Text
    Produce Summaries of Text wrapped in XML
 *** Sources
 **** Redshirt
@@ -81,5 +106,6 @@
      sections, lengths, cross references
 **** KJV
      Get sections, names, deontics, grammar
-** TODO NYT Natural Language
-   Processes for dealing with New York Times Archive Snippets
+**** King of Dragon Pass
+**** Twine Games
+**** UnRest
