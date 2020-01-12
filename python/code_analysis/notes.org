@@ -1,5 +1,6 @@
 * Data Notes
-** Abl
+** [[file:abl_extractor.py][Abl Extractor]]
+
    Parser extracts:
    Abl Entities,
    Action and WME Registrations
@@ -16,10 +17,10 @@
 ** C Sharp
 *** Sources
 **** Rimworld
-** Config Files
+** [[file:config_extractor.py][Config Extractor]]
 *** Sources
 **** Democracy 3 and Democracy 3 Africa
-** CSV
+** [[file:csv_extractor.py][CSV Extractor]]
    Loads csv files and summarizes them  
 *** Sources
 **** Democracy 3 and D3 Africa
@@ -28,14 +29,14 @@
 ***** SQF
 ***** Social Evolution
 **** BBC Sound Effects
-** Dev Logs
+** [[file:dev_log_extractor.py][Dev Log Extractor]]
 *** Sources
 **** Dwarf Fortress
      Covers 2004 - 2020 from [[http://www.bay12games.com/dwarves/index.html][Bay 12 games]]
 ** Json
 *** Sources
 **** Sunless Sea
-** Lua
+** [[file:lua_extractor.py][Lua Extractor]]
    Extracts Classes, Functions,
    and Don't Start Recipes from lua files
 *** Sources
@@ -46,19 +47,17 @@
 **** Invisible Inc
 **** Prison Architect
 **** The Guild 2
-** Natural Langauge Fiction
+** [[file:narrative_extractor.py][Narrative Extractor]]
    Get Characters, positions in story
 *** Sources
 **** 40k
 **** Discworld
-** Natural Language Deontic Rules
-   
+** [[file:deontic_extractor.py][Natural Language Deontic Extractor]]
 *** Sources
 **** nomic
 **** emily post
 **** roberts rules
-** Non-Specific Game Scripts
-
+** [[file:game_script_extractor.py][Non-Specific Game Script Extractor]]
 *** Sources
 **** Crusader kings 2
 **** EU 4
@@ -66,37 +65,38 @@
 **** stellaris
 **** Democracy 3 and Democracy 3 Africa
 **** Prison Architect
-** NYT Natural Language
+** [[file:nyt_extractor.py][NYT Extractor]]
    Processes for dealing with New York Times Archive Snippets
-** Patch Notes
-   Extracts dev logs from html of [[https://dwarffortresswiki.org/][DF Wiki]] and Dota Wiki
+** [[file:patch_notes_extractor.py][Patch Notes Extractor]]
+   Extracts dev logs from html of [[https://dwarffortresswiki.org/][DF Wiki]] and [[https://dota2.gamepedia.com/Patches][Dota Gamepedia]]
 *** Sources
 **** Dwarf Fotress
      Covers DF 0.21.93.19a to 0.28.181.40d
 **** Dota 2 from Dota Wiki
-** TSV
+** [[file:tsv_extractor.py][TSV Extractor]]
 *** Sources
 **** WoW wiki Quests
 **** Prom Week Dialogue Acts
-** Versu
+** [[file:versu_extractor.py][Versu Extractor]]
+
    Parses Praxis files (data/type/praxis extensions)
    Extracts Types, Proesses, Functions,
    Calls, Actions, States, Inserts
 *** Sources
 **** Linden Lab Versu scripts
 
-** Witcher 3
+** [[file:witcher_extractor.py][WitcherScript Extractor]]
    Parses witcherscript files (.ws) from the Witcher 3
 
 *** Sources
 **** Witcher Script files
 
-** XML rules
+** [[file:xml_rule_extractor.py][XML Rule Extractor]]
    Produces summaries from CiF and Promweek xml files
 *** Sources
 **** CiF
      Get Rules
-** XML Text
+** [[file:xml_text_extractor.py][XML Text Extractor]]
    Produce Summaries of Text wrapped in XML
 *** Sources
 **** Redshirt
