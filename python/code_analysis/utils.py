@@ -1,6 +1,7 @@
 from os.path import join, isfile, exists, abspath
 from os.path import split, isdir, splitext, expanduser
 from os import listdir
+from choice import random
 import logging as root_logger
 from random import shuffle
 logging = root_logger.getLogger(__name__)
