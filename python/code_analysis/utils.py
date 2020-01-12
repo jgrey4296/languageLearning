@@ -1,7 +1,7 @@
 from os.path import join, isfile, exists, abspath
 from os.path import split, isdir, splitext, expanduser
 from os import listdir
-from choice import random
+from random import choice
 import logging as root_logger
 from random import shuffle
 logging = root_logger.getLogger(__name__)
@@ -83,8 +83,6 @@ def write_output(source_path, data_str, ext):
 
     with open(analysis_path,'w') as f:
         f.write(data_str)
-
-
 
 def standard_main(sources, exts, extractor, output_lists, output_ext):
     import argparse
