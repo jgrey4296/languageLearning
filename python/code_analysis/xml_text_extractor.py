@@ -41,34 +41,10 @@ def extract_from_file(filename):
     data = { }
 
     with open(filename, 'rb') as f:
-        text = f.read().decode('utf-8','ignore') 
+        text = f.read().decode('utf-8','ignore')
 
     soup = BeautifulSoup(text, features='lxml')
 
-    if soup.find('cifstate') is not None:
-        data = extract_from_cifstate(soup)
-    elif soup.find('promweek') is not None:
-        data = extract_from_promweek(soup)
-    elif soup.find('ciflibraries') is not None:
-        data = extract_from_cif_library(soup)
-
-
-    return data
-
-def extract_from_cif_library(soup):
-    data = {}
-
-    return data
-
-def extract_from_cifstate(soup):
-    data = {}
-    data['toplevel_components'] = [x.name for x in soup.find('cifstate').contents]
-
-    return data
-
-def extract_from_promweek(soup):
-    data = {}
-    data['toplevel_components'] = [x.name for x in soup.find('promweek')
 
     return data
 
@@ -84,10 +60,10 @@ if __name__ == "__main__":
         files = [args.target]
     else:
         base = ["data", "xml"]
-        queue = [join(*base, x) for x in ["uscode", "kjv_aprocrypha_utf8_FINAL.xml"]]
+        queue = [join(*base, x) for x in ["uscode", "king_james_bible", "red_shirt"]]
         files = utils.get_data_files(queue, ".xml")
 
     for f in files:
         data = extract_from_file(f)
         data_str = utils.convert_data_to_output_format(data, [])
-        utils.write_output(f, data_str, ".xml_rule_analysis")
+        utils.write_output(f, data_str, ".xml_text_analysis")
