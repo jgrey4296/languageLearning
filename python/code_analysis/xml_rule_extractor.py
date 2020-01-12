@@ -41,7 +41,7 @@ def extract_from_file(filename):
     data = { }
 
     with open(filename, 'rb') as f:
-        text = f.read().decode('utf-8','ignore') 
+        text = f.read().decode('utf-8','ignore')
 
     soup = BeautifulSoup(text, features='lxml')
 
@@ -68,7 +68,7 @@ def extract_from_cifstate(soup):
 
 def extract_from_promweek(soup):
     data = {}
-    data['toplevel_components'] = [x.name for x in soup.find('promweek')
+    data['toplevel_components'] = [x.name for x in soup.find('promweek')]
 
     return data
 
