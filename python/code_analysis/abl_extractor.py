@@ -27,7 +27,7 @@ logging = root_logger.getLogger(__name__)
 ##############################
 # Enums:
 
-obj_e = Enum('Parse Objects', 'ENT ACT WME BEH COM SPAWN MENTAL PRECON SPEC INIT STEP')
+obj_e = Enum('Parse Objects', 'ENT ACT WME BEH COM SPAWN MENTAL PRECON SPEC INIT STEP COMMENT')
 
 class AblEnt(utils.ParseBase):
 
@@ -155,7 +155,11 @@ def build_parser():
     pass_stmt = pp.restOfLine
     pass_stmt.setParseAction(lambda x: utils.ParseBase())
 
-    abl_parser = pp.MatchFirst([beh_ent_stmt,
+    com_parser = pp.dblSlashComment
+    com_parser.setParseAction(lambda x: obj_e.COMMENT)
+
+    abl_parser = pp.MatchFirst([com_parser,
+                                beh_ent_stmt,
                                 register_act_stmt,
                                 register_wme_stmt,
                                 behavior_stmt,
@@ -166,13 +170,12 @@ def build_parser():
                                 spec_stmt,
                                 pass_stmt])
 
-    com_parser = pp.dblSlashComment
-    com_parser.setParseAction(lambda x: { 'type' : 'comment'})
 
-    return abl_parser, com_parser
+    return abl_parser
 
-def extract_from_file(filename, abl_parser, com_parser):
+def extract_from_file(filename):
     logging.info("Extracting from: {}".format(filename))
+    main_parser = build_parser()
     data = { 'behaving_entity' : "",
              'registrations' : [],
              'behaviors' : [],
@@ -189,46 +192,41 @@ def extract_from_file(filename, abl_parser, com_parser):
         state['line'] += 1
         current = lines.pop(0)
 
-        try:
-            comment = com_parser.parseString(current)
-            data['comments'] += 1
-        except pp.ParseException:
-            result = abl_parser.parseString(current)[0]
-            #Get open and close brackets
-            #handle result:
-            if not result:
-                continue
+        result = main_parser.parseString(current)[0]
+        #Get open and close brackets
+        #handle result:
+        if not result:
+            continue
 
+        if isinstance(result, utils.ParseBase):
             result._line_no = state['line']
 
-            if isinstance(result, AblEnt):
-                data['behaving_entity'] = result
-            elif isinstance(result, AblRegistration):
-                data['registrations'].append(result)
-            elif isinstance(result, AblBehavior):
-                state['current'] = result
-                data['behaviors'].append(state['current'])
-            elif isinstance(result, AblComponent):
-                state['current'].add_component(result)
-            elif not isinstance(result, utils.ParseBase):
-                logging.warning("Unrecognised parse result: {}".format(result))
+        if result is obj_e.COMMENT:
+            data['comment'] += 1
+        elif isinstance(result, AblEnt):
+            data['behaving_entity'] = result
+        elif isinstance(result, AblRegistration):
+            data['registrations'].append(result)
+        elif isinstance(result, AblBehavior):
+            state['current'] = result
+            data['behaviors'].append(state['current'])
+        elif isinstance(result, AblComponent):
+            state['current'].add_component(result)
+        elif not isinstance(result, utils.ParseBase):
+            logging.warning("Unrecognised parse result: {}".format(result))
 
     return data
 
 
 if __name__ == "__main__":
-    import argparse
-    parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
-                                     epilog = "\n".join([""]))
-    parser.add_argument('-t', '--target')
-    args = parser.parse_args()
-    if args.target is not None:
-        files = [args.target]
-    else:
-        files = utils.get_data_files([join("data","abl")], ".abl")
 
-    abl_parser, com_parser = build_parser()
-    for f in files:
-        data = extract_from_file(f, abl_parser, com_parser)
-        data_str = utils.convert_data_to_output_format(data, ["registrations", "behaviors"])
-        utils.write_output(f, data_str, ".abl_analysis")
+    queue = [join("data","abl")]
+    input_ext = ".abl"
+    output_lists = ["registrations", "behaviors"]
+    output_ext = ".abl_analysis"
+
+    utils.standard_main(queue,
+                        input_ext,
+                        extract_from_file,
+                        output_lists,
+                        output_ext)

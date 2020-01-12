@@ -50,17 +50,13 @@ def extract_from_file(filename):
 
 
 if __name__ == "__main__":
-    import argparse
-    parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
-                                     epilog = "\n".join([""]))
-    parser.add_argument('-t', '--target')
-    args = parser.parse_args()
-    if args.target is not None:
-        files = [args.target]
-    else:
-        files = utils.get_text_files(join("data", "fiction"), ".txt")
+    queue = join("data", "fiction")
+    input_ext = ".txt"
+    output_lists = []
+    output_ext = ".narrative_analysis"
 
-    for f in files:
-        data = extract_from_file(f)
-        data_str = utils.convert_data_to_output_format(data, [])
-        utils.write_output(f, data_str, ".narrative_analysis")
+    utils.standard_main(queue,
+                        input_ext,
+                        extract_from_file,
+                        output_lists,
+                        output_ext)

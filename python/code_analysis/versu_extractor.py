@@ -158,8 +158,9 @@ def build_parser():
 
     return main_parser
 
-def extract_from_file(filename, main_parser):
+def extract_from_file(filename):
     logging.info("Extracting from: {}".format(filename))
+    main_parser = build_parser()
     data = { 'comments' : 0,
              'types' : [],
              'processes' : [],
@@ -220,18 +221,14 @@ def extract_from_file(filename, main_parser):
 
 
 if __name__ == "__main__":
-    import argparse
-    parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
-                                     epilog = "\n".join([""]))
-    parser.add_argument('-t', '--target')
-    args = parser.parse_args()
-    if args.target is not None:
-        files = [args.target]
-    else:
-        files = utils.get_data_files([join("data","versu")], [".type", ".data", ".praxis"])
+    queue = [join("data","versu")]
+    input_ext = [".type", ".data", ".praxis"]
+    output_lists = ['types','processes','functions','calls','actions','states','inserts']
+    output_ext = ".versu_analysis"
 
-    mp = build_parser()
-    for f in files:
-        data = extract_from_file(f, mp)
-        data_str = utils.convert_data_to_output_format(data, ['types','processes','functions','calls','actions','states','inserts'])
-        utils.write_output(f, data_str, ".versu_analysis")
+    utils.standard_main(queue,
+                        input_ext,
+                        extract_from_file,
+                        output_lists,
+                        output_ext)
+
