@@ -1,8 +1,9 @@
 from os.path import join, isfile, exists, abspath
 from os.path import split, isdir, splitext, expanduser
 from os import listdir
+from fractions import Fraction
+from random import choice, shuffle
 import logging as root_logger
-from random import shuffle
 logging = root_logger.getLogger(__name__)
 
 class ParseBase:
@@ -33,11 +34,85 @@ class ParseBase:
                         comp_s)
 
 
+class Trie:
+
+    def __init__(self, value, path, example=None):
+        self.count = 0
+        self.value = value
+        self.path = "{} {}".format(path, value)
+        self.data = {}
+        self._example = example
+
+    def __repr__(self):
+        #Print all paths to leaves
+        return "\n".join(self.leaves())
+
+    def __bool__(self):
+        """ Is Node populated? """
+        return bool(self.data)
+
+    def get(self, key):
+        if key not in self.data:
+            self.data[key] = Trie(key, self.path)
+
+        return self.data[key]
+
+    def inc(self):
+        self.count += 1
+
+    def add_string(self, theList, transform=None, example=None):
+        if transform is None:
+            transform = lambda x: x
+        current = self
+        for val in theList:
+            val_prime = transform(val)
+            current = current.get(val_prime)
+            current.inc()
+        if example and current._example is None:
+            current._example = example
+
+    def leaves(self):
+        leaves = []
+        queue = [self]
+        while queue:
+            node = queue.pop(0)
+            if not node:
+                leaves.append("{} :: {} / {} : {}".format(node.path, node.count.numerator, node.count.denominator, node._example))
+            else:
+                queue += list(node.data.values())
+
+        return leaves
+
+    def convert_to_rational(self, total_count):
+        if not isinstance(self.count, Fraction):
+            self.count = Fraction(self.count, total_count)
+        total_count = sum([x.count for x in self.data.values()])
+        for x in self.data.values():
+            x.convert_to_rational(total_count)
+
+
+    def construct_likely_path(self):
+        path = ""
+        current = self
+        while bool(self):
+            children = list(self.data.values())
+            prob_pairs = [(x.count, x) for x in children]
+
+            #random selection
+            current = prob_pairs[0][1]
+            path += " {} ({}) ".format(current.key, str(current.count))
+
+        return path
+
+
+
 
 def get_data_files(initial, ext):
     logging.info("Getting Data Files")
     if not isinstance(ext, list):
         ext = [ext]
+    if not isinstance(initial, list):
+        initial = [initial]
     files = []
     queue = initial[:]
     while bool(queue):
@@ -82,3 +157,48 @@ def write_output(source_path, data_str, ext):
 
     with open(analysis_path,'w') as f:
         f.write(data_str)
+
+def standard_main(sources, exts, extractor, output_lists, output_ext):
+    import argparse
+    parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
+                                     epilog = "\n".join([""]))
+    parser.add_argument('-t', '--target')
+    parser.add_argument('-r', '--rand')
+    args = parser.parse_args()
+    if args.target is not None:
+        files = [args.target]
+    else:
+        files = get_data_files(sources, exts)
+
+    if args.rand:
+        files = [choice(files) for x in range(int(args.rand))]
+
+    for f in files:
+        data = extractor(f)
+        data_str = convert_data_to_output_format(data, output_lists)
+        write_output(f, data_str, output_ext)
+
+
+
+
+
+def map_text(text):
+    """ Given some text, create a mapping to integers and back """
+    #todo: enable it to work for tokens as well
+    chars = sorted(list(set(text)))
+    char_indices = dict((c, i) for i, c in enumerate(chars))
+    indices_char = dict((i, c) for i, c in enumerate(chars))
+    return (char_indices, indices_char)
+
+
+def sample(predictions, temperature=1.0):
+    """ For a word mapping M:{i : char} dictionary, give [] of len(M) of predictions of
+    the next index. Normalize it and sample, taking the highest. Return that index """
+    #cast to high precision?
+    preds = np.asarray(predictions).astype('float64')
+    preds = np.log(pres) / temperature
+    exp_preds = np.exp(preds)
+    #normalize
+    preds = exp_preds / np.sum(exp_preds)
+    probabilities = np.random.multinomial(1, preds, 1)
+    return np.argmax(probas)

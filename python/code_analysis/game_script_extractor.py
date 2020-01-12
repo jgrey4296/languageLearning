@@ -1,9 +1,8 @@
 """
-Get rules from text in data dir,
+Get setup scripts from 4x games from data dir,
 
 output to similarly named files in analysis directory
 """
-import utils
 import IPython
 from enum import Enum
 from os.path import join, isfile, exists, abspath
@@ -11,8 +10,8 @@ from os.path import split, isdir, splitext, expanduser
 from os import listdir
 from random import shuffle
 import pyparsing as pp
+import utils
 
-nlp = spacy.load("en_core_web_sm")
 
 # Setup root_logger:
 from os.path import splitext, split
@@ -28,12 +27,14 @@ logging = root_logger.getLogger(__name__)
 ##############################
 # Enums:
 
+
 def build_parser():
+
     return None
 
-def extract_from_file(filename):
+def extract_from_file(filename, main_parser):
     logging.info("Extracting from: {}".format(filename))
-    data = {}
+    data = { }
     lines = []
     with open(filename,'r') as f:
         lines = f.readlines()
@@ -49,19 +50,13 @@ def extract_from_file(filename):
 
 
 if __name__ == "__main__":
-    import argparse
-    parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
-                                     epilog = "\n".join([""]))
-    parser.add_argument('-t', '--target')
-    args = parser.parse_args()
-    if args.target is not None:
-        files = [args.target]
-    else:
-        base = ["data", "txt"]
-        queue = [join(*base, x) for x in ["nomic", "emily_post_ettiquete.txt", "roberts_rules.txt"]]
-        files = utils.get_data_files(queue, ".txt")
+    queue = join("data","game_config_text")
+    input_ext = ".txt"
+    output_lists = []
+    output_ext = ".game_analysis"
 
-    for f in files:
-        data = extract_from_file(f)
-        data_str = utils.convert_data_to_output_format(data, [])
-        utils.write_output(f, data_str, ".rule_analysis")
+    utils.standard_main(queue,
+                        input_ext,
+                        extract_from_file,
+                        output_lists,
+                        output_ext)
