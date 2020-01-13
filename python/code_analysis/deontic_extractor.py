@@ -49,7 +49,7 @@ def extract_from_file(filename):
 
 
 if __name__ == "__main__":
-    queue = join("data","natural_langauge_deontics")
+    queue = join("data","natural_language_deontics")
     input_ext = ".txt"
     output_lists = []
     output_ext = ".deontic_analysis"
