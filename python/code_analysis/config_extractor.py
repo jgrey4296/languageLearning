@@ -29,14 +29,16 @@ logging = root_logger.getLogger(__name__)
 def extract_from_file(filename):
     logging.info("Extracting from: {}".format(filename))
     data = { }
-    config = configparser.ConfigParser(allow_no_value=True)
+    config = configparser.ConfigParser(allow_no_value=True, interpolation=None)
     with open(filename, 'rb') as f:
         text = f.read().decode('utf-8','ignore')
 
     try:
         config.read_string(text)
         data['keys'] = config.sections()
-
+        for section in config.sections():
+            data["{}_names".format(section)] = [x[0] for x in config.items(section)]
+            data["{}_values".format(section)] = [x[1] for x in config.items(section)]
 
 
     except configparser.ParsingError as e:
