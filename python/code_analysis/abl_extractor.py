@@ -27,6 +27,8 @@ logging = root_logger.getLogger(__name__)
 ##############################
 # Enums:
 
+main_parser = None
+
 obj_e = Enum('Parse Objects', 'ENT ACT WME BEH COM SPAWN MENTAL PRECON SPEC INIT STEP COMMENT')
 
 class AblEnt(utils.ParseBase):
@@ -175,7 +177,6 @@ def build_parser():
 
 def extract_from_file(filename):
     logging.info("Extracting from: {}".format(filename))
-    main_parser = build_parser()
     data = { 'behaving_entity' : "",
              'registrations' : [],
              'behaviors' : [],
@@ -202,7 +203,7 @@ def extract_from_file(filename):
             result._line_no = state['line']
 
         if result is obj_e.COMMENT:
-            data['comment'] += 1
+            data['comments'] += 1
         elif isinstance(result, AblEnt):
             data['behaving_entity'] = result
         elif isinstance(result, AblRegistration):
@@ -219,7 +220,7 @@ def extract_from_file(filename):
 
 
 if __name__ == "__main__":
-
+    main_parser = build_parser()
     queue = [join("data","abl")]
     input_ext = ".abl"
     output_lists = ["registrations", "behaviors"]
