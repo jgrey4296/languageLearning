@@ -64,12 +64,12 @@ class NYT_Entry(utils.ParseBase):
         return the_date
 
 
-def make_entry(data):
+def make_entry(current):
     lookup_keys = ['document_type', 'pub_date', 'web_url', 'lead_paragraph', 'print_page', '_id']
     lookup_values = [current[x] if x in current else "missing"  for x in lookup_keys]
 
     desk_keys = ['news_desk','section_name','subsection_name']
-    q = [current[x] for x in desk_keys]
+    q = [current[x] if x in current else "_" for x in desk_keys]
     w = [x for x in q if x is not None]
     desk_value = ".".join(w)
 
@@ -91,7 +91,7 @@ def extract_from_file(filename):
     data = { 'key_set' : set(),
              'document_type_set' : set(),
              'entity_set' : set(),
-             'entries' : [],
+             'entries' : []
              }
     raw_json = []
     with open(filename,'r') as f:
@@ -101,20 +101,28 @@ def extract_from_file(filename):
 
     state = { 'bracket_count' : 0,
               'current' : None,
-              'entry' : 0}
+              'entry' : 0,
+              'counter' : 0
+              'counter_reset' : int(len(docs) / 100)
+              }
 
     while bool(docs):
         state['entry'] += 1
+        state['counter'] += 1
+        if state['counter'] > state['counter_reset']:
+            logging.info("...")
+            state['counter'] = 0
+
         current = docs.pop(0)
 
         data['key_set'].update(current.keys())
         data['document_type_set'].add(current['document_type'])
 
-        entry = make_entry(data)
+        entry = make_entry(current)
         entry._line_no = state['entry']
 
         parsed_headline = nlp(entry._headline)
-        parsed_paragraph = nlp(entry._paragraph)
+        # parsed_paragraph = nlp(entry._paragraph)
 
         data['entity_set'].update([x for x in parsed_headline.ents])
 
