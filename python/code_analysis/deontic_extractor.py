@@ -45,12 +45,23 @@ def extract_from_file(filename):
         state['line'] += 1
         current = lines.pop(0)
 
+        #Nomic:
+        #Grab rules
+        # get mutable/immutable/initial
+
+
+
+        #Etiquette
+        ##Grab sentences with deontics: should, may, shall, can...
+
+
+
     return data
 
 
 if __name__ == "__main__":
     queue = join("data","natural_language_deontics")
-    input_ext = ".txt"
+    input_ext = [".txt", ".nomic"]
     output_lists = []
     output_ext = ".deontic_analysis"
 

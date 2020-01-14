@@ -46,6 +46,16 @@ def extract_from_file(filename):
         state['line'] += 1
         current = lines.pop(0)
 
+
+    #possibly load dramatis personae
+
+
+    #go through, find:
+    ## Speech
+    ## people
+    ## actions
+
+
     return data
 
 
