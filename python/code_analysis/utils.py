@@ -106,6 +106,26 @@ class Trie:
 
 
 
+def xml_search_components(data, soup, initial):
+    """ Summarize a file's tags and attributes, hierarchically """
+    queue = set(initial)
+    handled = set()
+    while bool(queue):
+        current = queue.pop()
+        if current is None or current in handled:
+            continue
+        handled.add(current)
+        sub_components = list({y.name for x in soup.find_all(current) for y in x.contents if y.name is not None})
+        attrs = set([x for y in soup.find_all(current) for x in y.attrs.keys()])
+        queue.update(sub_components)
+        data['{}_components'.format(current)] = ", ".join(sub_components)
+        if bool(attrs):
+            data['{}_attrs'.format(current)] = ", ".join(attrs)
+
+    return data
+
+
+
 
 def get_data_files(initial, ext):
     logging.info("Getting Data Files")
@@ -162,11 +182,11 @@ def standard_main(sources, exts, extractor, output_lists, output_ext):
     import argparse
     parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
                                      epilog = "\n".join([""]))
-    parser.add_argument('-t', '--target')
+    parser.add_argument('-t', '--target', action="append")
     parser.add_argument('-r', '--rand')
     args = parser.parse_args()
     if args.target is not None:
-        files = [args.target]
+        files = args.target
     else:
         files = get_data_files(sources, exts)
 
