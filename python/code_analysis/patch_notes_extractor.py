@@ -42,10 +42,51 @@ def extract_from_file(filename):
               'current' : None,
               'line' : 0}
 
-    if soup.find('h1') is not None:
-        data = extract_from_release_info(soup)
+    if soup.find(id="firstHeading") is not None:
+        data = extract_from_dota_patch_notes(soup)
     else:
-        data = extract_from_dev_log(soup)
+        data = extract_from_release_info(soup)
+
+    return data
+
+def extract_from_dota_patch_notes(soup):
+    data = { }
+
+    data['release_date'] = soup.find(id="firstHeading").text
+    body_content = soup.find(id="bodyContent")
+    initial_heading = body_content.find("h1")
+
+    queue = initial_heading.parent.find_all(recursive=False)
+    state = { 'current' : [initial_heading],
+              'contents' : [] }
+
+    for elem in queue:
+        if elem is None or elem.name is None or elem.text == "":
+            continue
+
+        if elem.name in ['h1','h2','h3']:
+            if bool(state['contents']):
+                key = "_".join([x.text for x in state['current']])
+                data[key] = state['contents']
+                state['current'] = [elem]
+                state['contents'] = []
+            else:
+                state['current'].append(elem)
+            continue
+
+        try:
+            if elem.name == "ul":
+                #todo: if contains ul, remove ul, get preface text, get text of ul, combine
+                list_elements = [x for x in elem.find_all("li") if not x.find_all("ul")]
+                available = [x.get_text().strip() for x in list_elements if x != "\n"]
+                state['contents'] += [x for x in available if x != ""]
+            elif elem.get_text().strip() != "":
+                state['contents'].append(elem.get_text().strip())
+        except Exception as e:
+            breakpoint()
+
+    key = "_".join([x.text for x in state['current']])
+    data[key] = state['contents']
 
     return data
 
@@ -83,25 +124,6 @@ def extract_from_release_info(soup):
     if blockquote is not None:
         the_string = blockquote.get_text().replace('\n',' ')
         data['release_quote' ] = the_string
-
-    return data
-
-def extract_from_dev_log(soup):
-    dev_list = soup.find('ul')
-
-    data = {}
-    try:
-        for li in dev_list.children:
-            span = li.find('span')
-            if span is None or span == -1:
-                continue
-            date = span.string
-            text = li.get_text()
-            text = text.replace(date,"")
-            text = text.replace('\n',' ')
-            data[date] = text
-    except AttributeError:
-        breakpoint()
 
     return data
 
