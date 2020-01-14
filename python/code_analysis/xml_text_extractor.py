@@ -45,6 +45,8 @@ def extract_from_file(filename):
 
     soup = BeautifulSoup(text, features='lxml')
 
+    data = utils.xml_search_components(data, soup, [x.name for x in soup.contents])
+
 
     return data
 

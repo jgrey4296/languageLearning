@@ -47,28 +47,43 @@ def extract_from_file(filename):
 
     if soup.find('cifstate') is not None:
         data = extract_from_cifstate(soup)
+        data['is_cifstate'] = True
     elif soup.find('promweek') is not None:
         data = extract_from_promweek(soup)
+        data['is_promweek'] = True
     elif soup.find('ciflibraries') is not None:
         data = extract_from_cif_library(soup)
+        data['is_cif_library'] = True
 
 
     return data
 
 def extract_from_cif_library(soup):
     data = {}
+    contents = soup.find('ciflibraries')
+    data['cif_library_contents'] = list({x.name for x in contents if x.name is not None})
+
+    data = utils.xml_search_components(data, soup, data['cif_library_contents'])
+
 
     return data
 
 def extract_from_cifstate(soup):
     data = {}
-    data['toplevel_components'] = [x.name for x in soup.find('cifstate').contents]
+    contents = soup.find('cifstate')
+    data['cif_state_contents'] = list({x.name for x in contents if x.name is not None})
+
+    data = utils.xml_search_components(data, soup, data['cif_state_contents'])
+
 
     return data
 
 def extract_from_promweek(soup):
-    data = {}
-    data['toplevel_components'] = [x.name for x in soup.find('promweek')]
+    data = { 'toplevel_components' : [] }
+    contents = soup.find('promweek')
+    data['prom_week_coontents'] = list({x.name for x in contents if x.name is not None})
+
+    data = utils.xml_search_components(data, soup, data['prom_week_contents'])
 
     return data
 
