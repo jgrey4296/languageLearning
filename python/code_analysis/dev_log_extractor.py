@@ -42,47 +42,7 @@ def extract_from_file(filename):
               'current' : None,
               'line' : 0}
 
-    if soup.find('h1') is not None:
-        data = extract_from_release_info(soup)
-    else:
-        data = extract_from_dev_log(soup)
-
-    return data
-
-def extract_from_release_info(soup):
-    data = {}
-    title = soup.find('h1')
-    release_date = soup.find('p')
-    blockquote = soup.find('blockquote')
-
-    headings = soup.find_all('h2')
-    queue = headings[:]
-    while bool(queue):
-        current = queue.pop(0)
-        if current.find_next_sibling('ul') is None:
-            continue
-        curr_string = current.string
-        if curr_string is None:
-            curr_string = current.get_text()
-        curr_string = curr_string.replace("[edit]","")
-        data[curr_string] = [x for x in current.find_next_sibling('ul').strings if re.match('\n',x) is None]
-
-    data['version'] = title.string
-
-    release_match = None
-    if release_date is not None:
-        release_match = re.search('was released on (.+?)\.', release_date.get_text())
-
-    if release_match is not None:
-        release_string = release_match.group(1)
-    else:
-        release_string = "UNKNOWN"
-
-    data['release_date' ] = release_string
-
-    if blockquote is not None:
-        the_string = blockquote.get_text().replace('\n',' ')
-        data['release_quote' ] = the_string
+    data = extract_from_dev_log(soup)
 
     return data
 
