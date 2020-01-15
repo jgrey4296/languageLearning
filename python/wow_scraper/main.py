@@ -47,36 +47,13 @@ if __name__ == "__main__":
     quest_group_sources = []
     logging.info("Retrieving {} quest groups".format(len(quest_groups)))
     for link in quest_groups:
-        if sleep_counter >= sleep_at:
-            sleep_counter = 0
-            logging.info("...")
-            sleep(sleep_min + sleep_max)
-        else:
-            sleep_counter += 1
-            sleep(sleep_min + sleep_max * random())
-
         logging.info("Retrieving: {}".format(link))
         file_name = "{}.html".format(link.replace("/","_"))
         quest_group_sources.append(file_name)
+
         if exists(join(args.directory, file_name)):
             continue
 
-        with open(join(args.directory, file_name), 'w') as target:
-            with urllib.request.urlopen(base_url + link) as source:
-                target.write(source.read().decode("utf-8","ignore"))
-
-        logging.info("Written: {}".format(file_name))
-
-    #extract individual quests
-    all_quests = []
-    for group_source in quest_group_sources:
-        with open(group_source,'r') as f:
-            soup = BeautifulSoup(f.read(), features="lxml")
-            all_links += [x.attrs['href'] for x in soup.find(class_="category-page__members").find_all("a")]
-
-    logging.info("Retrieving {} individual quests".format(len(all_quests)))
-    #retrieve individual quests
-    for link in all_quests:
         if sleep_counter >= sleep_at:
             sleep_counter = 0
             logging.info("...")
@@ -85,17 +62,58 @@ if __name__ == "__main__":
             sleep_counter += 1
             sleep(sleep_min + sleep_max * random())
 
-        logging.info("Retrieving {}".format(link))
+        try:
+            with open(join(args.directory, file_name), 'w') as target:
+                with urllib.request.urlopen(base_url + link) as source:
+                    target.write(source.read().decode("utf-8","ignore"))
+            logging.info("Written: {}".format(file_name))
+        except urllib.error.HTTPError as e:
+            logging.warning("Problem: {}".format(str(e)))
+
+
+    #extract individual quests
+    all_quests = set()
+    for group_source in quest_group_sources:
+        with open(join(args.directory, group_source),'r') as f:
+            soup = BeautifulSoup(f.read(), features="lxml")
+            members = soup.find(class_="category-page__members")
+            if bool(members):
+                all_quests.update([x.attrs['href'] for x in members.find_all("a")])
+
+    logging.info("Retrieving {} individual quests".format(len(all_quests)))
+    with open(join(args.directory, 'all_quest_list.txt'), 'w') as f:
+        f.write("\n".join(all_quests))
+
+    all_remaining_quests = [x for x in all_quests if not exists(join(args.directory, "{}.html".format(x.replace("/", "_"))))]
+
+    len_all_quests = len(all_remaining_quests)
+    subtracted = len(all_quests) - len_all_quests
+    logging.info("{} - {} = {} remaining quests".format(len(all_quests),
+                                                        subtracted,
+                                                        len_all_quests))
+    #retrieve individual quests
+    for i, link in enumerate(all_remaining_quests):
+        logging.info("Retrieving {}/{} : {}".format(i, len_all_quests, link))
         file_name = "{}.html".format(link.replace("/","_"))
         quest_group_sources.append(file_name)
         if exists(join(args.directory, file_name)):
             continue
 
-        with open(join(args.directory, file_name), 'w') as target:
-            with urllib.request.urlopen(base_url + link) as source:
-                target.write(source.read().decode("utf-8","ignore"))
+        if sleep_counter >= sleep_at:
+            sleep_counter = 0
+            logging.info("...")
+            sleep(sleep_min + sleep_max)
+        else:
+            sleep_counter += 1
+            sleep(sleep_min + sleep_max * random())
 
-        logging.info("Written {}".format(file_name))
+        try:
+            with open(join(args.directory, file_name), 'w') as target:
+                with urllib.request.urlopen(base_url + link) as source:
+                    target.write(source.read().decode("utf-8","ignore"))
+            logging.info("Written {}".format(file_name))
+        except urllib.error.HTTPError as e:
+            logging.warning("Url Error: {}".format(str(e)))
 
 
     #parse individual quests
