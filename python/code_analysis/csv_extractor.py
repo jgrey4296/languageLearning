@@ -52,6 +52,10 @@ def extract_from_file(filename):
         if key in keys:
             data[key] = [x[key].strip() for x in rows]
 
+    for key in ["category","zone","department"]:
+        if key in keys:
+            data["{}_set".format(key)] = list({x[key].strip() for x in rows})
+
     for row in rows:
         if "name" not in row:
             continue
