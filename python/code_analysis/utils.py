@@ -178,12 +178,13 @@ def write_output(source_path, data_str, ext):
     with open(analysis_path,'w') as f:
         f.write(data_str)
 
-def standard_main(sources, exts, extractor, output_lists, output_ext):
+def standard_main(sources, exts, extractor, output_lists, output_ext, accumulator=None, accumulator_final=None):
     import argparse
     parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
                                      epilog = "\n".join([""]))
     parser.add_argument('-t', '--target', action="append")
     parser.add_argument('-r', '--rand')
+    parser.add_argument('-a', '--accum_name', default="accumulated_data")
     args = parser.parse_args()
     if args.target is not None:
         files = args.target
@@ -193,14 +194,21 @@ def standard_main(sources, exts, extractor, output_lists, output_ext):
     if args.rand:
         files = [choice(files) for x in range(int(args.rand))]
 
+    accumulated_data = {}
+
     for f in files:
         data = extractor(f)
+        if accumulator is not None:
+            accumulated_data = accumulator(data, accumulated_data)
         data_str = convert_data_to_output_format(data, output_lists)
         write_output(f, data_str, output_ext)
 
+    if accumulator_final is not None:
+        accumulated_data = accumulator_final(accumulated_data)
 
-
-
+    data_str = convert_data_to_output_format(accumulated_data, output_lists)
+    with open(join("analysis", args.accum_name), "w") as f:
+        f.write(data_str)
 
 def map_text(text):
     """ Given some text, create a mapping to integers and back """
