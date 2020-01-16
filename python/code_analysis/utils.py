@@ -178,7 +178,7 @@ def write_output(source_path, data_str, ext):
     with open(analysis_path,'w') as f:
         f.write(data_str)
 
-def standard_main(sources, exts, extractor, output_lists, output_ext, accumulator=None, accumulator_final=None):
+def standard_main(sources, exts, extractor, output_lists, output_ext, accumulator=None, accumulator_final=None, init_accum=None):
     import argparse
     parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
                                      epilog = "\n".join([""]))
@@ -194,7 +194,10 @@ def standard_main(sources, exts, extractor, output_lists, output_ext, accumulato
     if args.rand:
         files = [choice(files) for x in range(int(args.rand))]
 
-    accumulated_data = {}
+    accumulated_data = init_accum
+    if accumulated_data is None:
+        accumulated_data = {}
+
 
     for f in files:
         data = extractor(f)
@@ -206,9 +209,10 @@ def standard_main(sources, exts, extractor, output_lists, output_ext, accumulato
     if accumulator_final is not None:
         accumulated_data = accumulator_final(accumulated_data)
 
-    data_str = convert_data_to_output_format(accumulated_data, output_lists)
-    with open(join("analysis", args.accum_name), "w") as f:
-        f.write(data_str)
+    if bool(accumulated_data):
+        data_str = convert_data_to_output_format(accumulated_data, output_lists)
+        with open(join("analysis", args.accum_name), "w") as f:
+            f.write(data_str)
 
 def map_text(text):
     """ Given some text, create a mapping to integers and back """
