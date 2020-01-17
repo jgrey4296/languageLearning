@@ -118,9 +118,9 @@ def xml_search_components(data, soup, initial):
         sub_components = list({y.name for x in soup.find_all(current) for y in x.contents if y.name is not None})
         attrs = set([x for y in soup.find_all(current) for x in y.attrs.keys()])
         queue.update(sub_components)
-        data['{}_components'.format(current)] = ", ".join(sub_components)
+        data['{}_components'.format(current)] = sub_components
         if bool(attrs):
-            data['{}_attrs'.format(current)] = ", ".join(attrs)
+            data['{}_attrs'.format(current)] = attrs
 
     return data
 
