@@ -1,6 +1,6 @@
 """
 Get witcherscript files from data dir,
-
+see https://witcher.gamepedia.com/Witcher_Script
 output to similarly named files in analysis directory
 """
 import utils
@@ -27,7 +27,32 @@ logging = root_logger.getLogger(__name__)
 # Enums:
 
 def build_parser():
-    return None
+
+    #enum parser
+
+    #function name
+
+    #class
+
+    #statemachines
+
+    #states
+
+    #events
+
+    #structs
+
+    #match /** lines
+    comment_parser = None
+
+
+    main_parser = pp.matchFirst([comment_parser
+
+
+        ])
+
+
+    return main_parser
 
 def extract_from_file(filename):
     logging.info("Extracting from: {}".format(filename))
