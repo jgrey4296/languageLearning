@@ -105,7 +105,6 @@ class Trie:
         return path
 
 
-
 def xml_search_components(data, soup, initial):
     """ Summarize a file's tags and attributes, hierarchically """
     queue = set(initial)
@@ -123,8 +122,6 @@ def xml_search_components(data, soup, initial):
             data['{}_attrs'.format(current)] = attrs
 
     return data
-
-
 
 
 def get_data_files(initial, ext):
@@ -187,7 +184,7 @@ def standard_main(sources, exts, extractor, output_lists, output_ext, accumulato
     parser.add_argument('-a', '--accum_name', default="accumulated_data")
     args = parser.parse_args()
     if args.target is not None:
-        files = args.target
+        files = get_data_files(args.target, exts)
     else:
         files = get_data_files(sources, exts)
 
@@ -214,6 +211,8 @@ def standard_main(sources, exts, extractor, output_lists, output_ext, accumulato
         with open(join("analysis", args.accum_name), "w") as f:
             f.write(data_str)
 
+
+
 def map_text(text):
     """ Given some text, create a mapping to integers and back """
     #todo: enable it to work for tokens as well
@@ -221,7 +220,6 @@ def map_text(text):
     char_indices = dict((c, i) for i, c in enumerate(chars))
     indices_char = dict((i, c) for i, c in enumerate(chars))
     return (char_indices, indices_char)
-
 
 def sample(predictions, temperature=1.0):
     """ For a word mapping M:{i : char} dictionary, give [] of len(M) of predictions of
