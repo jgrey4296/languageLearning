@@ -1,4 +1,5 @@
 * Data Notes
+  look to [[https://www.lyonwj.com/2016/06/26/graph-of-thrones-neo4j-social-network-analysis/]]
 ** [[file:abl_extractor.py][Abl Extractor]]
 
    Parser extracts:
