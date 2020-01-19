@@ -41,8 +41,61 @@ def extract_from_file(filename):
     data['keys'] = keys
     data['length'] = len(rows)
 
-    if 'name' in keys:
-        data['names'] = [x['name'] for x in rows]
+    for key in ["name", "desc", "secs",
+                "category", "introduce", "cancel","raise","lower",
+                "department", "mincost", "maxcost",
+                "cost multiplier", "implementation", "minincome"
+                "maxincome", "incomemultiplier",
+                "min","max", "influences", "zone",
+
+                ]:
+        if key in keys:
+            data[key] = [x[key].strip() for x in rows]
+
+    for key in ["category","zone","department"]:
+        if key in keys:
+            data["{}_set".format(key)] = list({x[key].strip() for x in rows})
+
+    for row in rows:
+        if "name" not in row:
+            continue
+
+        node_name = row['name'].strip()
+        links = []
+        values = []
+
+        if "remaining" in row:
+            cleaned = [x.strip() for x in row['remaining'] if x.strip() not in ["#",""]]
+            remaining = [x.split(',') for x in cleaned if x != "#Effects"]
+            links += [x[0] for x in remaining]
+            try:
+                values += [x[1] for x in remaining]
+            except IndexError:
+                logging.warning("Remain Error")
+                breakpoint()
+
+        lookup = [x for x in keys if "multiplier" in x]
+        for k in lookup:
+            if row[k].strip() == "":
+                continue
+            pairs = [x.split(",") for x in row[k].split(";")]
+
+            try:
+                links += [x[0] for x in pairs]
+                values += [x[1] for x in pairs]
+            except IndexError:
+                logging.warning("Multiplier Error")
+                breakpoint()
+
+
+        #Make nodes for graph
+        ## category, zone
+        if bool(links):
+            data["{}_node".format(node_name)] = [('edges', links), ('equations', values)]
+
+    #handle sliders settings
+
+
 
     return data
 

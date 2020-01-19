@@ -3,6 +3,7 @@ Get tsv files from data dir,
 
 output to similarly named files in analysis directory
 """
+from random import choice
 import utils
 import re
 import csv
@@ -29,11 +30,19 @@ logging = root_logger.getLogger(__name__)
 
 def extract_from_file(filename):
     logging.info("Extracting from: {}".format(filename))
-    data = { }
-
     with open(filename, 'rb') as f:
         text = [x.decode('utf-8','ignore') for x in f.readlines()]
 
+    if "dialogue" in filename:
+        data = handle_dialogue(text)
+    else:
+        data = handle_normal(text)
+
+
+    return data
+
+def handle_dialogue(text):
+    data = {}
     csv_obj = csv.reader(text, delimiter="\t", quotechar='"')
 
     rows = [x for x in csv_obj]
@@ -47,6 +56,30 @@ def extract_from_file(filename):
 
 
     return data
+
+def handle_normal(text):
+    data = {}
+    csv_obj = csv.DictReader(text, delimiter="\t", restkey="remaining", quotechar='"')
+
+    rows = [x for x in csv_obj]
+
+    keys = [x for x in rows[0].keys()]
+    data['keys'] = keys
+    data['length'] = len(rows)
+
+    sum_keys = ["Start","End","Level","Rewards"]
+    data.update({x : [] for x in sum_keys})
+
+    selection = [choice(rows) for x in range(20)]
+
+    for row in selection:
+        for key in sum_keys:
+            data[key].append(row[key])
+
+    return data
+
+
+
 
 
 if __name__ == "__main__":

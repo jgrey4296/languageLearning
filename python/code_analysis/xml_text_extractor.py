@@ -45,6 +45,94 @@ def extract_from_file(filename):
 
     soup = BeautifulSoup(text, features='lxml')
 
+    if 'wow_quests' in filename:
+        data = parse_wow_quest(soup)
+    elif "trump" in filename:
+        data = parse_trump(soup)
+    else:
+        data = utils.xml_search_components(data, soup, [x.name for x in soup.contents])
+
+
+    return data
+
+def parse_wow_quest(soup):
+    logging.info("Parsing Wow Quest")
+    data = {}
+
+    wikiapage = soup.find(id="WikiaPage")
+    assert(wikiapage is not None)
+    data['title'] = wikiapage.find("h1").text
+
+    main_container = wikiapage.find(id="mw-content-text")
+    assert(main_container is not None)
+    aside = main_container.find("aside")
+    assert(aside is not None)
+    aside_details = aside.find_all("div",class_="pi-item")
+    for detail in aside_details:
+        pair = detail.findChildren(recursive=False)
+        assert(len(pair) >= 2)
+        data[pair[0].text] = [x.get_text(", ") for x in pair[1:]]
+
+    content = [x for x in main_container.findChildren(recursive=False) if x.name in ["h2", "p", "table", "ul", "ol"]]
+    #Get rid of cruft at the start
+    while content[0].name != 'h2':
+        content.pop(0)
+    h2s = [x for x in content if x.name == "h2"]
+    ids = [y.attrs['id'] for x in h2s for y in x.findChildren(recursive=False) if 'id' in y.attrs]
+
+    #loop through content, assigning p's to h2s
+    curr_section = None
+    while bool(content):
+        current = content.pop(0)
+        if current.name == "h2":
+            curr_section = current.find('span').text
+            data[curr_section] = []
+        elif current.name == "p":
+            assert(curr_section is not None)
+            data[curr_section].append(current.text)
+        elif current.name == "ul":
+            lis = current.find_all('li',recursive=False)
+            for li in lis:
+                text = li.get_text()
+                img = li.find('img')
+                if img and 'alt' in img.attrs:
+                    text += " {}".format(img.attrs['alt'])
+                data[curr_section].append(text)
+
+        elif current.name == "table":
+            links = current.find_all('a')
+            link_texts = [x.text for x in links if x.text != ""]
+            data[curr_section].append(link_texts)
+        elif current.name == "ol":
+            lis = current.find_all('li', recursive=False)
+            li_text = [x.text for x in lis]
+            data[curr_section].append(li_text)
+
+    return data
+
+def parse_trump(soup):
+    data = {}
+
+    posts = soup.find_all("article")
+    data['_num_posts'] = len(posts)
+    data['days_mentioned'] = []
+    data['components'] = set()
+    for post in posts:
+        day = post.find('h2').find('a').attrs['href']
+        logging.info("Processing post: {}".format(day))
+
+        for sub_structure in post.findChildren():
+            data['components'].add(sub_structure.name)
+
+        data[day] = {}
+        data[day]['date'] = post.find('time').attrs['datetime']
+        data['days_mentioned'].append(data[day]['date'])
+
+        paras = post.find_all('p', recursive=False)
+        texts = [x.text for x in paras]
+        data[day]['paragraphs'] = texts
+        links = [y.attrs['href'] for x in paras for y in x.find_all('a')]
+        data[day]['links'] = links
 
     return data
 
@@ -58,7 +146,7 @@ if __name__ == "__main__":
                                       "king_dragon_pass",
                                       "unrest",
                                       "twine"]]
-    input_ext = ".xml"
+    input_ext = [".xml", ".html"]
     output_lists = []
     output_ext = ".xml_text_analysis"
 

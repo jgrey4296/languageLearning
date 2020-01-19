@@ -1,4 +1,5 @@
 * Python notes
+** [[https://pygobject.readthedocs.io/en/latest/getting_started.html][PyGObject]]
 ** [[https://www.crummy.com/software/BeautifulSoup/bs4/doc/][Beautiful Soup]]
 ** [[https://wiki.python.org/moin/PythonDecoratorLibrary][Decorators]]
 ** [[http://www.bogotobogo.com/python/python_fncs_map_filter_reduce.php][Functional Style]]

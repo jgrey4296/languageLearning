@@ -1,16 +1,19 @@
 """
-Get ini files from data dir,
+Extract people from a dramatis personae file (ie: Horus Heresy)
 
 output to similarly named files in analysis directory
 """
 import utils
-import configparser
+import spacy
+import IPython
 from enum import Enum
 from os.path import join, isfile, exists, abspath
 from os.path import split, isdir, splitext, expanduser
 from os import listdir
 from random import shuffle
 import pyparsing as pp
+
+nlp = spacy.load("en_core_web_sm")
 
 # Setup root_logger:
 from os.path import splitext, split
@@ -28,31 +31,42 @@ logging = root_logger.getLogger(__name__)
 
 def extract_from_file(filename):
     logging.info("Extracting from: {}".format(filename))
-    data = { }
-    config = configparser.ConfigParser(allow_no_value=True, interpolation=None)
-    with open(filename, 'rb') as f:
-        text = f.read().decode('utf-8','ignore')
+    data = {}
+    lines = []
+    with open(filename,'r') as f:
+        lines = [x.strip() for x in f.readlines()]
 
-    try:
-        config.read_string(text)
-        data['keys'] = config.sections()
-        for section in config.sections():
-            data["{}_names".format(section)] = [x[0] for x in config.items(section)]
-            data["{}_values".format(section)] = [x[1] for x in config.items(section)]
+    state = { 'bracket_count' : 0,
+              'current' : None,
+              'line' : 0}
+    while bool(lines):
+        state['line'] += 1
+        current = lines.pop(0)
 
 
-    except configparser.ParsingError as e:
-        logging.warning("Parse Error: {}".format(str(e)))
-        data['parse_error'] = str(e)
+    #handle breaks of 20 -'s
+
+    #handle first line after break, specifying legion/group
+    ## handle The X Legion 'Y'
+    ## handle The X Legion
+    ## handle With X
+
+    #handle person line.
+    ## name , [titles]
+    ## handle monikers / Called X / also known as X
+    ## handle ranks
+    ## handle company's
+    ## handle X to|of the? Y
+    ## handle X's Y
 
     return data
 
 
 if __name__ == "__main__":
-    queue = [join("data","config_files")]
-    input_ext = [".ini", ".txt"]
+    queue = join("data", "fiction")
+    input_ext = ".txt"
     output_lists = []
-    output_ext = ".config_analysis"
+    output_ext = ".narrative_analysis"
 
     utils.standard_main(queue,
                         input_ext,

@@ -34,10 +34,12 @@ def build_parser():
 
 def extract_from_file(filename):
     logging.info("Extracting from: {}".format(filename))
-    data = {}
+    data = { '__unique_words' : set(),
+             '__total_count' : 0,
+             '__sen_counts'  : {} }
     lines = []
-    with open(filename,'r') as f:
-        lines = f.readlines()
+    with open(filename,'rb') as f:
+        lines = [x for x in f.read().decode('utf-8','ignore').split('\n')]
 
     state = { 'bracket_count' : 0,
               'current' : None,
@@ -45,6 +47,34 @@ def extract_from_file(filename):
     while bool(lines):
         state['line'] += 1
         current = lines.pop(0)
+
+        parsed = nlp(current)
+
+        for sen in parsed.sents:
+            for word in sen:
+                if any([word.pos in [spacy.symbols.PUNCT, spacy.symbols.SPACE],
+                        word.is_punct, word.is_space]):
+                    continue
+
+                word_lemma = word.lemma_.lower()
+                if word_lemma not in data:
+                    data['__unique_words'].add(word_lemma)
+                    data[word_lemma] = 0
+                data[word_lemma] += 1
+
+            if len(sen) not in data['__sen_counts']:
+                data['__sen_counts'][len(sen)] = 0
+            data['__sen_counts'][len(sen)] += 1
+
+
+        #possibly load dramatis personae
+
+
+        #go through, find:
+        ## Speech
+        ## people
+        ## actions
+
 
     return data
 

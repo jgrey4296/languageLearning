@@ -46,6 +46,40 @@ def extract_from_file(filename, main_parser):
         state['line'] += 1
         current = lines.pop(0)
 
+    #Stack based, uses:
+    ## X = { : key + context open
+    ## } : context close
+    ## X = Y : assignment
+
+
+    #CK2/EUIV scripts
+    ## decision files?
+    ## traits, religions!
+    ##factions, titles,
+    ##law, jobs, actions
+    #government
+    #execution methods
+    #disease, death,
+    #cultures
+    #council voting/positions
+    #buildings
+    #policies
+
+    #democracy
+    #prison_architect
+
+    #distant worlds
+    ## policies
+
+    #Stellaris
+    ##message types
+    ##policies
+    ##governments
+    ##event chains
+    ##ethics
+    ##edicts
+    #diplomatic actions
+
     return data
 
 

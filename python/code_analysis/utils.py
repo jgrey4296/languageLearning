@@ -105,6 +105,23 @@ class Trie:
         return path
 
 
+def xml_search_components(data, soup, initial):
+    """ Summarize a file's tags and attributes, hierarchically """
+    queue = set(initial)
+    handled = set()
+    while bool(queue):
+        current = queue.pop()
+        if current is None or current in handled:
+            continue
+        handled.add(current)
+        sub_components = list({y.name for x in soup.find_all(current) for y in x.contents if y.name is not None})
+        attrs = set([x for y in soup.find_all(current) for x in y.attrs.keys()])
+        queue.update(sub_components)
+        data['{}_components'.format(current)] = sub_components
+        if bool(attrs):
+            data['{}_attrs'.format(current)] = attrs
+
+    return data
 
 
 def get_data_files(initial, ext):
@@ -158,27 +175,41 @@ def write_output(source_path, data_str, ext):
     with open(analysis_path,'w') as f:
         f.write(data_str)
 
-def standard_main(sources, exts, extractor, output_lists, output_ext):
+def standard_main(sources, exts, extractor, output_lists, output_ext, accumulator=None, accumulator_final=None, init_accum=None):
     import argparse
     parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
                                      epilog = "\n".join([""]))
-    parser.add_argument('-t', '--target')
+    parser.add_argument('-t', '--target', action="append")
     parser.add_argument('-r', '--rand')
+    parser.add_argument('-a', '--accum_name', default="accumulated_data")
     args = parser.parse_args()
     if args.target is not None:
-        files = [args.target]
+        files = get_data_files(args.target, exts)
     else:
         files = get_data_files(sources, exts)
 
     if args.rand:
         files = [choice(files) for x in range(int(args.rand))]
 
+    accumulated_data = init_accum
+    if accumulated_data is None:
+        accumulated_data = {}
+
+
     for f in files:
         data = extractor(f)
+        if accumulator is not None:
+            accumulated_data = accumulator(data, accumulated_data)
         data_str = convert_data_to_output_format(data, output_lists)
         write_output(f, data_str, output_ext)
 
+    if accumulator_final is not None:
+        accumulated_data = accumulator_final(accumulated_data)
 
+    if bool(accumulated_data):
+        data_str = convert_data_to_output_format(accumulated_data, output_lists)
+        with open(join("analysis", args.accum_name), "w") as f:
+            f.write(data_str)
 
 
 
@@ -189,7 +220,6 @@ def map_text(text):
     char_indices = dict((c, i) for i, c in enumerate(chars))
     indices_char = dict((i, c) for i, c in enumerate(chars))
     return (char_indices, indices_char)
-
 
 def sample(predictions, temperature=1.0):
     """ For a word mapping M:{i : char} dictionary, give [] of len(M) of predictions of
