@@ -1,3 +1,5 @@
+# also see https://github.com/firewut/wow-quest-sentiment-analyze
+
 import urllib
 from random import random
 from time import sleep
