@@ -17,7 +17,8 @@ logging = root_logger.getLogger(__name__)
 
 import sys
 import random
-from PySide2 import QtCore, QtWidgets, QtGui
+# from PySide2 import QtCore, QtWidgets, QtGui
+from qtpy import QtGui, QtWidgets, QtCore
 
 class MyWidget(QtWidgets.QWidget):
 
