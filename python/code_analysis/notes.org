@@ -1,14 +1,22 @@
 * Data Notes
-  look to [[https://www.lyonwj.com/2016/06/26/graph-of-thrones-neo4j-social-network-analysis/]]
+  look at [[https://www.lyonwj.com/2016/06/26/graph-of-thrones-neo4j-social-network-analysis/][Graph of Thrones]]
 ** [[file:abl_extractor.py][Abl Extractor]]
-
-   Parser extracts:
-   Abl Entities,
-   Action and WME Registrations
-   Behaviours
-   Mental Acts, Preconditions, Steps,
-   Specificity, Subgoal and Spawngoals,
-   and acts.
+   :Status:
+   Ready to count Acts/WMEs/Mental Ats
+   and create behaviour graph
+   :END:
+*** Analysis Intentions
+    How commented are abl agents?
+    What is the balance between sequential and parallel actions?
+    What does the graph look like for an agent?
+    What is the balance of behaviours : acts : wmes ?
+*** Parser extracts:
+    Abl Entities,
+    Action and WME Registrations
+    Behaviours
+    Mental Acts, Preconditions, Steps,
+    Specificity, Subgoal and Spawngoals,
+    and acts.
 *** Sources
 **** Eisbot
 **** SSim
@@ -16,13 +24,26 @@
 ***** Grace
 ***** Trip
 ** C Sharp
+*** Analysis Questions
+    What are the main components of the Rimworld simulation?
 *** Sources
 **** Rimworld
 ** [[file:config_extractor.py][Config Extractor]]
+*** Analysis Questions
+    What patterns are there in dilemmas?
+    What patterns are there in event influences?
 *** Sources
 **** Democracy 3 and Democracy 3 Africa
 ** [[file:csv_extractor.py][CSV Extractor]]
-   Loads csv files and summarizes them  
+   Loads csv files and summarizes them
+*** Analysis Questions
+    What does the d3 simulation graph look like?
+    What patterns are there in weights?
+    What patterns are there in the Stop and Frisk Data?
+    What does disease transmission show?
+    What variation are there in policy making rules?
+    What policy rules are beneficial?
+    What reasons do ministers resign for?
 *** Sources
 **** Democracy 3 and D3 Africa
 **** Reality Commons
@@ -30,35 +51,89 @@
 ***** SQF
 ***** Social Evolution
 **** BBC Sound Effects
+**** How Cold is that Library
+**** Collaborative Policy
+**** Ministerial Resignations
 ** [[file:dev_log_extractor.py][Dev Log Extractor]]
+*** Analysis Questions
+    How does DF development speed vary?
+    How often are features added versus removed?
+    What elements get mentioned repeatedly?
 *** Sources
+    [[http://www.bay12games.com/dwarves/mantisbt/view_all_bug_page.php?page_number=1][DF Bug List]]
 **** Dwarf Fortress
      Covers 2004 - 2020 from [[http://www.bay12games.com/dwarves/index.html][Bay 12 games]]
+** EULAS
+*** Analysis Questions
+    What Headings are there?
+    What sentence structure?
+*** Sources
+**** Adobe
+**** Amazon
+**** Apple
+**** Far Cry
+**** Google
+**** Hulu
+**** Microsoft
+**** Tumblr
 ** Json
 *** Sources
 **** Sunless Sea
 ** [[file:lua_extractor.py][Lua Extractor]]
    Extracts Classes, Functions,
    and Don't Start Recipes from lua files
+*** Analysis Questions
+    How large are the simulations?
+    What enums are used?
+    How many functions?
+    How many creatures are there?
+    How many different items?
+    How many different tasks?
+    How many states and events?
+    What do the function graphs look like?
+    What sort of buildings are there?
 *** Sources
 **** df9
      Lua Source for DoubleFine's Spacebase DF-9
-**** Don't Starve 
+**** Don't Starve
      Lua Source for Klei's Don't Starve
 **** Invisible Inc
 **** Prison Architect
 **** The Guild 2
 ** [[file:narrative_extractor.py][Narrative Extractor]]
    Get Characters, positions in story
+*** Analysis Questions
+    What characters are there?
+    How often do they appear?
+    How often do characters interact?
+    Do character Honorifics change?
+    Do characters die?
+    What clothing do characters wear?
+    What is mentioned often?
+    What environments are mentioned?
+    What do characters do besides fight?
+    What is the gender balance?
+    What colours are mentioned?
 *** Sources
 **** 40k
 **** Discworld
 ** [[file:deontic_extractor.py][Natural Language Deontic Extractor]]
+*** Analysis Questions
+    What topics are mentioned?
+    What deontic statements are there?
+    What phrases are mentioned?
+    What behaviours are described?
+    What scripts are given?
 *** Sources
 **** nomic
 **** emily post
 **** roberts rules
 ** [[file:game_script_extractor.py][Non-Specific Game Script Extractor]]
+*** Analysis Questions
+    What concepts are mentioned?
+    How large are the simulations?
+    What graphs do they form?
+    What diseases, deaths, names etc are defined?
 *** Sources
 **** Crusader kings 2
 **** EU 4
@@ -68,45 +143,121 @@
 **** Prison Architect
 ** [[file:nyt_extractor.py][NYT Extractor]]
    Processes for dealing with New York Times Archive Snippets
+*** Analysis Questions
+    What sentence structures are used?
+    When do particular words appear?
+    When do particular people appear?
+    Who interacts?
+    How much news is there per year?
+    How long do events get mentioned for?
+    Does style change over time?
+    What locations are mentioned?
+    What sort of events are mentioned?
 ** [[file:patch_notes_extractor.py][Patch Notes Extractor]]
    Extracts dev logs from html of [[https://dwarffortresswiki.org/][DF Wiki]] and [[https://dota2.gamepedia.com/Patches][Dota Gamepedia]]
+*** Analysis Questions
+    What areas are changed most often?
+    What areas are only changed once?
+    How often are changes made?
+    How much are values changed by?
+    How often are characters added?
+    How often are cosmetic items added?
 *** Sources
 **** Dwarf Fotress
      Covers DF 0.21.93.19a to 0.28.181.40d
 **** Dota 2 from Dota Wiki
 ** [[file:tsv_extractor.py][TSV Extractor]]
+*** Analysis Questions
+    How do quests chain together?
+    What do quest graph look like?
+    Are there choices?
+    What is the level distribution?
+    What rewards are used?
+    What is the distribution of locations?
+    What is the distribution of dialogue acts?
+    What is the distribution of variables?
 *** Sources
 **** WoW wiki Quests
 **** Prom Week Dialogue Acts
 ** [[file:versu_extractor.py][Versu Extractor]]
-
    Parses Praxis files (data/type/praxis extensions)
-   Extracts Types, Proesses, Functions,
+   Extracts Types, Processes, Functions,
    Calls, Actions, States, Inserts
+*** Analysis Questions
+    What is the set of EL sentences?
+    What are the most used sentences?
+    How often are assertions / proesses used?
+    What states and actions are available?
+    How many types are there?
+    How large are types?
+    How many variations of types are there?
+    What is the graph of functions
 *** Sources
 **** Linden Lab Versu scripts
 
 ** [[file:witcher_extractor.py][WitcherScript Extractor]]
    Parses witcherscript files (.ws) from the Witcher 3
+*** Analysis Questions
+    What NPC type/actions are there?
+    What other enums are there?
+    What does the behaviour tree look like?
+    What options in combat to NPCs have?
+    What variations are there for the living world?
+    What do quests contain?
 
 *** Sources
 **** Witcher Script files
 
 ** [[file:xml_rule_extractor.py][XML Rule Extractor]]
    Produces summaries from CiF and Promweek xml files
+*** Analysis Questions
+    How many rules are there?
+    How many traits?
+    How many characters?
+    How many microtheories?
+    What are the combinations of weights?
+    How many games?
+    How many performances for each game?
+    
 *** Sources
 **** CiF
      Get Rules
 ** [[file:xml_text_extractor.py][XML Text Extractor]]
    Produce Summaries of Text wrapped in XML
+*** Analysis Questions
+    What variations are there in ai failures?
+    What weights are there for redshirt?
+    What progression of jobs are there for redshirt?
+    What activities do people do in redshirt?
+
+    In the U.S.C, R.R.O and K.J.B:
+    What sentence structures are there?
+    What deontic statements are there?
+    What definitions are there?
+    How long are sentences? 
+    
+    In Twine, KoDP, Unrest:
+    What do the graphs look like?
+    What language is used?
+    What locations are used?
+    
+    For Trump Timeline:
+    What language is used?
+    What is repeated?
+    What people are mentioned?
+    How often do things happen?
+    
 *** Sources
 **** Redshirt
      Of particular interest: the Jobs file
 **** USC
      Get Categories, rules, deontics, sanctions,
      sections, lengths, cross references
-**** KJV
+**** KJB
      Get sections, names, deontics, grammar
 **** King of Dragon Pass
 **** Twine Games
 **** UnRest
+**** Wow Quests
+**** Trump Timeline
+**** AI Failures
