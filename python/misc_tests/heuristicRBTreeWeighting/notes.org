@@ -1,0 +1,24 @@
+
+Let R be the ranking of N items, with c being the centre neutral point,
+where there can be M <= N bins of ranks with at least 1 rank in each bin.
+
+Dir(R, c, Max, Min) is the directed ranking vector of N entries:
+	The lowest rank has value Min,
+	rank c has value 0,
+    The highest rank has value Max,
+    with the invariant min <= c <= max?
+
+Rank Values are spaced range(min,max) either linearly, exponentially, or logarithmically
+Rank values are spaced to skip values based on bin size. (ie: two items in rank 1 means rank 2 will be skipped then slot 3 is used)
+Either from top down, bottom up, or centre out.
+
+Mod(Dir(R...)) is a modifying function that shifts individual items up or down, with guards as to what they can't supersede, subsede,
+or stray from, producing Dir'(R..)
+
+
+A node in the MC Tree has a vector of probabilities for N, P(N).
+P(N) . Dir(R) gives a scalar value that scales the weight of each effect by its likelihood,
+
+
+
+

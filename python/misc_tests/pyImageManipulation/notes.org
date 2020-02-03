@@ -1,0 +1,21 @@
+* PIL notes
+from PIL import Image
+** Loading and Saving
+a = Image.open("blah.jpg")
+a.save("bloo.jpg")
+** Manipulation
+a.crop
+a.resize
+a.rotate
+
+
+
+
+* matplotlib
+** Color Formatting
+'b','g','r' (blue green red)
+'c','m','y','k','w' (cyan,magenta,yellow,black,white)
+** Line formatting
+'-', '- -', ':' (solid, dashed, dotted)
+** Marker formatting
+'.','o','s','*','+','x' (dot,circle,square,start,plus,x)
