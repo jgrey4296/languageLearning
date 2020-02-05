@@ -51,9 +51,11 @@ def extract_from_file(filename):
              '__honorifics'  : set(),
              '__clothes'     : [],
              '__environments' : [],
-             '__actions'     : [],
+             '__actions'     : set(),
              '__genders'     : [],
              '__death'       : [],
+             '__entities'    : set(),
+             '__verb_pairs'  : set()
     }
     lines = []
     with open(filename,'rb') as f:
@@ -77,10 +79,10 @@ def extract_from_file(filename):
 
         parsed = nlp(current)
 
-        for word in parsed:
-            # if state['potential_speech'] is not None:
-            #     logging.info("Potential: {}".format(word.text))
+        for ent in parsed.ents:
+            data['__entities'].add((ent.text, ent.label_))
 
+        for word in parsed:
 
             if state['potential_speech'] is not None and word.text in [RIGHT_QUOTE, RIGHT_DBL_QUOTE, DBL_QUOTE]:
                 quote = parsed[state['potential_speech']:word.i+1].text.strip()
@@ -102,12 +104,20 @@ def extract_from_file(filename):
 
             if word.tag_ == "NNP":
                 data['__nouns'].add(word.text)
+                if word.dep_ == "nsubj" and word.head.pos_ == "VERB":
+                    heads = [word.head.text] + [x.text for x in word.head.children if x.dep_ == 'conj' and x.pos_ == "VERB"]
+                    data['__verb_pairs'].add((word.text, ",".join(heads)))
 
             if word.pos_ == "PRON":
                 if word.text not in data['__pronouns']:
                     data['__pronouns'][word.text] = 0
                 data['__pronouns'][word.text] += 1
+                if word.dep_ == "nsubj" and word.head.pos_ == "VERB":
+                    heads = [word.head.text] + [x.text for x in word.head.children if x.dep_ == 'conj' and x.pos_ == "VERB"]
+                    data['__verb_pairs'].add((word.text, ",".join(heads)))
 
+            if word.pos_ == "VERB":
+                data['__actions'].add(word.lemma_)
 
             if word.is_punct and word.text in [".","?","!"]:
                 if state['sentence_length'] not in data['__sen_counts']:
