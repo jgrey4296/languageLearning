@@ -68,10 +68,10 @@ def extract_from_dev_log(soup):
 def accumulator(new_data, accum_data):
     #accumulate all words to get frequencies
     for date,text in new_data.items():
-        logging.info("Accum Data Sizes:")
-        logging.info("Total count: {}".format(accum_data['__total_count']))
-        logging.info("Sen Counts: {}".format(len(accum_data['__sen_counts'])))
-        logging.info("Unique Words: {}".format(len(accum_data['__unique_words'])))
+        # logging.info("Accum Data Sizes:")
+        # logging.info("Total count: {}".format(accum_data['__total_count']))
+        # logging.info("Sen Counts: {}".format(len(accum_data['__sen_counts'])))
+        # logging.info("Unique Words: {}".format(len(accum_data['__unique_words'])))
         #TODO process dates
 
         #Accumulate text
