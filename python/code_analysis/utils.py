@@ -1,9 +1,11 @@
 from os.path import join, isfile, exists, abspath
 from os.path import split, isdir, splitext, expanduser
 from os import listdir
+from time import sleep
 from fractions import Fraction
 from random import choice, shuffle
 import logging as root_logger
+import requests
 logging = root_logger.getLogger(__name__)
 
 class ParseBase:
@@ -14,6 +16,11 @@ class ParseBase:
         self._components = []
         self._args = []
         self._line_no = -1
+
+    def __repr__(self):
+        return "({} : {} : {})".format(self._line_no,
+                                       self._type,
+                                       self._name)
 
     def __str__(self):
         arg_s = ""
@@ -32,6 +39,9 @@ class ParseBase:
                         self._name,
                         arg_s,
                         comp_s)
+
+    def __lt__(self, other):
+        return self._line_no < other._line_no
 
 
 class Trie:
@@ -211,6 +221,17 @@ def standard_main(sources, exts, extractor, output_lists, output_ext, accumulato
         with open(join("analysis", args.accum_name), "w") as f:
             f.write(data_str)
 
+
+
+CONCEPT_NET_API = "http://api.conceptnet.io{}"
+def search_conceptnet(concept):
+    """ Rate Limit: 3600 an hour, 120 a minute.
+    Average at 1 per second
+    Expect concept to start with a /
+    """
+    assert(concept[0] == "/")
+    sleep(1)
+    return requests.get(CONCEPT_NET_API.format(concept)).json()
 
 
 def map_text(text):
