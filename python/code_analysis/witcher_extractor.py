@@ -58,8 +58,8 @@ def extract_from_file(filename):
     logging.info("Extracting from: {}".format(filename))
     data = {}
     lines = []
-    with open(filename,'r') as f:
-        lines = f.readlines()
+    with open(filename,'rb') as f:
+        lines = [x for x in f.read().decode('utf-8','ignore').split('\n')]
 
     state = { 'bracket_count' : 0,
               'current' : None,
