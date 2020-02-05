@@ -63,11 +63,24 @@ def extract_from_cif_library(soup):
     contents = soup.find('ciflibraries')
     data['cif_library_contents'] = list({x.name for x in contents if x.name is not None})
 
-    data = utils.xml_search_components(data, soup, data['cif_library_contents'])
-
+    # data = utils.xml_search_components(data, soup, data['cif_library_contents'])
     cif_library_components = {'responderinfluenceruleset', 'initiatorinfluenceruleset', 'performancerealization', 'name', 'conditionalrules', 'conditionrule', 'effect', 'instantiations', 'definition', 'instantiation', 'rule', 'influencerule', 'preconditions', 'changerule', 'toc2', 'partialchange', 'toc3', 'lineofdialogue', 'patsyrule', 'intents', 'effects', 'toc1', 'microtheory', 'chorusrule', 'predicate', 'socialgame'}
-
     data['all_counts'] = {x : len(soup.find_all(x)) for x in cif_library_components}
+
+    #get all predicates of rules/chorusRules/partialChanges/intents/changeRules/conditionRules/influenceRules
+    # predicate_attrs : second, window, first, intent, trait, numtimesroleslot,
+    # numtimesuniquelytrueflag, value, networktype, issfdb, relationship, label,
+    # type, comparator, negated, status, numtimesuniquelytrue predicates =
+    predicates = contents.find_all('predicate')
+
+    data['all_predicates'] = [str(x) for x in predicates]
+
+    #get all performance realizations
+    performances = contents.find_all('performancerealization')
+    data['all_performances'] = [x.string for x in performances]
+
+    #influence rules have weights.
+
 
     return data
 
@@ -76,10 +89,16 @@ def extract_from_cifstate(soup):
     contents = soup.find('cifstate')
     data['cif_state_contents'] = list({x.name for x in contents if x.name is not None})
 
-    data = utils.xml_search_components(data, soup, data['cif_state_contents'])
+    # data = utils.xml_search_components(data, soup, data['cif_state_contents'])
     cif_state_components = {'trait', 'status', 'conditionrule', 'rule', 'relationship', 'character', 'backstorycontext', 'performancerealization', 'edge', 'proposition', 'changerule', 'predicate', 'locution', 'trigger'}
-
     data['all_counts'] = {x : len(soup.find_all(x)) for x in cif_state_components}
+
+    #sfdb, culturalkd,
+
+    #relationships
+    #network edges
+
+    #cast / locutions, traits, statuses
 
 
     return data
@@ -89,14 +108,17 @@ def extract_from_promweek(soup):
     contents = soup.find('promweek')
     data['prom_week_contents'] = list({x.name for x in contents if x.name is not None})
 
-    data = utils.xml_search_components(data, soup, data['prom_week_contents'])
+    # data = utils.xml_search_components(data, soup, data['prom_week_contents'])
     prom_week_components = {'endings', 'todorule', 'forcedsgs', 'todoitems', 'todolist', 'conditionalrules', 'tidbit', 'quickplayendingdescription', 'cast', 'goalrules', 'description', 'tasknaturallanguage', 'instantiations', 'levels', 'rule', 'goaldescription', 'instantiation', 'todoitem', 'preconditions', 'level', 'toc2', 'partialchange', 'setting', 'forcedsg', 'toc3', 'lineofdialogue', 'condition', 'toc1', 'chorusrule', 'charactername', 'predicate', 'quickplaydescription', 'ending'}
-
     data['all_counts'] = {x : len(soup.find_all(x)) for x in prom_week_components}
 
+    #todoitem : tidbit, condition, goaldescrptions
+
+    #level : setting, description, goalrules, cast
+
+    #ending : instantiation, preconditions
 
     return data
-
 
 
 def accumulator(new_data, acc_data):

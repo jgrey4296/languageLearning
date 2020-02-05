@@ -29,7 +29,7 @@ logging = root_logger.getLogger(__name__)
 
 main_parser = None
 
-obj_e = Enum('Parse Objects', 'ENT ACT WME BEH COM SPAWN MENTAL PRECON SPEC INIT STEP COMMENT')
+obj_e = Enum('Parse Objects', 'ENT ACT WME CONFLICT BEH COM SPAWN MENTAL PRECON SPEC INIT STEP COMMENT')
 
 class AblEnt(utils.ParseBase):
 
@@ -42,7 +42,7 @@ class AblRegistration(utils.ParseBase):
 
     def __init__(self, _type, name):
         super().__init__()
-        assert(_type in [obj_e.WME, obj_e.ACT])
+        assert(_type in [obj_e.WME, obj_e.ACT, obj_e.CONFLICT])
         self._type = _type
         self._name = name
 
@@ -94,6 +94,13 @@ class AblComponent(utils.ParseBase):
         return "[{}: {} ({})]".format(_type, name, args)
 
 
+class AblMisc(utils.ParseBase):
+
+    def __init__(self, iden, text):
+        super().__init__()
+        self._iden = iden
+        self._text = text
+
 def build_parser():
 
     s = pp.Suppress
@@ -124,7 +131,8 @@ def build_parser():
     initial_abl = pp.Keyword("initial_tree")
     succeed_abl = pp.Keyword("succeed_step")
     fail_abl = pp.Keyword("fail_step")
-
+    conflict_abl = pp.Keyword('conflict')
+    import_abl = pp.Keyword('import')
 
     parallel_abl.setParseAction(lambda x: "Parallel")
     sequential_abl.setParseAction(lambda x: "Sequential")
@@ -142,10 +150,13 @@ def build_parser():
     mental_stmt = mental_abl
     precondition_stmt = precond_abl
     spec_stmt = s(specificity_abl) + NUM
+    conflict_stmt = s(conflict_abl) + NAME + NAME;
+    import_stmt = s(import_abl) + pp.restOfLine
 
     beh_ent_stmt.setParseAction(lambda x: AblEnt(x[0]))
     register_act_stmt.setParseAction(lambda x: AblRegistration(obj_e.ACT, x[0]))
     register_wme_stmt.setParseAction(lambda x: AblRegistration(obj_e.WME, x[0]))
+    conflict_stmt.setParseAction(lambda x: AblRegistration(obj_e.CONFLICT, x[:]))
     behavior_stmt.setParseAction(lambda x: AblBehavior(x['name'][0], x['args'][:] + [x['form']]))
     spawn_stmt.setParseAction(lambda x: AblComponent(obj_e.SPAWN, name=x[1], args=[x[0]]))
     step_stmt.setParseAction(lambda x: AblComponent(obj_e.STEP, x[0]))
@@ -153,6 +164,7 @@ def build_parser():
     precondition_stmt.setParseAction(lambda x: AblComponent(obj_e.PRECON))
     spec_stmt.setParseAction(lambda x: AblComponent(obj_e.SPEC, args=[float(x[0])]))
     initial_abl.setParseAction(lambda x: AblBehavior("initial_tree", [], True))
+    import_stmt.setParseAction(lambda x: AblMisc('import',x[:]))
 
     pass_stmt = pp.restOfLine
     pass_stmt.setParseAction(lambda x: utils.ParseBase())
@@ -161,9 +173,11 @@ def build_parser():
     com_parser.setParseAction(lambda x: obj_e.COMMENT)
 
     abl_parser = pp.MatchFirst([com_parser,
+                                import_stmt,
                                 beh_ent_stmt,
                                 register_act_stmt,
                                 register_wme_stmt,
+                                conflict_stmt,
                                 behavior_stmt,
                                 skip_to_spawn,
                                 skip_to_step,
@@ -191,6 +205,7 @@ def extract_from_file(filename):
               'line' : 0}
     while bool(lines):
         state['line'] += 1
+        # logging.info("line: {}".format(state['line']))
         current = lines.pop(0)
 
         result = main_parser.parseString(current)[0]
@@ -202,19 +217,24 @@ def extract_from_file(filename):
         if isinstance(result, utils.ParseBase):
             result._line_no = state['line']
 
-        if result is obj_e.COMMENT:
-            data['comments'] += 1
-        elif isinstance(result, AblEnt):
-            data['behaving_entity'] = result
-        elif isinstance(result, AblRegistration):
-            data['registrations'].append(result)
-        elif isinstance(result, AblBehavior):
-            state['current'] = result
-            data['behaviors'].append(state['current'])
-        elif isinstance(result, AblComponent):
-            state['current'].add_component(result)
-        elif not isinstance(result, utils.ParseBase):
-            logging.warning("Unrecognised parse result: {}".format(result))
+        try:
+            if result is obj_e.COMMENT:
+                data['comments'] += 1
+            elif isinstance(result, AblEnt):
+                data['behaving_entity'] = result
+            elif isinstance(result, AblRegistration):
+                data['registrations'].append(result)
+            elif isinstance(result, AblBehavior):
+                state['current'] = result
+                data['behaviors'].append(state['current'])
+            elif isinstance(result, AblComponent):
+                state['current'].add_component(result)
+            elif not isinstance(result, utils.ParseBase):
+                logging.warning("Unrecognised parse result: {}".format(result))
+
+        except AttributeError as e:
+            breakpoint()
+
 
     return data
 

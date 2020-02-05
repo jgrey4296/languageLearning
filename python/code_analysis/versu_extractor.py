@@ -25,62 +25,75 @@ root_logger.getLogger('').addHandler(console)
 logging = root_logger.getLogger(__name__)
 ##############################
 
-versu_e = Enum('Versu Enums', 'COMMENT COPEN CCLOSE ODEF CDEF TOPEN END')
+versu_e = Enum('Versu Enums', 'COMMENT COPEN CCLOSE ODEF CDEF TOPEN END PATCH RANDOM')
 
-class VersuType(utils.ParseBase):
+Enum_to_String = {
+    versu_e.TOPEN  : "type",
+    versu_e.PATCH  : "patch",
+    versu_e.RANDOM : "random"
+    }
 
-    def __init__(self, name):
+Quote_Extractor = pp.ZeroOrMore(pp.Suppress(pp.SkipTo(pp.quotedString)) + pp.quotedString)
+
+class VersuBlock(utils.ParseBase):
+
+    def __init__(self, blockType, text):
         super().__init__()
-        self._type = "type"
-        self._name = name
+        self._type = blockType
+        if blockType in Enum_to_String:
+            self._type = Enum_to_String[blockType]
+        self._name = text
 
-class VersuProcess(utils.ParseBase):
+    def __str__(self):
+        arg_s = ""
+        comp_s = ""
 
-    def __init__(self, name):
+        s = "{} : BLOCK : {} : {}{}{}"
+
+        if bool(self._args):
+            arg_s = " : {}".format(", ".join([str(x) for x in self._args]))
+
+        if bool(self._components):
+            comp_s = " := {}".format(", ".join([str(x) for x in self._components]))
+
+        return s.format(self._line_no,
+                        self._type,
+                        self._name,
+                        arg_s,
+                        comp_s)
+
+class VersuExpression(utils.ParseBase):
+    def __init__(self, expressionType, text, hand=None):
         super().__init__()
-        self._type = "process"
-        self._name = name
+        self._type = expressionType
+        self._name = text
+        self._block = None
+        self._hand_ordered = False
+        if bool(hand):
+            self._hand_ordered = True
 
-class VersuFunction(utils.ParseBase):
+    def __str__(self):
+        arg_s = ""
+        comp_s = ""
+        hand_ordered = ""
+        s = "{} : {} {}: {}{}{}"
 
-    def __init__(self, name):
-        super().__init__()
-        self._type = "function"
-        self._name = name
+        if self._hand_ordered:
+            hand_ordered = "(hand_ordered)"
 
-class VersuCall(utils.ParseBase):
+        if bool(self._args):
+            arg_s = " : {}".format(", ".join([str(x) for x in self._args]))
 
-    def __init__(self, name):
-        super().__init__()
-        self._type = "call"
-        self._name = name
+        if bool(self._components):
+            comp_s = " := {}".format(", ".join([str(x) for x in self._components]))
 
-
-class VersuAction(utils.ParseBase):
-
-    def __init__(self, name):
-        super().__init__()
-        self._type = "action"
-        self._name = name
-
-class VersuState(utils.ParseBase):
-
-    def __init__(self, name):
-        super().__init__()
-        self._type = "state"
-        self._name = name
-
-class VersuInsert(utils.ParseBase):
-
-    def __init__(self, name):
-        super().__init__()
-        self._type = "insert"
-        self._name = name
-
-
-#TODO: beliefs, quips, data
-
-
+        return s.format(self._line_no,
+                        self._type,
+                        hand_ordered,
+                        self._name,
+                        arg_s,
+                        comp_s)
+#----------------------------------------
 def build_parser():
 
     s         = pp.Suppress
@@ -93,6 +106,17 @@ def build_parser():
     C_BRACKET = pp.Literal('}')
     O_PAR     = pp.Literal('(')
     C_PAR     = pp.Literal(')')
+
+ # to in test pick
+ # assert_count_nodes assert_count_terms assert_count_removals assert_count_processes
+ # increment decrement change_by create destroy load can_stit stit score_action
+ # test_clear_undo test_undo test_find_subs test_process_autonomy test_all test_autonomy test_evaluate
+ # assert_count_actions_available test_tick_processes perform_action assert_text_sub assert_count_free_object_pool
+ # process_name process_menu test_clear_definitions definition debug_break count abs sign log
+ # align_center align_left align_right ignore restriction
+ # dot colon bang game_over append_text compute_reasons_for_action untyped_function append_text_capitalize
+ # clear_clicks add_logical_breakpoint can_perform data do_patches cached_condition
+ # update_achievement_stats praxis placement
 
     FUN     = pp.Keyword('function')
     PROCESS = pp.Keyword('process')
@@ -112,24 +136,42 @@ def build_parser():
     DOM     = pp.Keyword('dominating')
     DEL     = pp.Keyword('delete')
     STATE   = pp.Keyword('state')
+    PATCH   = pp.Keyword('patch')
+    RANDOM  = pp.Keyword('random')
+    IMPORT  = pp.Keyword('import')
+    LOOP    = pp.Keyword('loop')
+    MENU    = pp.Keyword('menu')
+    ASSERT  = pp.Keyword('assert')
+    ALL     = pp.Keyword('all')
+    SOME    = pp.Keyword('some')
 
-    type_p     = s(TYPES)
-    process_p  = s(PROCESS) + pp.restOfLine.setResultsName('rest')
-    function_p = s(FUN) + pp.restOfLine.setResultsName('rest')
-    call_p     = s(CALL) + pp.restOfLine.setResultsName('rest')
-    action_p   = s(ACTION) + pp.restOfLine.setResultsName('rest')
-    state_p    = s(STATE) + pp.restOfLine.setResultsName('rest')
-    insert_p   = s(INSERT) + pp.restOfLine.setResultsName('rest')
+    ALL_WRAP = op(O_PAR) + ALL
+    SOME_WRAP = op(O_PAR) + SOME
+
+    add_p = pp.Literal('add_') + pp.Word(pp.alphas)
+    add_p.setParseAction(lambda x: "".join(x[:]))
+
+    on_p = pp.Literal('on_') + pp.Word(pp.alphas)
+    on_p.setParseAction(lambda x: "".join(x[:]))
+
+    block_p = pp.Or([TYPES, FUN, RANDOM,
+                     PATCH, PROCESS, on_p,
+                     ALL, SOME]).setResultsName('head') + pp.restOfLine.setResultsName('rest')
+
+    exp_p = op(HAND).setResultsName('hand') \
+        + pp.Or([ACTION, INSERT, CALL,
+                 DEL, TEXT, IMPORT, IF_p,
+                 THEN, PRECON, POSTCON,
+                 LOOP, MENU, ASSERT, ELSE,
+                 DOM, add_p]).setResultsName('head') + pp.restOfLine.setResultsName('rest')
+
+    misc_p = pp.restOfLine.setResultsName('rest')
     end_p      = s(END)
 
     #result construction:
-    type_p.setParseAction(lambda x: versu_e.TOPEN)
-    process_p.setParseAction(lambda x: VersuProcess(x.rest))
-    function_p.setParseAction(lambda x: VersuFunction(x.rest))
-    call_p.setParseAction(lambda x: VersuCall(x.rest))
-    action_p.setParseAction(lambda x: VersuAction(x.rest))
-    state_p.setParseAction(lambda x: VersuState(x.rest))
-    insert_p.setParseAction(lambda x: VersuInsert(x.rest))
+    block_p.setParseAction(lambda x: VersuBlock(x.head[0], x.rest.strip()))
+    exp_p.setParseAction(lambda x: VersuExpression(x.head[0], x.rest.strip(), hand=x.hand))
+    misc_p.setParseAction(lambda x: VersuExpression("statement", x.rest.strip()))
     end_p.setParseAction(lambda x: versu_e.END)
 
     #double slash comment
@@ -145,15 +187,16 @@ def build_parser():
                             comment_close
                             ])
 
+    O_BRACKET.setParseAction(lambda x: versu_e.ODEF)
+    C_BRACKET.setParseAction(lambda x: versu_e.CDEF)
+    closure_parser = pp.Or([O_BRACKET, C_BRACKET])
+
     main_parser = pp.MatchFirst([comment_parser,
+                                 closure_parser,
                                  end_p,
-                                 type_p,
-                                 process_p,
-                                 function_p,
-                                 call_p,
-                                 action_p,
-                                 state_p,
-                                 insert_p,
+                                 block_p,
+                                 exp_p,
+                                 misc_p,
                                  pp.restOfLine])
 
     return main_parser
@@ -161,69 +204,127 @@ def build_parser():
 def extract_from_file(filename):
     logging.info("Extracting from: {}".format(filename))
     main_parser = build_parser()
+    #Data to return:
     data = { 'comments' : 0,
-             'types' : [],
-             'processes' : [],
+             'strings' : [],
+             'non_exclusions' : 0,
+             'exclusions' : 0,
+             'in_order' : [],
+
+             'blocks' : [],
              'functions' : [],
-             'calls' : [],
+             'inserts' : [],
+             'types' : [],
              'actions' : [],
-             'states' : [],
-             'inserts' : [] }
+
+                 }
+    #Read the file:
     lines = []
     with open(filename,'rb') as f:
         lines = [x.decode('utf-8','ignore') for x in f.readlines()]
 
+    #Intermediate parsing state:
     state = { 'bracket_count' : 0,
               'current' : None,
               'line' : 0,
-              'in_block' : None }
+              'in_block' : [],
+              'block_text' : None,
+              'in_def' : None,
+              'def_prefix' : None,
+              'last_line' : None,
+              'fold_into_last' : False}
+    #Parse:
     while bool(lines):
         state['line'] += 1
-        current = lines.pop(0)
+        # logging.info("Line: {}".format(state['line']))
+        current = lines.pop(0).strip()
 
+        #Handle simple syntax cues
+        if current == "":
+            continue
+        if state['fold_into_last']:
+            current = state['last_line'] + current
+            state['fold_into_last'] = False
+        if current == "{":
+            state['in_def'] = True
+            state['def_prefix'] = state['last_line']
+            continue
+        elif current == "}":
+            state['in_def'] = None
+            continue
+
+        if state['in_def'] and state['def_prefix']:
+            current = "{}.{}".format(state['def_prefix'],current)
+
+        #PARSE
         result = main_parser.parseString(current)[0]
 
         if isinstance(result, utils.ParseBase):
             result._line_no = state['line']
 
-        if result is versu_e.COPEN:
+        #Handle Blocks:
+        if result is versu_e.COPEN: #comment
             data['comments'] += 1
-            state['in_block'] = versu_e.COMMENT
-        elif result is versu_e.CCLOSE:
+            state['in_block'].append(versu_e.COMMENT)
+            continue
+        elif result is versu_e.CCLOSE: #comment close
             data['comments'] += 1
-            state['in_block'] = None
-        elif state['in_block'] is versu_e.COMMENT or result is versu_e.COMMENT:
+            state['in_block'].pop()
+            continue
+        elif bool(state['in_block']) and state['in_block'][-1] is versu_e.COMMENT or result is versu_e.COMMENT:
             data['comments'] += 1
-        elif result is versu_e.TOPEN:
-            assert(state['in_block'] is None)
-            state['in_block'] = versu_e.TOPEN
-        elif result is versu_e.END and state['in_block'] is versu_e.TOPEN:
-            state['in_block'] = None
-        elif isinstance(result, VersuProcess):
-            data['processes'].append(result)
-        elif isinstance(result, VersuFunction):
-            data['functions'].append(result)
-        elif isinstance(result, VersuCall):
-            data['calls'].append(result)
-        elif isinstance(result, VersuAction):
-            data['actions'].append(result)
-        elif isinstance(result, VersuState):
-            data['states'].append(result)
-        elif isinstance(result, VersuInsert):
-            data['inserts'].append(result)
-        elif state['in_block'] is versu_e.TOPEN and result.strip() != "":
-            the_type = VersuType(result.strip())
-            the_type._line_no = state['line']
-            data['types'].append(the_type)
+            continue
+        elif current[-1] == "." or current[-1] == "!":
+            state['last_line'] = current
+            state['fold_into_last'] = True
+            continue
+
+        elif isinstance(result, VersuBlock):
+            state['in_block'].append(result)
+            data['in_order'].append(result)
+            data['blocks'].append(result)
+            if result._type == "function":
+                data['functions'].append(result)
+
+        elif result is versu_e.END: #block end
+            ending = state['in_block']
+            if bool(state['in_block']):
+                state['in_block'].pop()
+            #TODO COPY and END
+            end_exp = VersuExpression('end','')
+            end_exp._line_no = state['line']
+            data['in_order'].append(end_exp)
+
+        #Handle Expressions:
+        elif isinstance(result, VersuExpression):
+            #TODO: Add block height
+            data['in_order'].append(result)
+            if result._type == 'insert':
+                data['inserts'].append(result)
+            elif result._type == "action":
+                data['actions'].append(result)
+            elif bool(state['in_block']) and isinstance(state['in_block'][-1], VersuBlock) and state['in_block'][-1]._type == "types":
+                data['types'].append(result)
 
 
+        #Handle other simple syntax based counts:
+        data['non_exclusions'] += current.count('.')
+        data['exclusions'] += current.count('!')
+
+        potential_strings = Quote_Extractor.parseString(current)
+        data['strings'] += potential_strings[:]
+
+
+        state['last_line'] = current
+
+    data['in_order'].sort()
     return data
 
 
 if __name__ == "__main__":
     queue = [join("data","versu")]
     input_ext = [".type", ".data", ".praxis"]
-    output_lists = ['types','processes','functions','calls','actions','states','inserts']
+    output_lists = ['in_order']
     output_ext = ".versu_analysis"
 
     utils.standard_main(queue,
@@ -231,4 +332,3 @@ if __name__ == "__main__":
                         extract_from_file,
                         output_lists,
                         output_ext)
-

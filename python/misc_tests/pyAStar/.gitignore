@@ -1,0 +1,7 @@
+.DS_Store
+*.pycache
+*.pyc
+flycheck_*
+log.*
+.log
+*/__pycache__

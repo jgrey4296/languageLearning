@@ -1,0 +1,58 @@
+
+python author.py
+...
+...
+load file? y/n
+n
+
+Name the System to Author: 
+Physical
+
+(Everything will be implicitly ".physical.$x..")
+
+Specify Initial Components and Properties:
+.item.wood
+.item.$x.on.fire
+.item.metal
+.item.tree
+.item.axe
+.item.pickaxe
+END
+
+Specify Actions:
+.action.cut.tree
+.action.mine.stone
+.action.start.fire
+END
+
+Define the inputs and outputs of ".action.cut.tree":
+Inputs:
+.item.axe
+.item.tree
+end
+Outputs:
+.item.wood
+end
+
+Define ".action.mine.stone":
+Inputs:
+.item.pickaxe
+.item.stone
+end
+Outputs:
+.item.metal
+end
+
+
+Define System Input Layer:
+.item.$x
+.item.$x.on.fire
+end
+
+Actions Must produce all system inputs
+
+Produced but unused:
+.item.wood
+.item.metal
+end
+
