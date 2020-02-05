@@ -3,7 +3,6 @@ Get xml files of text (usc, the bible etc) from data dir,
 
 output to similarly named files in analysis directory
 """
-
 from enum import Enum
 from os import listdir
 from os.path import join, isfile, exists, abspath
@@ -35,6 +34,9 @@ root_logger.getLogger('').addHandler(console)
 logging = root_logger.getLogger(__name__)
 ##############################
 # Enums:
+KJV_RE = re.compile('kjv([0-9]+)(O|A)z([0-9]+)z([0-9]+)')
+
+
 
 def extract_from_file(filename):
     logging.info("Extracting from: {}".format(filename))
@@ -49,6 +51,18 @@ def extract_from_file(filename):
         data = parse_wow_quest(soup)
     elif "trump" in filename:
         data = parse_trump(soup)
+    elif "kjv" in filename:
+        data = parse_bible(soup)
+    elif "usc" in filename:
+        data = parse_usc(soup)
+    elif "dragon" in filename:
+        data = parse_king_dragon_pass(soup)
+    elif "roberts" in filename:
+        data = parse_roberts_rules(soup)
+    elif "twine" in filename:
+        data = parse_twine(soup)
+    elif "unrest" in filename:
+        data = pase_unrest(soup)
     else:
         data = utils.xml_search_components(data, soup, [x.name for x in soup.contents])
 
@@ -136,7 +150,49 @@ def parse_trump(soup):
 
     return data
 
+def parse_bible(soup):
+    data = {}
+    divs = soup.find_all('divs')
 
+    for section in divs:
+        book, testament, chapter, verse = KJV_RE.match(section.find(h1).string).groups()
+        text = nlp(section.find('p').string)
+
+        #TODO
+
+    return data
+
+def parse_usc(soup):
+    data = {}
+
+
+    return data
+
+def parse_king_dragon_pass(soup):
+    data = {}
+
+    #TODO
+
+    return data
+
+def parse_roberts_rules(soup):
+    data = {}
+
+    body = soup.find('body')
+
+    paragraphs = body.find_all('p')
+    #TODO
+
+
+    return data
+
+def parse_unrest(soup):
+    data = {}
+
+    #TODO
+
+
+    return data
 
 if __name__ == "__main__":
     base = ["data", "xml"]
@@ -144,6 +200,7 @@ if __name__ == "__main__":
                                       "king_james_bible",
                                       "red_shirt",
                                       "king_dragon_pass",
+                                      "dwarf_fortress",
                                       "unrest",
                                       "twine"]]
     input_ext = [".xml", ".html"]
