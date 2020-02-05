@@ -42,7 +42,7 @@ def extract_from_file(filename):
               'current' : None,
               'line' : 0}
 
-    if soup.find(id="firstHeading") is not None:
+    if "dota" in filename:
         data = extract_from_dota_patch_notes(soup)
     else:
         data = extract_from_release_info(soup)
