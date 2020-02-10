@@ -39,19 +39,39 @@ def extract_from_file(filename, main_parser):
     with open(filename,'r') as f:
         lines = f.readlines()
 
-    state = { 'bracket_count' : 0,
-              'current' : None,
-              'line' : 0}
-    while bool(lines):
-        state['line'] += 1
-        current = lines.pop(0)
+    if "CK2" in filename:
+        data.update(handleCK2(lines))
+    elif "EUIV" in filename:
+        data.update(handleEUIV(lines))
+    elif "democracy_3" in filename:
+        data.update(handleDemocracy(lines))
+    elif "distant_worlds" in filename:
+        data.update(handleDistantWorlds(lines))
+    elif "geck" in filename:
+        data.update(handleGECK(lines))
+    elif "prison_architect" in filename:
+        data.update(handlePrisonArchitect(lines))
+    elif "red_shirt" in filename:
+        data.update(handleRedShirt(lines))
+    elif "skyrim" in filename:
+        data.update(handleSkyrim(lines))
+    elif "stellaris" in filename:
+        data.update(handleStellaris(lines))
 
-    #Stack based, uses:
-    ## X = { : key + context open
-    ## } : context close
-    ## X = Y : assignment
+    return data
+
+#Stack based, uses:
+## X = { : key + context open
+## } : context close
+## X = Y : assignment
 
 
+
+#democracy
+#prison_architect
+
+
+def handleCK2(lines):
     #CK2/EUIV scripts
     ## decision files?
     ## traits, religions!
@@ -64,13 +84,121 @@ def extract_from_file(filename, main_parser):
     #council voting/positions
     #buildings
     #policies
+    data = {}
+    state = { 'bracket_count' : 0,
+              'current' : None,
+              'line' : 0}
+    while bool(lines):
+        state['line'] += 1
+        current = lines.pop(0)
 
-    #democracy
-    #prison_architect
 
+    return data
+
+def handleEUIV(lines):
+    #CK2/EUIV scripts
+    ## decision files?
+    ## traits, religions!
+    ##factions, titles,
+    ##law, jobs, actions
+    #government
+    #execution methods
+    #disease, death,
+    #cultures
+    #council voting/positions
+    #buildings
+    #policies
+    data = {}
+    state = { 'bracket_count' : 0,
+              'current' : None,
+              'line' : 0}
+    while bool(lines):
+        state['line'] += 1
+        current = lines.pop(0)
+
+
+    return data
+
+def handleDemocracy(lines):
+
+    data = {}
+    state = { 'bracket_count' : 0,
+              'current' : None,
+              'line' : 0}
+    while bool(lines):
+        state['line'] += 1
+        current = lines.pop(0)
+
+
+    return data
+
+def handleDistantWorlds(lines):
     #distant worlds
     ## policies
+    data = {}
+    state = { 'bracket_count' : 0,
+              'current' : None,
+              'line' : 0}
+    while bool(lines):
+        state['line'] += 1
+        current = lines.pop(0)
 
+
+    return data
+
+def handleGECK(lines):
+
+    data = {}
+    state = { 'bracket_count' : 0,
+              'current' : None,
+              'line' : 0}
+    while bool(lines):
+        state['line'] += 1
+        current = lines.pop(0)
+
+
+    return data
+
+def handlePrisonArchitect(lines):
+
+    data = {}
+    state = { 'bracket_count' : 0,
+              'current' : None,
+              'line' : 0}
+    while bool(lines):
+        state['line'] += 1
+        current = lines.pop(0)
+
+
+    return data
+
+def handleRedShirt(lines):
+
+    data = {}
+    state = { 'bracket_count' : 0,
+              'current' : None,
+              'line' : 0}
+    while bool(lines):
+        state['line'] += 1
+        current = lines.pop(0)
+
+
+    return data
+
+def handleSkyrim(lines):
+
+    data = {}
+    state = { 'bracket_count' : 0,
+              'current' : None,
+              'line' : 0}
+    while bool(lines):
+        state['line'] += 1
+        current = lines.pop(0)
+
+
+    return data
+
+def handleStellaris(lines):
     #Stellaris
     ##message types
     ##policies
@@ -79,6 +207,14 @@ def extract_from_file(filename, main_parser):
     ##ethics
     ##edicts
     #diplomatic actions
+    data = {}
+    state = { 'bracket_count' : 0,
+              'current' : None,
+              'line' : 0}
+    while bool(lines):
+        state['line'] += 1
+        current = lines.pop(0)
+
 
     return data
 

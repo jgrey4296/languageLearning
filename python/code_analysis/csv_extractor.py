@@ -38,8 +38,34 @@ def extract_from_file(filename):
     rows = [x for x in csv_obj]
 
     keys = [x for x in rows[0].keys()]
-    data['keys'] = keys
-    data['length'] = len(rows)
+    data['__keys'] = keys
+    data['__length'] = len(rows)
+
+    if "BBC" in filename:
+        data.update(handleBBC(rows))
+    elif "swda" in filename:
+        data.update(handleDAMSL(rows))
+    elif "democracy" in filename:
+        data.update(handleDemocracy(rows))
+    elif "SQF" in filename:
+        data.update(handleStopAndFrisk(rows))
+    elif "Badge" in filename:
+        data.update(handleBadge(rows))
+
+    return data
+
+
+def handleBBC(rows):
+    data = {}
+
+    return data
+
+def handleDAMSL(rows):
+    data = {}
+    return data
+
+def handleDemocracy(rows):
+    data = {}
 
     for key in ["name", "desc", "secs",
                 "category", "introduce", "cancel","raise","lower",
@@ -55,6 +81,7 @@ def extract_from_file(filename):
     for key in ["category","zone","department"]:
         if key in keys:
             data["{}_set".format(key)] = list({x[key].strip() for x in rows})
+
 
     for row in rows:
         if "name" not in row:
@@ -88,15 +115,18 @@ def extract_from_file(filename):
                 breakpoint()
 
 
-        #Make nodes for graph
-        ## category, zone
         if bool(links):
             data["{}_node".format(node_name)] = [('edges', links), ('equations', values)]
 
-    #handle sliders settings
 
+    return data
 
+def handleStopAndFrisk(rows):
+    data = {}
+    return data
 
+def handleBadge(rows):
+    data = {}
     return data
 
 
