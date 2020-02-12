@@ -6,8 +6,151 @@
    Setup coq projects with _CoqProject file
 
 ** Syntax
+*** Modules
+    #+NAME: Module Use
+    #+begin_src coq :results value
+      Module TestMod.
+      Inductive test : Type :=
+      | TestT1
+      | TestT2.
+      End TestMod.
 
-   [[https://learnxinyminutes.com/docs/coq/][Learn X in Y]]
+
+      Check TestMod.TestT1.
+      (* ===> TestT1 : TestMode.test *)
+
+    #+end_src
+
+*** Type Definition
+
+    #+NAME: Enumerated Type Definition
+    #+begin_src coq :results value
+    Inductive day : Type :=
+    | monday
+    | tuesday
+    | wednesday
+    | thursday
+    | friday
+    | saturday
+    | sunday.
+    #+end_src
+
+    #+NAME: Type Constructor
+    #+begin_src coq :results value
+	  Inductive rgb : Type :=
+    | red
+    | green
+    | blue.
+
+    Inductive color : Type :=
+    | black
+    | white
+    | primary (p:rgb).
+    
+    #+end_src
+
+    #+NAME: Tuples
+    #+begin_src coq :results value
+	  Inductive bit : Type :=
+    | B0
+    | B1.
+
+    Inductive nybble : Type :=
+    | bits (b0 b1 b2 b3 : bit).
+
+    Check (bits B1 B0 B1 B0).
+    (* ==> bits B1 B0 B1 B0 : nybble *)
+
+    (* Tuples can be unwrapped with pattern matching: *)
+    Definition all_zero (nb : nybble) : bool :=
+    match nb with
+    | (bits B0 B0 B0 B0) ⇒ true
+    | (bits _ _ _ _) ⇒ false
+    end.
+    Compute (all_zero (bits B1 B0 B1 B0)).
+    (* ===> false : bool *)
+    Compute (all_zero (bits B0 B0 B0 B0)).
+    (* ===> true : bool *)
+    #+end_src
+
+    #+NAME: Print Type
+    #+begin_src coq :results value
+	  Check true.
+    (* ===> true : bool *)
+    #+end_src
+
+
+    #+NAME: Numbers
+    #+begin_src coq :results value
+	  Inductive nat : Type :=
+    | O
+    | S (n : nat).
+    #+end_src
+
+
+*** Function Definition
+    #+NAME: Function Definition
+    #+begin_src coq :results value
+    Definition next_weekday (d:day) : day :=
+    match d with
+    | monday => tuesday
+    | tuesday => wednesday
+    | wednesday => thursday
+    | thursday => friday
+    | friday => monday
+    | saturday => monday
+    | sunday => monday
+    #+end_src
+
+*** Evaluation and Proofs
+    #+NAME: Evaluate expression
+    #+begin_src coq :results value
+	  Compute (next_weeday friday).
+    #+end_src
+
+    #+NAME: Prove
+    #+begin_src coq :results value
+	  Example test_next_weeday:
+    (next_weekday (next_weekday saturday)) = tuesday.
+    Proof. simpl. reflexivity. Qed.
+    #+end_src
+
+    #+NAME: Admitted
+    #+begin_src coq :results value
+    (* Placeholder for an incomplete proof *)
+	  Definition nandb (b1:bool) (b2:bool) : bool. 
+    Admitted.
+
+    Example test_nandb: (nandb true false) = true.
+    Admitted.
+    #+end_src
+
+*** Operator Notation
+    #+NAME: Notation
+    #+begin_src coq :results value
+	  Inductive bool : Type :=
+    | true
+    | false.
+
+    Definition andb (b1:bool) (b2:bool) : bool :=
+    match b1 with
+    | true => b2
+    | false => false
+    end.
+
+    
+    Notation "x && y" := (andb x y).
+
+    Example test_notation: false && true = false.
+    Proof. simpl. reflexivity. Qed.
+    #+end_src
+
+    
+
+
+
+
+** [[https://learnxinyminutes.com/docs/coq/][Learn X in Y]]
    #+NAME: Learn X in Y
    #+begin_src coq :results value
   (*** Comments ***)
@@ -458,7 +601,6 @@
          - simpl. ring [IHn]. (* induction step *)
   Qed.
    #+end_src
-
 
 
 ** Sandbox
