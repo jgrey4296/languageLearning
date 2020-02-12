@@ -1,3 +1,4 @@
+import argparse
 from os.path import join, isfile, exists, abspath
 from os.path import split, isdir, splitext, expanduser
 from os import listdir
@@ -26,13 +27,13 @@ class ParseBase:
         arg_s = ""
         comp_s = ""
 
-        s = "{} : {} : {}{}{}"
-
         if bool(self._args):
             arg_s = " : {}".format(", ".join([str(x) for x in self._args]))
 
         if bool(self._components):
-            comp_s = " := {}".format(", ".join([str(x) for x in self._components]))
+            comp_s = " := {}".format(" ".join([str(x) for x in self._components]))
+
+        s = "{} : {} : {}{}{}"
 
         return s.format(self._line_no,
                         self._type,
@@ -186,36 +187,50 @@ def write_output(source_path, data_str, ext):
         f.write(data_str)
 
 def standard_main(sources, exts, extractor, output_lists, output_ext, accumulator=None, accumulator_final=None, init_accum=None):
-    import argparse
+    """ Standardised main function for extractors.
+    Handles parser arguments, finds files that match extensions in the source directories specified,
+    parses found files using the provided extractor,
+    prints out data, expanded specified output lists, into a filename with output_ext.
+
+    Can accumulate data across files, and then apply a final function to that accumulation"""
+
     parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
                                      epilog = "\n".join([""]))
     parser.add_argument('-t', '--target', action="append")
     parser.add_argument('-r', '--rand')
     parser.add_argument('-a', '--accum_name', default="accumulated_data")
     args = parser.parse_args()
+    # Get files, or use CLI specified targets
     if args.target is not None:
         files = get_data_files(args.target, exts)
     else:
         files = get_data_files(sources, exts)
 
+    # Choose subselection of files if necessary
     if args.rand:
         files = [choice(files) for x in range(int(args.rand))]
 
+    # Initialise accumulation data
     accumulated_data = init_accum
     if accumulated_data is None:
         accumulated_data = {}
 
-
+    # Process each found file:
     for f in files:
+        # Extract data:
         data = extractor(f)
         if accumulator is not None:
             accumulated_data = accumulator(data, accumulated_data)
+        # Convert to string
         data_str = convert_data_to_output_format(data, output_lists)
+        # Write it out
         write_output(f, data_str, output_ext)
 
+    # Apply final accumulator function
     if accumulator_final is not None:
         accumulated_data = accumulator_final(accumulated_data)
 
+    # Write out final accumulation
     if bool(accumulated_data):
         data_str = convert_data_to_output_format(accumulated_data, output_lists)
         with open(join("analysis", args.accum_name), "w") as f:
