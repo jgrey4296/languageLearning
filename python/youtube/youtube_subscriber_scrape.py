@@ -99,11 +99,12 @@ def get_videos_for_playlist(youtube, playlist_id, video_state):
     if video_state['last_page_token'] is None:
         request = youtube.playlistItems().list(part="snippet", playlistId=playlist_id, maxResults=50)
         response = request.execute()
-        logging.debug(response)
         video_state['totals'][playlist_id] = response['pageInfo']['totalResults']
 
         for video in response['items']:
             video_state['videos'][playlist_id].append(make_vid_data(video))
+
+        logging.info("Got {}/{} videos".format(len(video_state['videos'][playlist_id]), video_state['totals'][playlist_id]))
 
         if 'nextPageToken' in response:
             video_state['last_page_token'] = response['nextPageToken']
@@ -117,6 +118,8 @@ def get_videos_for_playlist(youtube, playlist_id, video_state):
 
         for video in response['items']:
             video_state['videos'][playlist_id].append(make_vid_data(video))
+
+        logging.info("Got {}/{} videos".format(len(video_state['videos'][playlist_id]), video_state['totals'][playlist_id]))
 
         if 'nextPageToken' in response:
             video_state['last_page_token'] = response['nextPageToken']
@@ -191,8 +194,11 @@ def main():
                                          sub_state['subscriptions'].keys(),
                                          chan_state)
 
+        chan_state['reverse_lookup'] = {x[1]:x[0] for x in chan_state['playlists'].items()}
+
         # now finish any unfinished video retrieval:
         if video_state['last_playlist'] is not None and video_state['last_page_token'] is not None:
+            logging.info("Continuing: {}".format(video_state['last_playlist']))
             video_state = get_videos_for_playlist(youtube,
                                                   video_state['last_playlist'],
                                                   video_state)
