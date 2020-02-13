@@ -15,3 +15,8 @@ log.*
 python/scrapers/sfam_scraper/data/*
 python/scrapers/sfam_scraper/imgs/*
 python/code_analysis/data
+.key
+.secrets.json
+.channel_data
+.subscription_data
+.video_data
