@@ -192,7 +192,7 @@ def parse_usc(soup):
     data = {}
 
     # describe and aggregate
-    data.update(utils.xml_search_components(data, soup, soup.find('main')))
+    data.update(utils.xml_search_components(data, soup, ['main']))
 
     return data
 
