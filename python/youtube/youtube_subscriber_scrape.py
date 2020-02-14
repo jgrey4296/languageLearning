@@ -205,13 +205,21 @@ def main():
 
         # and continue with normal iteration to get videos:
         for channel_id, playlist_id in chan_state['playlists'].items():
-            if playlist_id not in video_state['videos'] or len(video_state['videos'][playlist_id]) < video_state['totals']:
+            if playlist_id in video_state['videos'] and video_state['videos'][playlist_id] == True:
+                continue
+
+            if playlist_id not in video_state['videos'] or len(video_state['videos'][playlist_id]) < video_state['totals'][playlist_id]:
                 video_state = get_videos_for_playlist(youtube, playlist_id, video_state)
+
+            if len(video_state['videos'][playlist_id]) == video_state['totals'][playlist_id]:
+                with open(join('videos','{}.json'.format(channel_id)),'w') as f:
+                    json.dump(video_state['videos'][playlist_id], f)
+                video_state['videos'][playlist_id] = True
 
         # If theres a problem, break
     except Exception as exp:
-        logging.warning("Exception occurred: {}".format(exp))
         breakpoint()
+        logging.warning("Exception occurred: {}".format(exp))
     finally:
         logging.info("Writing out data")
         # always Write the states
@@ -220,6 +228,15 @@ def main():
 
         with open(CHAN_DATA, 'w') as f:
             json.dump(chan_state, f)
+
+        # Write out completed video sections into separate files to manage space
+        for x,y in video_state['videos'].items():
+            if y == True:
+                continue
+            if len(y) == video_state['totals'][x]:
+                with open(join('data','{}.json'.format(x)),'w') as f:
+                    json.dump(y, f)
+                video_state['videos'][x] = True
 
         with open(VIDEO_DATA, 'w') as f:
             json.dump(video_state, f)
