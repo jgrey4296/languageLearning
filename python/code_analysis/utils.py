@@ -121,6 +121,7 @@ def xml_search_components(data, soup, initial):
     queue = set(initial)
     handled = set()
     while bool(queue):
+        logging.info("Queue len: {}".format(len(queue)))
         current = queue.pop()
         if current is None or current in handled:
             continue
@@ -128,12 +129,11 @@ def xml_search_components(data, soup, initial):
         sub_components = list({y.name for x in soup.find_all(current) for y in x.contents if y.name is not None})
         attrs = set([x for y in soup.find_all(current) for x in y.attrs.keys()])
         queue.update(sub_components)
-        data['{}_components'.format(current)] = sub_components
+        data['components_{}'.format(current)] = sub_components
         if bool(attrs):
-            data['{}_attrs'.format(current)] = attrs
+            data['attrs_{}'.format(current)] = attrs
 
     return data
-
 
 def get_data_files(initial, ext):
     logging.info("Getting Data Files")
