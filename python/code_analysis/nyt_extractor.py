@@ -102,7 +102,7 @@ def extract_from_file(filename):
     state = { 'bracket_count' : 0,
               'current' : None,
               'entry' : 0,
-              'counter' : 0
+              'counter' : 0,
               'counter_reset' : int(len(docs) / 100)
               }
 
@@ -128,6 +128,13 @@ def extract_from_file(filename):
 
         if entry._type in only_allow:
             data['entries'].append(entry)
+
+        # TODO Counts
+        # TODO verb pairs
+        # TODO POS ngrams
+        # TODO heading lengths
+
+        # TODO: use parsed_headling.vector to cluster
 
 
     data['key_set'] = list(data['key_set'])
