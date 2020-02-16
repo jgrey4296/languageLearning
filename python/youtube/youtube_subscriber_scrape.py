@@ -234,7 +234,7 @@ def main():
             if y == True:
                 continue
             if len(y) == video_state['totals'][x]:
-                with open(join('data','{}.json'.format(x)),'w') as f:
+                with open(join('videos','{}.json'.format(x)),'w') as f:
                     json.dump(y, f)
                 video_state['videos'][x] = True
 
