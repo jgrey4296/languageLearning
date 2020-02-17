@@ -169,21 +169,27 @@ def convert_data_to_output_format(data, loop_on_keys=None):
 
     return output_str
 
-def write_output(source_path, data_str, ext):
-    logging.info("Writing output to analysis file")
+def source_path_to_output_path(source_path, ext):
     src_name = splitext(split(source_path)[1])[0]
     header = split(split(source_path)[0])[1]
     analysis_name = "{}_{}{}".format(header,src_name, ext)
-    analysis_path = join("analysis",analysis_name)
+    orig_analysis_path = join("analysis",analysis_name)
+    unique_analysis_path = orig_analysis_path
 
-    if exists(analysis_path):
-        logging.warning("Analysis path already exists: {}".format(analysis_path))
+    if exists(orig_analysis_path):
+        logging.warning("Analysis path already exists: {}".format(orig_analysis_path))
         tmp = list("abcdefg")
         shuffle(tmp)
         analysis_name = "{}_{}_{}{}".format(header,src_name,"".join(tmp), ext)
-        analysis_path = join("analysis",analysis_name)
+        unique_analysis_path = join("analysis",analysis_name)
 
-    with open(analysis_path,'w') as f:
+    return unique_analysis_path, orig_analysis_path
+
+
+def write_output(source_path, data_str, ext):
+    logging.info("Writing output to analysis file")
+    u_analysis_path, other = source_path_to_output_path(source_path, ext)
+    with open(u_analysis_path,'w') as f:
         f.write(data_str)
 
 def standard_main(sources, exts, extractor, output_lists, output_ext, accumulator=None, accumulator_final=None, init_accum=None):
@@ -197,9 +203,14 @@ def standard_main(sources, exts, extractor, output_lists, output_ext, accumulato
     parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
                                      epilog = "\n".join([""]))
     parser.add_argument('-t', '--target', action="append")
-    parser.add_argument('-r', '--rand')
+    parser.add_argument('-r', '--randn')
+    parser.add_argument('--randarg', action="store_true")
+    parser.add_argument('--filter', action="store_true")
     parser.add_argument('-a', '--accum_name', default="accumulated_data")
     args = parser.parse_args()
+
+
+
     # Get files, or use CLI specified targets
     if args.target is not None:
         files = get_data_files(args.target, exts)
@@ -207,8 +218,20 @@ def standard_main(sources, exts, extractor, output_lists, output_ext, accumulato
         files = get_data_files(sources, exts)
 
     # Choose subselection of files if necessary
-    if args.rand:
-        files = [choice(files) for x in range(int(args.rand))]
+    if args.randn:
+        files = [choice(files) for x in range(int(args.randn))]
+    elif args.randarg:
+        shuffle(files)
+
+    #filter already processed
+    if args.filter:
+        filtered_files = []
+        for x in files:
+            u_path, o_path = source_path_to_output_path(x, output_ext)
+            if exists(o_path):
+                continue
+            filtered_files.append(x)
+            files = filtered_files
 
     # Initialise accumulation data
     accumulated_data = init_accum
