@@ -4,7 +4,7 @@
    https://fuhm.net/super-harmful/
    https://python.libhunt.com/
    [[https://github.com/vinta/awesome-python][awesome-python]]
-
+**** [[https://github.com/pmaupin/pdfrw][pdfrw]]                                                                      :document_processing:PDF:
 **** [[https://pymotw.com/3/abc/][Abstract Base Classes]]                                                      :design:
 
 **** [[https://github.com/iiitv/algos][algos]]                                                                      :data_structure:algorithm:
@@ -406,3 +406,4 @@
 
 *** [[http://www.pythonforbeginners.com/python-on-the-web/how-to-use-urllib2-in-python/][URL requests]]
 ** [[http://docs.python-guide.org/en/latest/writing/structure/][Module Structure]]
+   
