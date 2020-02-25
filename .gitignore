@@ -20,3 +20,8 @@ python/code_analysis/data
 .channel_data
 .subscription_data
 .video_data
+.all_names
+.dates.json
+.splattercat
+python/youtube/videos/
+python/code_analysis/analysis
