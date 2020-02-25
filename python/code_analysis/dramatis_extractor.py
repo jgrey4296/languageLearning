@@ -49,6 +49,9 @@ def extract_from_file(filename):
     #handle first line after break, specifying legion/group
     ## handle The X Legion 'Y'
     ## handle The X Legion
+    ## handle The X of Y
+    ## handle The X Fleet
+    ## handle The X
     ## handle With X
 
     #handle person line.
