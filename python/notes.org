@@ -1,430 +1,374 @@
 * Python notes
-** [[https://pygobject.readthedocs.io/en/latest/getting_started.html][PyGObject]]
-** [[https://www.crummy.com/software/BeautifulSoup/bs4/doc/][Beautiful Soup]]
-** [[https://wiki.python.org/moin/PythonDecoratorLibrary][Decorators]]
+** Resources
+   https://blog.bruce-hill.com/6-useful-snippets
+   https://fuhm.net/super-harmful/
+   https://python.libhunt.com/
+   [[https://github.com/vinta/awesome-python][awesome-python]]
+
+**** [[https://pymotw.com/3/abc/][Abstract Base Classes]]                                                      :design:
+
+**** [[https://github.com/iiitv/algos][algos]]                                                                      :data_structure:algorithm:
+
+**** [[https://docs.conda.io/en/latest/][Anaconda]]                                                                   :package_manager:environment:distribution:
+     [[https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html][Conda Environment management]]
+**** [[https://github.com/vintasoftware/python-api-checklist][api-checklist]]                                                              :design:
+
+**** [[https://github.com/asaini/Apriori][apriori]]                                                                    :association_rules:machine_learning:
+
+**** [[https://docs.python.org/3/howto/argparse.html][argparse]]                                                                   :CLI:
+
+**** [[http://docs.astropy.org/en/stable/][astropy]]                                                                    :astronomy:
+
+**** [[https://glyph.twistedmatrix.com/2016/08/attrs.html][attrs]]                                                                      :tuple:
+
+**** [[https://github.com/CamDavidsonPilon/Probabilistic-Programming-and-Bayesian-Methods-for-Hackers][bayesian methods for hackers]]                                               :statistics:
+
+**** [[https://www.crummy.com/software/BeautifulSoup/bs4/doc/][BeautfulSoup]]                                                               :XML:parser:
+
+**** [[http://biopython.org/wiki/Documentation][biopython]]                                                                  :computational_biology:
+
+**** [[http://blaze.pydata.org/][Blaze]]                                                                      :query:
+
+**** [[https://docs.blender.org/api/current/][Blender]]                                                                    :3d_modeling:
+
+**** [[https://bokeh.org/][Bokeh]]                                                                      :visualisation:
+
+**** [[https://github.com/boto/boto3][boto]]                                                                       :AWS:
+
+**** [[https://github.com/jarun/Buku][buku]]                                                                       :bookmarks:
+
+**** [[https://pycairo.readthedocs.io/en/latest/][cairo]]                                                                      :graphic:
+     [[https://www.cairographics.org/pycairo/][pycairo]]
+
+**** [[https://github.com/hsmfawaz/Chat-Bot-Using-python-and-ClIPS][chatbot and clips]]                                                          :machine_learning:
+
+**** [[https://cryptography.io/en/latest/][cryptography]]                                                               :cryptography:
+
+**** [[https://pythonhosted.org/cubes/][Cubes]]                                                                      :data_analysis:
+
+**** [[https://matplotlib.org/cycler/][cycler]]                                                                     :patterns:
+
+**** [[http://docs.cython.org/][cython]]                                                                     :performance:
+     https://dbader.org/blog/python-ctypes-tutorial-part-2
+
+**** [[https://github.com/jakevdp/PythonDataScienceHandbook][data science handbook]]                                                      :data_analysis:
+
+**** [[https://kolesnikov.ga/Datasets_in_Python/][Datasets]]                                                                   :datasets:
+
+**** [[https://github.com/dateutil/dateutil/][dateutil]]                                                                   :timezones:
+
+**** [[https://github.com/hchasestevens/hchasestevens.github.io/blob/master/notebooks/the-decorators-they-wont-tell-you-about.ipynb#blob_contributors_box][decorators]]                                                                 :decorators:
+
+     [[https://wiki.python.org/moin/PythonDecoratorLibrary][Decorator Reference]]
+**** [[http://disco.readthedocs.org/en/latest/intro.html][Disco]]                                                                      :distributed_systems:mapreduce:
+
+**** [[https://docs.djangoproject.com/en/dev/misc/][django]]                                                                     :web_development:
+
+**** [[http://docutils.sourceforge.net/][docutils]]                                                                   :documentation:
+
+**** [[https://github.com/vahidk/EffectiveTensorflow][effectivetensorflow]]                                                        :machine_learning:tensorflow:
+
+**** [[https://www.fullstackpython.com/flask.html][Flask]]                                                                      :web_development:
+
+**** [[https://radimrehurek.com/gensim/][gensim]]                                                                     :NLP:
+
+**** [[http://www.gevent.org/contents.html][gevent]]                                                                     :coroutines:
+     https://github.com/tmc/gevent-zeromq
+     https://bitbucket.org/Jeffrey/gevent-websocket
+
+**** [[https://github.com/GOFAI/glasstone][glasstone]]                                                                  :nuclear:
+
+**** [[https://github.com/cprogrammer1994/GLWindow][glwindow]]                                                                   :open_gl:GUI:
+
+**** [[https://code.google.com/p/googlecl/wiki/Manual][googlecl]]                                                                   :google:
+
+**** [[https://github.com/grappa-py/grappa][grappa]]                                                                     :assertion:
+
+**** [[https://greenlet.readthedocs.org/en/latest/][greenlet]]                                                                   :concurrency:
+
+**** [[https://pypi.python.org/pypi/grin][grin]]                                                                       :grep:
+
+**** [[https://github.com/MattVitelli/GRUV][GRUV]]                                                                       :machine_learning:music:
+
+**** [[https://www.hdfgroup.org/][HDF5]]                                                                       :data_format:
+     http://www.h5py.org/
+
+**** [[https://pypi.org/project/HeapDict/][heapdict]]                                                                   :data_structure:heap:
+
+**** [[https://github.com/inconvergent/hyphae/blob/master/hyphae.py][hyphae]]                                                                     :art:graphics:
+
+**** [[https://igraph.org/python/][igraph]]                                                                     :graph:
+
+**** [[https://imageio.github.io/][imageio]]                                                                    :image_processing:
+
+**** [[https://docs.python.org/3/library/inspect.html][inspect]]                                                                    :debugging:introspection:
+**** [[https://software.intel.com/en-us/articles/intel-math-kernel-library-documentation][intel_math_kernal]]                                                          :debugging:introspection:math:
+
+**** [[https://github.com/donnemartin/interactive-coding-challenges][interactive coding challenges]]                                              :practice:
+
+**** [[https://github.com/rouseguy/intro2stats][intro2stats]]                                                                :statistics:
+
+**** [[https://ipython.org/documentation.html][ipython]]                                                                    :introspection:CLI:
+     [[https://github.com/ipython/ipython/issues/9816][ipython]]
+     [[http://ipython.org/ipython-doc/stable/notebook/notebook.html#introduction][Ipython Notebook]]
+
+**** [[https://github.com/daleroberts/itermplot][itermplot]]                                                                  :visualisation:CLI:
+
+**** [[https://itsdangerous.palletsprojects.com/en/1.1.x/][itsdangerous]]                                                               :security:signing:
+
+**** [[https://github.com/davidhalter/jedi][jedi]]                                                                       :static_analysis:autocomplete:
+
+**** [[http://jinja.pocoo.org/docs/dev/][jinja2]]                                                                     :template:
+
+**** [[https://github.com/fastforwardlabs/keras-hello-world/blob/master/kerashelloworld.ipynb][keras hello world]]                                                          :machine_learning:
+
+**** [[https://github.com/fchollet/keras-resources][keras-resources]]                                                            :machine_learning:
+
+**** [[https://www.ibm.com/developerworks/library/l-pyint/index.html][l-pyint]]                                                                    :introspection:
+
+**** [[https://github.com/jstray/lede-algorithms][lede algorithms]]                                                            :journalism:algorithm:
+
+**** [[https://github.com/peterhil/leftrb][leftrb]]                                                                     :data_structure:red_black_trees:
+
+**** [[https://libevent.org/][libevent]]                                                                   :events:
+
+**** [[http://www.libpng.org/pub/png/libpng-1.2.5-manual.html][libpng]]                                                                     :image_processing:
+
+**** [[https://lxml.de/index.html][lxml]]                                                                       :parser:XML:
+
+**** [[https://github.com/pallets/markupsafe][markupsafe]]                                                                 :XML:text:security:
+
+**** [[https://matplotlib.org/contents.html][matplotlib]]                                                                 :visualisation:
+     [[https://github.com/rougier/matplotlib-tutorial][Tutorial]]
+
+**** [[https://github.com/hildensia/mcts][mcts]]                                                                       :machine_learning:monte_carlo:
+
+**** [[http://mdp-toolkit.sourceforge.net/documentation.html][mdp-toolkit]]                                                                :machine_learning:data_analysis:
+     [[http://mdpdocs.readthedocs.io/en/latest/][MDP-toolkit]]
+
+**** [[https://github.com/MarkCWirt/MIDIUtil][MIDIUtil]]                                                                   :MIDI:
+
+**** [[https://mpi4py.readthedocs.io/en/stable/][MPI]]                                                                        :message_passing:
+
+**** [[https://github.com/puolival/multipy][multipy]]                                                                    :hypothesis_testing:statistics:
+
+**** [[https://networkx.github.io/documentation/latest/index.html][networkX]]                                                                   :graphs:
+
+**** [[https://github.com/jakevdp/nfft][nfft]]                                                                       :DSP:
+
+**** [[https://www.nltk.org/][nltk]]                                                                       :NLP:
+
+**** [[https://nose.readthedocs.org/en/latest/][nose]]                                                                       :testing:
+
+**** [[https://github.com/valentina-s/Novice2DataNinja][novice2dataninja]]                                                           :data_analysis:
+
+**** [[https://github.com/ethanfetaya/nri][nri]]                                                                        :machine_learning:
+
+**** [[https://github.com/pydata/numexpr][numexpr]]                                                                    :math:
+
+**** [[https://docs.scipy.org/doc/][numpy]]                                                                      :math:
+
+     [[http://www.numpy.org/][Numpy]]
+
+**** [[https://oauthlib.readthedocs.io/en/latest/index.html][oauthlib]]                                                                   :web_development:security:
+
+**** [[https://opencv.org/][opencv]]                                                                     :computer_vision:
+
+**** [[https://github.com/santinic/pampy][pampy]]                                                                      :pattern_matching:
+
+**** [[https://pandas.pydata.org/][pandas]]                                                                     :data_analysis:data_structure:
+     https://pandas.pydata.org/docs/getting_started/10min.html
+
+**** [[https://github.com/facebookresearch/ParlAI/blob/master/README.md][parlAI]]                                                                     :dialogue:NLP:machine_learning:
+
+**** [[https://patsy.readthedocs.io/en/latest/][patsy]]                                                                      :statistics:math:
+
+**** [[https://pillow.readthedocs.io/en/stable/][Pillow]]                                                                     :image_processing:
+
+     [[http://web.archive.org/web/20130115175340/http://nadiana.com/pil-tutorial-basic-advanced-drawing][Tutorial]]
+
+**** [[https://pip.pypa.io/en/latest/][pip]]                                                                        :package_manager:
+
+**** [[https://github.com/vvanirudh/Pixel-Art][pixel-art]]                                                                  :graphic:
+
+**** [[https://www.dabeaz.com/ply/ply.html][ply]]                                                                        :parser:
+
+**** [[https://pomegranate.readthedocs.io/en/latest/index.html][Pomegranate]]                                                                :bayesian:probability:statistics:
+
+**** [[https://github.com/praw-dev/praw][praw]]                                                                       :NLP:reddit:network:
+
+**** [[https://github.com/mewo2/pronouncingpy][pronouncingpy]]                                                              :NLP:
+
+**** [[https://github.com/giampaolo/psutil][psutil]]                                                                     :process_management:
+
+**** [[http://py2exe.org/index.cgi/Tutorial][py2exe]]                                                                     :distribution:
+
+**** [[http://cairographics.org/documentation/pycairo/2/][pycairo]]                                                                    :image_processing:
+     https://cairocffi.readthedocs.io/en/latest/
+
+**** [[https://github.com/PyCQA/pycodestyle][pycodestyle]]                                                                :lint:
+
+     https://www.python.org/dev/peps/pep-0008/
+
+**** [[https://github.com/ContinuumIO/pycosat][pycosat]]                                                                    :sat_solving:
+
+**** [[http://pycurl.io/][pycurl]]                                                                     :url_retrieval:
+
+**** [[https://github.com/pyenv/pyenv][pyenv]]                                                                      :environment:
+     [[https://realpython.com/python-virtual-environments-a-primer/][PyEnv Primer]]
+**** [[https://divmod.readthedocs.org/en/latest/products/pyflakes.html][pyflakes]]                                                                   :lint:
+
+**** [[https://www.pygame.org/news][PyGame]]                                                                     :games:
+**** [[https://github.com/pyglfw/pyglfw][pyglfw]]                                                                     :GUI:
+
+**** [[https://pygments.org/docs/][pygments]]                                                                   :syntax_highlighting:
+
+**** [[https://pygobject.readthedocs.io/en/latest/getting_started.html][PyGObject]]                                                                  :GUI:
+
+**** [[https://github.com/csurfer/pyheatmagic][pyheatmagic]]                                                                :visualisation:ipython:analysis:
+
+**** [[https://github.com/ideoforms/pylive][PyLive]]                                                                     :music:ableton:
+
+**** [[https://github.com/pymc-devs/pymc3][pymc3]]                                                                      :mcmc:math:statistics:
+
+**** [[http://ajaxsoundstudio.com/software/pyo/][pyo]]                                                                        :DSP:
+
+**** [[https://github.com/pyparsing/pyparsing/][pyparsing]]                                                                  :parser:
+
+**** [[https://github.com/Microsoft/pyright][pyright]]                                                                    :static_analysis:
+
+**** [[https://pysal.org/][pysal]]                                                                      :spatial_analysis:
+
+**** [[https://pysam.readthedocs.org/en/latest/][pysam]]                                                                      :genomics:data_analysis:
+
+**** [[https://github.com/FDSaussure/PySankey][PySankey]]                                                                   :visualisation:
+
+**** [[https://pytables.github.io/usersguide/index.html][pytables]]                                                                   :data_format:
+
+**** [[https://docs.pytest.org/en/latest/][pytest]]                                                                     :testing:
+
+**** [[https://github.com/dabeaz/python-cookbook][python cookbook]]                                                            :design:
+
+**** [[https://github.com/gregmalcolm/python_koans][python koans]]                                                               :practice:education:
+
+**** [[https://github.com/attwad/python-osc/blob/master/pythonosc/osc_message.py][python-osc]]                                                                 :message_passing:OSC:
+
+**** [[https://github.com/norvig/pytudes][pytudes]]                                                                    :practice:
+
+**** [[https://github.com/stub42/pytz][pytz]]                                                                       :timezones:
+
+**** [[https://github.com/alvations/pywsd][pywsd]]                                                                      :NLP:
+
+**** [[https://github.com/yaml/pyyaml][pyyaml]]                                                                     :configuration:yaml:
+
+**** [[https://pyzmq.readthedocs.io/en/latest/][pyZMQ]]                                                                      :message_passing:concurrency:network:
+
+**** [[http://qt-project.org/doc/][QT]]                                                                         :GUI:
+
+     [[https://www.qt.io/qt-for-python][qt]]
+     [[https://github.com/spyder-ide/qtpy][qtpy]]
+
+**** [[https://github.com/andymccurdy/redis-py][redis-py]]                                                                   :web_development:
+
+**** [[https://github.com/cfpb/regdown][regdown]]                                                                    :text_processing:
+
+**** [[https://requests.readthedocs.io/en/master/][requests]]                                                                   :request:
+
+**** [[https://github.com/AdamLaurie/RFIDIOt][RFIDIOt]]                                                                    :hardware:RFID:
+
+**** [[https://github.com/python-rope/rope][rope]]                                                                       :refactoring:
+
+**** [[https://github.com/ricklupton/sankeydata][sankeydata]]                                                                 :data_format:
+
+**** [[https://scikit-learn.org/stable/user_guide.html][scikit-learn]]                                                               :machine_learning:
+
+**** [[https://github.com/aigamedev/scikit-neuralnetwork][scikit-neuralnetwork]]                                                       :machine_learning:
+
+**** [[https://github.com/reiinakano/scikit-plot][scikit-plot]]                                                                :visualisation:
+
+**** [[https://docs.scipy.org/doc/scipy/reference/][scipy]]                                                                      :math:
+
+**** [[https://github.com/python-semver/python-semver][semver]]                                                                     :parser:semantic_versioning:
+
+**** [[https://github.com/pypa/setuptools][setuptools]]                                                                 :package_manager:installation:distribution:
+
+**** [[https://github.com/benjaminp/six][six]]                                                                        :compatibility:
+
+**** [[https://scikit-image.org/docs/dev/][skimage]]                                                                    :image_processing:
+
+**** [[https://github.com/memoiry/Snaky][snaky]]                                                                      :game:
+
+**** [[https://spacy.io/][Spacy]]                                                                      :NLP:
+     https://nbviewer.jupyter.org/github/skipgram/modern-nlp-in-python/blob/master/executable/Modern_NLP_in_Python.ipynb
+
+
+**** [[http://sphinx-doc.org/contents.html][sphinx]]                                                                     :documentation:
+
+**** [[https://www.spyder-ide.org/][spyder]]                                                                     :IDE:
+
+**** [[https://docs.sqlalchemy.org/en/rel_0_8/][sqlalchemy]]                                                                 :SQL:
+
+**** [[https://docs.python.org/3/library/sqlite3.html][SQLite3]]                                                                    :database:SQL:
+
+**** [[https://github.com/fonnesbeck/statistical-analysis-python-tutorial][statistical analysis tutorial]]                                              :statistics:
+
+**** [[https://docs.python.org/3/library/statistics.html][statistics]]                                                                 :statistics:
+
+**** [[https://www.statsmodels.org/stable/index.html][statsmodels]]                                                                :statistics:math:
+
+**** [[http://web.archive.org/web/20081224234350/http://www.dcs.shef.ac.uk/~sam/stringmetrics.html][String Metrics]]                                                             :NLP:
+
+**** [[https://www.sympy.org/en/index.html][sympy]]                                                                      :symbolic_computation:math:
+
+**** [[https://github.com/chartbeat-labs/textacy][textacy]]                                                                    :NLP:
+
+**** [[https://textblob.readthedocs.io/en/dev/index.html][Textblob]]                                                                   :NLP:
+
+**** [[https://github.com/stas-semeniuta/textvae][textvae]]                                                                    :deep_learning:machine_learning:NLP:
+
+**** [[https://github.com/tflearn/tflearn][tflearn]]                                                                    :deep_learning:tensorflow:
+
+**** [[https://deeplearning.net/software/theano/][theano]]                                                                     :machine_learning:math:
+
+**** [[https://wiki.python.org/moin/TkInter][tkinter]]                                                                    :GUI:
+     [[https://github.com/Dvlv/Tkinter-By-Example][Tkinter by example]]
+
+**** [[https://github.com/pytoolz/toolz/][toolz]]                                                                      :iterators:utility:
+
+**** [[https://www.tornadoweb.org/en/stable/][tornado]]                                                                    :server:web_development:
+
+**** [[https://github.com/sixohsix/twitter][twitter]]                                                                    :twitter:
+
+**** [[https://docs.python.org/3.5/library/unittest.html][Unittest]]                                                                   :testing:
+
+**** [[https://urwid.readthedocs.io/en/latest/tutorial/index.html][Urwid]]                                                                      :CLI:
+
+**** [[https://github.com/pypa/virtualenv][virtual-env]]                                                                :environment:
+**** [[https://github.com/amitkaps/weed][weed]]                                                                       :data_analysis:
+
+**** [[https://palletsprojects.com/p/werkzeug/][werkzeug]]                                                                   :server:WSGI:web_development:
+
+**** [[https://github.com/bbaltaxe/wfc-piano-roll][wfc-piano-roll]]                                                             :wave_function_collapse:
+
+**** [[https://github.com/fluhus/wordnet-to-json][wordnet to json]]                                                            :NLP:data_format:
+
+**** [[https://github.com/Kyubyong/wordvectors][wordvectors]]                                                                :NLP:
+
+**** [[http://www.python-excel.org/][xlwt]]                                                                       :spreadsheet:excel:
+
+**** [[https://github.com/google/yapf][yapf]]                                                                       :lint:formatting:
+
 ** [[http://www.bogotobogo.com/python/python_fncs_map_filter_reduce.php][Functional Style]]
-** GUI
-*** [[https://wiki.python.org/moin/TkInter][tkinter]]
-*** [[https://www.qt.io/qt-for-python][qt]]
-*** [[https://www.pygame.org/news][pygame]]
-*** [[https://github.com/pyglfw/pyglfw][pyglfw]]
-*** [[https://pillow.readthedocs.io/en/3.2.x/][Pillow]]
-    [[http://web.archive.org/web/20130115175340/http://nadiana.com/pil-tutorial-basic-advanced-drawing][Tutorial]]
-    from PIL import Image, ImageDraw etc
-*** [[https://pycairo.readthedocs.io/en/latest/][cairo]]
-    [[https://www.cairographics.org/pycairo/][pycairo]]
-
-*** [[http://matplotlib.org/][Matplotlib]]
-    [[https://github.com/rougier/matplotlib-tutorial][Tutorial]]
-
-** [[https://docs.python.org/3/library/inspect.html][inspection]]
 ** Language
    [[http://anandology.com/python-practice-book/getting-started.html][Python Practice]]
-   [[https://docs.python.org/2/py-modindex.html][Module List]]
    [[http://www.tutorialspoint.com/python/python_lists.htm][List operations]]
    [[https://wiki.python.org/moin/HowTo/Sorting][Sorting]]
-*** Arithmetic
-**** Division is integer division and floors the results automatically.
-     5 / 2  * => 2
-
-     11.0 / 4.0  * => 2.75
-
-**** [[https://docs.python.org/2/library/random.html][random numbers:]]
-     random.seed([x])
-     random.randint(a,b)
-     random.random() *0.0 - 1.0
-
-***** random sequence choice:
-      random.choice(seq)
-      random.shuffle(x[,random])
-      random.sample(population, k)
-
-*** [[https://docs.python.org/2/library/stdtypes.html][Basic Data Types]]
-    numerics,
-    sequences,
-    mappings,
-    files,
-    classes,
-    instances,
-    exceptions.
-
-*** TODO Bitwise
-*** Comparisons can be chained!
-    1 < 2 < 3  * => True
-    2 < 3 < 2  * => False
-
-*** Data Structures
-**** Lists
-***** Lists store sequences
-      li = []
-***** You can start with a prefilled list
-      other_li = [4, 5, 6]
-
-***** Add stuff to the end of a list with append
-      li.append(1)    * li is now [1]
-      li.append(2)    * li is now [1, 2]
-      li.append(4)    * li is now [1, 2, 4]
-      li.append(3)    * li is now [1, 2, 4, 3]
-***** Remove from the end with pop
-      li.pop()        * => 3 and li is now [1, 2, 4]
-***** Let's put it back
-      li.append(3)    * li is now [1, 2, 4, 3] again.
-
-***** Access a list like you would any array
-      li[0]  * => 1
-***** Look at the last element
-      li[-1]  * => 3
-
-***** Looking out of bounds is an IndexError
-      li[4]  * Raises an IndexError
-
-***** You can look at ranges with slice syntax.
-      (It's a closed/open range for you mathy types.)
-      li[1:3]  * => [2, 4]
-***** Omit the beginning
-      li[2:]  * => [4, 3]
-***** Omit the end
-      li[:3]  * => [1, 2, 4]
-***** Select every second entry
-      li[::2]   * =>[1, 4]
-***** Revert the list
-      li[::-1]   * => [3, 4, 2, 1]
-***** Use any combination of these to make advanced slices
-      li[start:end:step]
-
-***** Remove arbitrary elements from a list with "del"
-      del li[2]   * li is now [1, 2, 3]
-
-***** You can add lists
-      li + other_li   * => [1, 2, 3, 4, 5, 6] - Note: values for li and for other_li are not modified.
-
-***** Concatenate lists with "extend()"
-      li.extend(other_li)   * Now li is [1, 2, 3, 4, 5, 6]
-
-***** Check for existence in a list with "in"
-      1 in li   * => True
-
-***** Examine the length with "len()"
-      len(li)   * => 6
-
-**** Tuples
-**** Tuples are like lists but are immutable.
-     tup = (1, 2, 3)
-     tup[0]   * => 1
-     tup[0] = 3  * Raises a TypeError
-
-**** You can do all those list thingies on tuples too
-     len(tup)   * => 3
-     tup + (4, 5, 6)   * => (1, 2, 3, 4, 5, 6)
-     tup[:2]   * => (1, 2)
-     2 in tup   * => True
-
-**** You can unpack tuples (or lists) into variables
-     a, b, c = (1, 2, 3)     *** a is now 1, b is now 2 and c is now 3
-**** Tuples are created by default if you leave out the parentheses
-     d, e, f = 4, 5, 6
-**** Now look how easy it is to swap two values
-     e, d = d, e     *** d is now 5 and e is now 4
-
-**** Dictionaries
-**** Dictionaries store mappings
-     empty_dict = {}
-**** Here is a prefilled dictionary
-     filled_dict = {"one": 1, "two": 2, "three": 3}
-
-**** Look up values with []
-     filled_dict["one"]   *** => 1
-
-**** Get all keys as a list with "keys()"
-     filled_dict.keys()   *** => ["three", "two", "one"]
-**** Note - Dictionary key ordering is not guaranteed.
-**** Your results might not match this exactly.
-
-**** Get all values as a list with "values()"
-     filled_dict.values()   *** => [3, 2, 1]
-**** Note - Same as above regarding key ordering.
-
-**** Check for existence of keys in a dictionary with "in"
-     "one" in filled_dict   *** => True
-     1 in filled_dict   *** => False
-
-**** Looking up a non-existing key is a KeyError
-     filled_dict["four"]   *** KeyError
-
-**** Use "get()" method to avoid the KeyError
-     filled_dict.get("one")   *** => 1
-     filled_dict.get("four")   *** => None
-**** The get method supports a default argument when the value is missing
-     filled_dict.get("one", 4)   *** => 1
-     filled_dict.get("four", 4)   *** => 4
-
-**** "setdefault()" inserts into a dictionary only if the given key isn't present
-     filled_dict.setdefault("five", 5)  *** filled_dict["five"] is set to 5
-     filled_dict.setdefault("five", 6)  *** filled_dict["five"] is still 5
-
-**** Sets
-
-**** Sets store ... well sets
-     empty_set = set()
-**** Initialize a "set()" with a bunch of values
-     some_set = set([1, 2, 2, 3, 4])   *** some_set is now set([1, 2, 3, 4])
-
-**** Since Python 2.7, {} can be used to declare a set
-     filled_set = {1, 2, 2, 3, 4}   *** => {1, 2, 3, 4}
-
-**** Add more items to a set
-     filled_set.add(5)   *** filled_set is now {1, 2, 3, 4, 5}
-
-**** Do set intersection with &
-     other_set = {3, 4, 5, 6}
-     filled_set & other_set   *** => {3, 4, 5}
-
-**** Do set union with |
-     filled_set | other_set   *** => {1, 2, 3, 4, 5, 6}
-
-**** Do set difference with -
-     {1, 2, 3, 4} - {2, 3, 5}   *** => {1, 4}
-
-**** Check for existence in a set with in
-     2 in filled_set   *** => True
-     10 in filled_set   *** => False
-
-**** Objects
-**** None is an object
-     None  *** => None
-
-**** Don't use the equality "==" symbol to compare objects to None
-**** Use "is" instead
-     "etc" is None  *** => False
-     None is None  *** => True
-
-**** The 'is' operator tests for object identity. This isn't
-**** very useful when dealing with primitive values, but is
-**** very useful when dealing with objects.
-
-**** None, 0, and empty strings/lists all evaluate to False.
-**** All other values are True
-     bool(0)  *** => False
-     bool("")  *** => False
-
-
-***** Classes
-
-**** We subclass from object to get a class.
-     class Human(object):
-
-     *** A class attribute. It is shared by all instances of this class
-     species = "H. sapiens"
-
-     *** Basic initializer, this is called when this class is instantiated.
-     *** Note that the double leading and trailing underscores denote objects
-     *** or attributes that are used by python but that live in user-controlled
-     *** namespaces. You should not invent such names on your own.
-     def __init__(self, name):
-     *** Assign the argument to the instance's name attribute
-     self.name = name
-
-     *** An instance method. All methods take "self" as the first argument
-     def say(self, msg):
-     return "%s: %s" % (self.name, msg)
-
-     *** A class method is shared among all instances
-     *** They are called with the calling class as the first argument
-     @classmethod
-     def get_species(cls):
-     return cls.species
-
-     *** A static method is called without a class or instance reference
-     @staticmethod
-     def grunt():
-     return "***grunt***"
-
-**** Instantiate a class
-     i = Human(name="Ian")
-     print(i.say("hi"))     *** prints out "Ian: hi"
-
-     j = Human("Joel")
-     print(j.say("hello"))  *** prints out "Joel: hello"
-
-**** Call our class method
-     i.get_species()   *** => "H. sapiens"
-
-**** Change the shared attribute
-     Human.species = "H. neanderthalensis"
-     i.get_species()   *** => "H. neanderthalensis"
-     j.get_species()   *** => "H. neanderthalensis"
-
-**** Call the static method
-     Human.grunt()   *** => "***grunt***"
-
-*** Generators
-    def double_numbers(iterable):
-    for i in iterable:
-    yield i + i
-
-    A generator creates values on the fly.
-    Instead of generating and returning all values at once it creates one in each
-    iteration.  This means values bigger than 15 wont be processed in
-    double_numbers.
-    Note xrange is a generator that does the same thing range does.
-    Creating a list 1-900000000 would take lot of time and space to be made.
-    xrange creates an xrange generator object instead of creating the entire list like range does.
-    We use a trailing underscore in variable names when we want to use a name that
-    would normally collide with a python keyword
-
-    xrange_ = xrange(1, 900000000)
-
-**** will double all numbers until a result >=30 found
-     for i in double_numbers(xrange_):
-     print(i)
-     if i >= 30:
-     break
-
-*** Input:
-
-    input("prompt:") * INTERPRETS AS A PYTHON EXPRESSION
-    raw_input("prompt: ") *gives back a string
-
-    ***windows uses 'rb' and 'wb' for binary, like jpeg and exe
-    f = open("file","r+")
-    f.read() *can take amount
-    f.readline()
-    f.seek(5) *coupled with f.tell()
-
-    f.close()
-
-    PREFERRED FORM: (will automatically close)
-    with open("file","r") as f:
-    read_data = f.read()
-
-*** Inspection and Output
-    has a REPL
-
-**** Python has a print function, available in versions 2.7 and 3...
-     print("I'm Python. Nice to meet you!")
-**** and an older print statement, in all 2.x versions but removed from 3.
-     print "I'm also Python!"
-
-
-**** explore an object:
-     import inspect
-     memberList = inspect.getmembers(object)
-     for a in memberList:
-     print a
-
-*** [[https://docs.python.org/2/library/json.html][json:]]
-    import json
-    json.dumps([1,'simple','list'])
-    json.dump(x,f) *if f is a file object for writing, serialises object x
-    x = json.load(f) *to get it back
-
-    json_text = '[' + json.dumps(jgStats, sort_keys=True, indent=4,
-    separators=(',', ': ')) + ']'
-
-    outputFile = open(jsonFileName, 'w')
-    outputFile.write(json_text)
-    outputFile.close();
-
-*** Language Specific Concepts:
-**** Beautiful Soup
-     http://www.crummy.com/software/BeautifulSoup/bs4/doc/
-
-***** Get the tag you want by calling its name:
-      soup.head
-      ****Can chain:
-      soup.body.b
-
-      ****Get all in this tree:
-      soup.find_all("a")
-
-      ****Contents
-      soup.head.contents
-
-      ****can iterate over thus:
-      for child in title_tag.children:
-      print child
-
-      ****for all descendents:
-      for child in head_tag.descendants:
-      print child
-
-      ****To get strings:
-      tag.string
-
-      ****stripped strings:
-      for string in soup.stripped_strings:
-      print(repr(string))
-
-
-      ****Parents and siblings:
-      soup.parent
-      soup.parents
-      soup.next_sibling
-      soup.previous_sibling
-
-***** Finding all with filters:
-      soup.find_all("b")
-      ****shortcut:
-      soup("b")
-
-      ****as a regex:
-      import re
-      for tag in soup.find_all(re.compile('^b')):
-      print(tag.name)
-
-      ****as a list:
-      soup.find_all(['a','b'])
-
-      ****True gives all tags, no text strings:
-      soup.find_all(True)
-
-      ****finally as a lambda:
-      soup.find_all(lambda x : return True)
-
-
-      ****filter by tag attribute:
-      soup.findall(id='link2')
-
-      ****search by css class:
-      soup.findall("a", class_="sister")
-
-      ****css selector:
-      css_soup.select("p.strikeout.body")
-
-***** Text:
-
-      soup.find_all(text="Elsie")
-
 *** Links
-    https://wiki.python.org/moin/ParallelProcessing
-    http://www.tutorialspoint.com/python/python_overview.htm
-    http://www.nltk.org/book/
-    http://www.nltk.org/
     http://stevenloria.com/tutorial-wordnet-textblob/
-    http://textblob.readthedocs.org/en/dev/
-    http://www.clips.ua.ac.be/public-scripts
     http://www.clips.ua.ac.be/pages/pattern
     http://learnpythonthehardway.org/book/index.html
     http://www.aaronstannard.com/post/2012/08/17/How-to-Setup-a-Proper-Python-Environment-on-Windows.aspx
-    https://cloud.github.com/downloads/tartley/python-regex-cheatsheet/cheatsheet.pdf
     http://www.slideshare.net/Siddhi/creating-domain-specific-languages-in-python
-*** None is an object
-    None  * => None
-
-**** Don't use the equality "==" symbol to compare objects to None
-**** Use "is" instead
-     "etc" is None  * => False
-     None is None  * => True
-
-     The 'is' operator tests for object identity. This isn't
-     very useful when dealing with primitive values, but is
-     very useful when dealing with objects.
-
-**** None, 0, and empty strings/lists all evaluate to False.
-***** All other values are True
-      bool(0)  * => False
-      bool("")  * => False
-
 *** [[http://flockhart.virtualave.net/RBIF0100/regexp.html][Regex:]]
     import re
     p = re.compile(r"ab*", re.IGNORECASE)
@@ -461,267 +405,4 @@
     time.sleep(5) * delays for 5 seconds
 
 *** [[http://www.pythonforbeginners.com/python-on-the-web/how-to-use-urllib2-in-python/][URL requests]]
-** Anaconda Packages
-*** astropy
-    http://docs.astropy.org/en/stable/
-
-*** biopython
-    http://biopython.org/wiki/Documentation
-
-*** boto
-    http://boto.cloudhackers.com/en/latest/
-
-*** Cubes
-    https://pythonhosted.org/cubes/
-
-*** cython
-    http://docs.cython.org/
-
-*** Disco
-    http://disco.readthedocs.org/en/latest/intro.html
-
-*** distribute / setuptools
-    https://pythonhosted.org/setuptools/
-    https://pythonhosted.org/distribute/
-
-*** django
-    https://docs.djangoproject.com/en/dev/misc/
-
-*** docutils
-    http://docutils.sourceforge.net/
-
-*** flask
-    http://flask.pocoo.org/docs/0.10/
-
-*** gevent
-    http://www.gevent.org/contents.html
-    https://github.com/tmc/gevent-zeromq
-    https://bitbucket.org/Jeffrey/gevent-websocket
-
-*** Google Drive Api
-    https://developers.google.com/drive/web/quickstart/quickstart-python
-
-*** googlecl
-    https://code.google.com/p/googlecl/wiki/Manual
-
-*** greenlet
-    http://greenlet.readthedocs.org/en/latest/
-
-*** grin
-    https://pypi.python.org/pypi/grin
-
-*** HDF5
-    http://www.hdfgroup.org/HDF5/doc/
-    http://www.h5py.org/
-
-*** intel math kernal
-    https://software.intel.com/en-us/articles/intel-math-kernel-library-documentation
-
-*** ipython
-    http://ipython.org/documentation.html
-
-*** jinja2
-    http://jinja.pocoo.org/docs/dev/
-
-*** libevent
-    http://libevent.org/
-
-*** libpng
-    http://www.libpng.org/pub/png/libpng-1.2.5-manual.html
-
-*** lxml
-    http://lxml.de/index.html***documentation
-
-*** matplotlib
-    http://matplotlib.org/contents.html
-
-*** mdp-toolkit
-    http://mdp-toolkit.sourceforge.net/documentation.html
-
-*** MPI
-    mpi4py.scipy.org/docs/usrman/index.html
-
-*** networkX
-    https://networkx.github.io/documentation/latest/index.html
-
-*** nltk
-    http://www.nltk.org/
-
-*** nose
-    https://nose.readthedocs.org/en/latest/
-
-*** numexpr
-    https://code.google.com/p/numexpr/
-
-*** numpy
-    http://docs.scipy.org/doc/
-
-*** opencv
-    http://docs.opencv.org/
-
-*** pandas
-    http://pandas.pydata.org/pandas-docs/dev/
-
-*** Pil
-    http://pythonware.com/library/pil/handbook/
-
-*** pip
-    https://pip.pypa.io/en/latest/
-
-*** ply
-    http://www.dabeaz.com/ply/ply.html
-
-*** psutil
-    https://code.google.com/p/psutil/wiki/Documentation
-
-*** pycairo
-    http://cairographics.org/documentation/pycairo/2/
-
-*** pycurl
-    http://pycurl.sourceforge.net/
-
-*** pyflakes
-    http://divmod.readthedocs.org/en/latest/products/pyflakes.html
-
-*** pygments
-    http://pygments.org/docs/
-
-*** pylib
-    https://readthedocs.org/projects/pylib/
-
-*** pyparsing
-    http://pyparsing.wikispaces.com/Documentation
-
-*** pysal
-    pysal.geodacenter.org/1.4/users/introduction.html
-
-*** pysam
-    http://pysam.readthedocs.org/en/latest/
-
-*** pytables
-    https://pytables.github.io/usersguide/index.html
-
-*** pytest
-    http://pytest.org/latest/contents.html
-
-*** python-util
-    http://labix.org/python-dateutil
-
-*** pytz
-    http://pytz.sourceforge.net/
-
-*** pyyaml
-    http://pyyaml.org/wiki/PyYAMLDocumentation
-
-*** pyZMQ
-    https://zeromq.github.io/pyzmq/
-
-*** QT
-    qt-project.org/doc/
-
-*** redis-py
-    http://redis-py.readthedocs.org/en/latest/
-
-*** requests
-    http://docs.python-requests.org/en/latest/
-
-*** scikit
-    scikit-learn.org/stable/user_guide.html
-
-*** scipy
-    http://docs.scipy.org/doc/scipy/reference/
-
-*** six
-    pythonhosted.org/six/
-
-*** skimage
-    scikit-image.org/docs/dev/
-
-*** sphinx
-    http://sphinx-doc.org/contents.html
-
-*** spyder
-    https://pythonhosted.org/spyder/
-
-*** sqlalchemy
-    http://docs.sqlalchemy.org/en/rel_0_8/
-
-*** statsmodels
-    http://statsmodels.sourceforge.net/documentation.html
-
-*** sympy
-    http://docs.sympy.org/latest/index.html
-
-*** theano
-    http://deeplearning.net/software/theano/
-
-*** xlwt
-    https://secure.simplistix.co.uk/svn/xlwt/trunk/xlwt/doc/xlwt.html?p=4966
-
-** Libraries of interest
-*** altgraph
-    Graph node/edge lib
-*** astropy
-    Astronomy stuff?
-*** Blaze?
-*** Bokeh
-    d3 like graphics?
-*** cryptography
-*** cycler
-*** cython
-*** distutils / setuptools
-*** django
-*** flask
-*** heapdict
-*** imageio
-*** itsdangerous
-*** jedi
-    static analysis
-*** leftrb
-    red black tree
-*** markupsafe
-*** networkx
-    anasis of networks/graphs
-*** oauthlib
-*** pandas
-*** patsy
-    statistical modelling
-*** pep8
-    format checking
-*** pycosat
-    sat solving
-*** pyparsing
-*** qtpy
-*** rope
-    refactoring?
-*** semver
-*** sphinx
-    documentation
-*** statsmodels?
-*** sympy
-    symbolic mathematics
-*** toolz
-*** tornado
-    web server?
-*** werkzeug
-    web dev swiss army knife?
 ** [[http://docs.python-guide.org/en/latest/writing/structure/][Module Structure]]
-** NLP
-*** [[https://spacy.io/][Spacy]]
-    Currently loaded en_core_web_sm
-    Might use:
-    en_core_web_md
-    Using:
-    python -m spacy download en_core..
-*** [[http://textblob.readthedocs.io/en/dev/][TextBlob]]
-*** [[https://spacy.io/][Spacy]]
-** [[http://ipython.org/ipython-doc/stable/notebook/notebook.html#introduction][Notebooks]]
-** [[http://www.numpy.org/][Numpy]]
-** [[https://github.com/attwad/python-osc/tree/master/pythonosc][python-osc]]
-** [[https://scikit-learn.org/stable/index.html][scikit-learn]]
-** [[https://www.scipy.org/][Scipy]]
-** [[https://docs.python.org/3/library/unittest.html][Testing]]
-** Environments
-   [[https://realpython.com/python-virtual-environments-a-primer/][PyEnv Primer]]  [[https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html][Conda Environment management]]
-
-   
