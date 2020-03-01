@@ -3,7 +3,6 @@ Get versu files from data dir,
 
 output to similarly named files in analysis directory
 """
-import IPython
 import utils
 from enum import Enum
 from os.path import join, isfile, exists, abspath
@@ -44,55 +43,17 @@ class VersuBlock(utils.ParseBase):
             self._type = Enum_to_String[blockType]
         self._name = text
 
-    def __str__(self):
-        arg_s = ""
-        comp_s = ""
-
-        s = "{} : BLOCK : {} : {}{}{}"
-
-        if bool(self._args):
-            arg_s = " : {}".format(", ".join([str(x) for x in self._args]))
-
-        if bool(self._components):
-            comp_s = " := {}".format(", ".join([str(x) for x in self._components]))
-
-        return s.format(self._line_no,
-                        self._type,
-                        self._name,
-                        arg_s,
-                        comp_s)
 
 class VersuExpression(utils.ParseBase):
+
     def __init__(self, expressionType, text, hand=None):
         super().__init__()
         self._type = expressionType
         self._name = text
         self._block = None
-        self._hand_ordered = False
         if bool(hand):
-            self._hand_ordered = True
+            self._args.append('hand_ordered')
 
-    def __str__(self):
-        arg_s = ""
-        comp_s = ""
-        hand_ordered = ""
-        s = "{} : {} {}: {}{}{}"
-
-        if self._hand_ordered:
-            hand_ordered = "(hand_ordered)"
-
-        if bool(self._args):
-            arg_s = " : {}".format(", ".join([str(x) for x in self._args]))
-
-        if bool(self._components):
-            comp_s = " := {}".format(", ".join([str(x) for x in self._components]))
-
-        return s.format(self._line_no,
-                        self._type,
-                        hand_ordered,
-                        self._name,
-                        arg_s,
-                        comp_s)
 #----------------------------------------
 def build_parser():
 
@@ -236,6 +197,8 @@ def extract_from_file(filename):
     #Parse:
     while bool(lines):
         state['line'] += 1
+        # TODO strip comments
+        # TODO construct trie
         # logging.info("Line: {}".format(state['line']))
         current = lines.pop(0).strip()
 

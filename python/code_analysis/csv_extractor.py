@@ -51,22 +51,30 @@ def extract_from_file(filename):
         data.update(handleStopAndFrisk(rows))
     elif "Badge" in filename:
         data.update(handleBadge(rows))
+    else:
+        logging.info("Handling Generic")
+        # TODO
 
     return data
 
 
 def handleBBC(rows):
     data = {}
-
+    # TODO handle bbc csv
+    # group, names, stats, length
+    # create link to sound file : http://bbcsfx.acropolis.org.uk/assets/{wav}
     return data
 
 def handleDAMSL(rows):
     data = {}
+    # TODO handle damsl csv
+    # stats on utterances
+    # stats on call,response and balance of conv
     return data
 
 def handleDemocracy(rows):
     data = {}
-
+    # TODO handle democracy csv
     for key in ["name", "desc", "secs",
                 "category", "introduce", "cancel","raise","lower",
                 "department", "mincost", "maxcost",
@@ -123,10 +131,12 @@ def handleDemocracy(rows):
 
 def handleStopAndFrisk(rows):
     data = {}
+    # TODO handle stop and frisk data
     return data
 
 def handleBadge(rows):
     data = {}
+    # TODO handle badge data
     return data
 
 

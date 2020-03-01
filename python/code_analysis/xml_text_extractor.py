@@ -37,7 +37,6 @@ logging = root_logger.getLogger(__name__)
 KJV_RE = re.compile('kjv([0-9]+)(O|A)z([0-9]+)z([0-9]+)')
 
 
-
 def extract_from_file(filename):
     logging.info("Extracting from: {}".format(filename))
     data = { }
@@ -183,7 +182,7 @@ def parse_bible(soup):
         book, testament, chapter, verse = KJV_RE.match(section.find(h1).string).groups()
         text = nlp(section.find('p').string)
 
-        #TODO analysis
+        #TODO bible analysis
 
     return data
 
@@ -194,13 +193,17 @@ def parse_usc(soup):
     # describe and aggregate
     data.update(utils.xml_search_components(data, soup, ['main']))
 
+    # TODO extract into groups, convert to text, parse
+    # TODO extract deontics
+    # TODO extract sanctions
+
     return data
 
 
 def parse_king_dragon_pass(soup):
     data = {}
 
-    #TODO
+    #TODO extract structure
 
     return data
 
@@ -263,7 +266,7 @@ def parse_roberts_rules(soup):
 def parse_unrest(soup):
     data = {}
 
-    #TODO
+    #TODO extract structure
 
 
     return data

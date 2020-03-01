@@ -57,6 +57,10 @@ def extract_from_file(filename, main_parser):
         data.update(handleSkyrim(lines))
     elif "stellaris" in filename:
         data.update(handleStellaris(lines))
+    elif "witcher" in filename:
+        data.update(handle_witcher(lines))
+    else:
+        logging.info("Handling generic")
 
     return data
 
@@ -66,24 +70,23 @@ def extract_from_file(filename, main_parser):
 ## X = Y : assignment
 
 
+# TODO extract predicates
 
-#democracy
-#prison_architect
 
 
 def handleCK2(lines):
-    #CK2/EUIV scripts
-    ## decision files?
-    ## traits, religions!
-    ##factions, titles,
-    ##law, jobs, actions
-    #government
-    #execution methods
-    #disease, death,
-    #cultures
-    #council voting/positions
-    #buildings
-    #policies
+    # TODO CK2/EUIV scripts
+    # TODO  decision files?
+    # TODO  traits, religions!
+    # TODO factions, titles,
+    # TODO law, jobs, actions
+    # TODO government
+    # TODO execution methods
+    # TODO disease, death,
+    # TODO cultures
+    # TODO council voting/positions
+    # TODO buildings
+    # TODO policies
     data = {}
     state = { 'bracket_count' : 0,
               'current' : None,
@@ -96,18 +99,18 @@ def handleCK2(lines):
     return data
 
 def handleEUIV(lines):
-    #CK2/EUIV scripts
-    ## decision files?
-    ## traits, religions!
-    ##factions, titles,
-    ##law, jobs, actions
-    #government
-    #execution methods
-    #disease, death,
-    #cultures
-    #council voting/positions
-    #buildings
-    #policies
+    # TODO CK2/EUIV scripts
+    # TODO  decision files?
+    # TODO  traits, religions!
+    # TODO factions, titles,
+    # TODO law, jobs, actions
+    # TODO government
+    # TODO execution methods
+    # TODO disease, death,
+    # TODO cultures
+    # TODO council voting/positions
+    # TODO buildings
+    # TODO policies
     data = {}
     state = { 'bracket_count' : 0,
               'current' : None,
@@ -120,7 +123,7 @@ def handleEUIV(lines):
     return data
 
 def handleDemocracy(lines):
-
+    # TODO figure out what this needs 
     data = {}
     state = { 'bracket_count' : 0,
               'current' : None,
@@ -133,8 +136,14 @@ def handleDemocracy(lines):
     return data
 
 def handleDistantWorlds(lines):
-    #distant worlds
-    ## policies
+    # TODO distant worlds
+    # TODO  policies
+    # TODO get verbs
+    # TODO get dialogue acts
+    # TODO construct hostility matrix
+    # TODO Government stats
+    # TODO disease
+    # TODO research tree
     data = {}
     state = { 'bracket_count' : 0,
               'current' : None,
@@ -147,7 +156,11 @@ def handleDistantWorlds(lines):
     return data
 
 def handleGECK(lines):
-
+    # TODO load dialogue
+    # TODO load ranks
+    # TODO load quest objective text and stages
+    # TODO load player topics
+    # TODO get radio messages
     data = {}
     state = { 'bracket_count' : 0,
               'current' : None,
@@ -160,7 +173,7 @@ def handleGECK(lines):
     return data
 
 def handlePrisonArchitect(lines):
-
+    # TODO see if theres anything useful
     data = {}
     state = { 'bracket_count' : 0,
               'current' : None,
@@ -173,7 +186,7 @@ def handlePrisonArchitect(lines):
     return data
 
 def handleRedShirt(lines):
-
+    # TODO unknown
     data = {}
     state = { 'bracket_count' : 0,
               'current' : None,
@@ -186,7 +199,8 @@ def handleRedShirt(lines):
     return data
 
 def handleSkyrim(lines):
-
+    # TODO look at civil war script
+    # TODO find categorisations, like in actor.psc
     data = {}
     state = { 'bracket_count' : 0,
               'current' : None,
@@ -199,14 +213,15 @@ def handleSkyrim(lines):
     return data
 
 def handleStellaris(lines):
-    #Stellaris
-    ##message types
-    ##policies
-    ##governments
-    ##event chains
-    ##ethics
-    ##edicts
-    #diplomatic actions
+    # TODO Stellaris
+    # TODO message types
+    # TODO policies
+    # TODO governments
+    # TODO event chains
+    # TODO ethics
+    # TODO edicts
+    # TODO diplomatic actions
+    # TODO Agendas
     data = {}
     state = { 'bracket_count' : 0,
               'current' : None,
@@ -217,6 +232,25 @@ def handleStellaris(lines):
 
 
     return data
+
+def handle_witcher(lines):
+    #see https://witcher.gamepedia.com/Witcher_Script
+    # TODO get enums of attacks and actions
+    # TODO get predicates
+    # TODO get job tree
+    # TODO get living world
+    # TODO get NPC
+    data = {}
+    state = { 'bracket_count' : 0,
+              'current' : None,
+              'line' : 0}
+    while bool(lines):
+        state['line'] += 1
+        current = lines.pop(0)
+
+
+    return data
+
 
 
 if __name__ == "__main__":

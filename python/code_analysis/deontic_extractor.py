@@ -70,11 +70,14 @@ def extract_from_file(filename):
         state['sentence_length'] = 0
         state['potential_speech'] = None
 
+        # Get entities
         for ent in parsed.ents:
             data['__entities'].add((ent.text, ent.label_))
 
+        # Go through words:
         for word in parsed:
 
+            # Extract Quotes
             if state['potential_speech'] is not None and word.text in [RIGHT_QUOTE, RIGHT_DBL_QUOTE, DBL_QUOTE]:
                 quote = parsed[state['potential_speech']:word.i+1].text.strip()
                 # logging.info("Potential Speech End: {}".format(quote))
@@ -87,12 +90,15 @@ def extract_from_file(filename):
                 state['potential_speech'] = word.i
                 # logging.info("Potential Speech Start: {} : {}".format(word.i, parsed[word.i:word.i+5]))
 
+
+            # Get Lemmas
             word_lemma = word.lemma_.lower()
             if word_lemma not in data:
                 data['__unique_words'].add(word_lemma)
                 data[word_lemma] = 0
             data[word_lemma] += 1
 
+            # Get Noun Verb Pairs
             if word.tag_ == "NNP":
                 data['__nouns'].add(word.text)
                 if word.dep_ == "nsubj" and word.head.pos_ == "VERB":
@@ -107,9 +113,11 @@ def extract_from_file(filename):
                     heads = [word.head.text] + [x.text for x in word.head.children if x.dep_ == 'conj' and x.pos_ == "VERB"]
                     data['__verb_pairs'].add((word.text, ",".join(heads)))
 
+            # Get Verb Lemmas
             if word.pos_ == "VERB":
                 data['__actions'].add(word.lemma_)
 
+            # Count Sentence Lengths
             if word.is_punct and word.text in [".","?","!"]:
                 if state['sentence_length'] not in data['__sen_counts']:
                     data['__sen_counts'][state['sentence_length']] = 0
@@ -120,14 +128,8 @@ def extract_from_file(filename):
 
 
 
-        #Nomic:
-        #Grab rules
-        # get mutable/immutable/initial
-
-
-
-        #Etiquette
-        ##Grab sentences with deontics: should, may, shall, can...
+        # TODO Nomic: Grab rules, get mutable/immutable/initial
+        # TODO Etiquette Grab sentences with deontics: should, may, shall, can...
 
 
 

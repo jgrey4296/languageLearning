@@ -44,23 +44,23 @@ def extract_from_file(filename):
         current = lines.pop(0)
 
 
-    #handle breaks of 20 -'s
+        # TODO handle breaks of 20 -'s
 
-    #handle first line after break, specifying legion/group
-    ## handle The X Legion 'Y'
-    ## handle The X Legion
-    ## handle The X of Y
-    ## handle The X Fleet
-    ## handle The X
-    ## handle With X
+        # TODO handle first line after break, specifying legion/group
+        # TODO  handle The X Legion 'Y'
+        # TODO  handle The X Legion
+        # TODO  handle The X of Y
+        # TODO  handle The X Fleet
+        # TODO  handle The X
+        # TODO  handle With X
 
-    #handle person line.
-    ## name , [titles]
-    ## handle monikers / Called X / also known as X
-    ## handle ranks
-    ## handle company's
-    ## handle X to|of the? Y
-    ## handle X's Y
+        # TODO handle person line.
+        # TODO  name , [titles]
+        # TODO  handle monikers / Called X / also known as X
+        # TODO  handle ranks
+        # TODO  handle company's
+        # TODO  handle X to|of the? Y
+        # TODO  handle X's Y
 
     return data
 
