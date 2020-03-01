@@ -3,7 +3,6 @@ Get abl files from data dir,
 extract names of behaviours mentioned
 output to similarly named files in analysis directory
 """
-from enum import Enum
 from os.path import join, isfile, exists, abspath
 from os.path import split, isdir, splitext, expanduser
 from os import listdir
@@ -27,8 +26,7 @@ logging = root_logger.getLogger(__name__)
 
 main_parser = None
 
-obj_e = Enum('Parse_Objects', 'ENT ACT WME CONFLICT BEH COM SPAWN MENTAL PRECON SPEC INIT STEP COMMENT')
-
+obj_e = utils.ABL_E
 
 class AblEnt(utils.ParseBase):
 
@@ -70,7 +68,7 @@ class AblComponent(utils.ParseBase):
         if args:
             self._args += args
 
-    def __str__(self):
+    def to_dict(self):
         _type = ""
         if self._type == obj_e.MENTAL:
             _type = "MentalAct"
@@ -91,9 +89,9 @@ class AblComponent(utils.ParseBase):
         if self._name is not None:
             name = "{}".format(self._name)
 
-        args = ", ".join([str(x) for x in self._args if x not in ["act", "spawngoal", "subgoal"]])
+        args = [str(x) for x in self._args if x not in ["act", "spawngoal", "subgoal"]]
 
-        return "[{} : {} ({})]".format(_type, name, args)
+        return { 'type' : _type, 'name': name, 'args': args }
 
 
 class AblMisc(utils.ParseBase):
@@ -144,7 +142,10 @@ def build_parser():
     register_act_stmt = s(register_abl + act_abl) + NAME
     register_wme_stmt = s(register_abl + wme_abl) + NAME
 
-    behavior_stmt = (op(atomic_abl) + op(joint_abl)).setResultsName("args") + pp.Or([sequential_abl, parallel_abl]).setResultsName('form') + s(behavior_abl) + pp.Group(NAME).setResultsName("name")
+    behavior_stmt = (op(atomic_abl) +
+                     op(joint_abl)).setResultsName("args") + \
+                     pp.Or([sequential_abl, parallel_abl]).setResultsName('form') + \
+                     s(behavior_abl) + pp.Group(NAME).setResultsName("name")
 
     spawn_stmt = pp.Or([spawn_abl, subgoal_abl, act_abl]) + NAME
     skip_to_spawn = s(pp.SkipTo(spawn_stmt)) + spawn_stmt
@@ -249,7 +250,6 @@ def extract_from_file(filename):
 
     # Convert graph into edgelist for data
     data['behavior_edges'] += list(nx.generate_edgelist(graph, data=False))
-
 
     return data
 

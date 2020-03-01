@@ -5,9 +5,14 @@ from os import listdir
 from time import sleep
 from fractions import Fraction
 from random import choice, shuffle
+import json
+from enum import Enum
 import logging as root_logger
 import requests
 logging = root_logger.getLogger(__name__)
+
+ABL_E = Enum('ABL_E', 'ENT ACT WME CONFLICT BEH COM SPAWN MENTAL PRECON SPEC INIT STEP COMMENT')
+
 
 class ParseBase:
 
@@ -24,22 +29,23 @@ class ParseBase:
                                        self._name)
 
     def __str__(self):
-        arg_s = ""
-        comp_s = ""
+        data = {}
 
         if bool(self._args):
-            arg_s = " : {}".format(", ".join([str(x) for x in self._args]))
+            data.update({ 'args': [str(x) for x in self._args]})
 
         if bool(self._components):
-            comp_s = " := {}".format(" ".join([str(x) for x in self._components]))
+            if not hasattr(self._components[0], 'to_dict'):
+                data.update({ 'components' : [str(x) for x in self._components]})
+            else:
+                data.update({ 'components' : [x.to_dict() for x in self._components]})
 
-        s = "{} : {} : {}{}{}"
+        s = "{} : {} : {} := {}"
 
         return s.format(self._line_no,
                         self._type,
                         self._name,
-                        arg_s,
-                        comp_s)
+                        json.dumps(data))
 
     def __lt__(self, other):
         return self._line_no < other._line_no
