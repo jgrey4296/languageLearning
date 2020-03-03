@@ -40,8 +40,6 @@
     a :: exogenousAction.
     #+end_src
 
-    #+RESULTS:
-
 *** Transitions
     Define movements between states, using actions
 
@@ -51,6 +49,7 @@
     constraint #1 -> caused false if -(#1);
     always #1,#2 -> (always #1 ; always #2) ;
     always #1 -> caused false after -(#1) ;  % or, constraint false after #1.
+
     default #1,#2 if #3 after #4 -> (default #1 if #3 after #4; default #2 if #3 after #4) ;
     default #1 if #2 after #3 -> caused #1 if #1 & #2 after #3 ;
     default #1,#2 after #3 -> (default #1 after #3 ; default #2 after #3) ;
@@ -214,15 +213,86 @@
    % Reading output file(s) from SAT solver... done.
    % Solution time: 0 seconds (prep 0 seconds, search 0 seconds)
 
-   0:  c=5  
+   0:  c=5
 
-   ACTIONS:  a  
+   ACTIONS:  a
 
-   1:  c=6  
+   1:  c=6
 
-   ACTIONS:  a  
+   ACTIONS:  a
 
-   2:  c=7  
+   2:  c=7
+
+
+   #+end_example
+
+   #+NAME: test inertial
+   #+begin_src ccalc :results output :query 1
+   :- macros
+      n -> 2.
+
+   :- sorts
+      object.
+
+   :- objects
+      first, second :: object.
+
+   :- constants
+      c             :: inertialFluent(0..n);
+      d             :: simpleFluent(object);
+      a             :: exogenousAction.
+
+   :- variables
+      I :: 0..n-1.
+
+   a causes c=I+1 if c=I.
+
+   default d=first after d=second.
+   default d=second after d=first.
+
+
+   :- query
+   label :: 1;
+   maxstep :: 2;
+   0 : c=0;
+   1 : a;
+   maxstep: c=2.
+
+   #+end_src
+
+   #+RESULTS: test inertial
+   #+begin_example
+   FALLBACK: 0
+
+
+
+   Causal Calculator: Version 2.0.
+   Type 'help.' for online help.
+
+
+   % loading file /Users/jgrey/github/otherlibs/ccalc/macros.std
+   % loading file /var/folders/9k/kt7tw9c53zq0mgj4rwyd6cqc0000gn/T/babel-RroIS4/ccalc-nSGg87.pl
+   % in transition mode...
+   % 11 atoms, 14 rules, 21 clauses
+   % Grounding time: 0.02 seconds
+   % Completion time: 0.00 seconds
+   % Total time: 0.02 seconds
+   % Shifting atoms and clauses... done. (0.00 seconds)
+   % After shifting: 17 atoms, 36 clauses
+   % Writing input clauses... done.  (0.00 seconds)
+   % Calling relsat 2.0... done.
+   % Reading output file(s) from SAT solver... done.
+   % Solution time: 0 seconds (prep 0 seconds, search 0 seconds)
+
+   0:  d=second  c=0
+
+   ACTIONS:  a
+
+   1:  d=first  c=1
+
+   ACTIONS:  a
+
+   2:  d=second  c=2
 
 
    #+end_example
@@ -357,43 +427,42 @@
    show_clauses.
    #+end_src
 
-
 ** Zoo
    [[https://www.cs.utexas.edu/users/tag/cc/examples/][Examples Source]]
 
    Giunchiglia et al:
-   [[file:monkeys::%25%20Monkey%20and%20Bananas%20("Nonmonotonic%20Causal%20Theories,"%20Figures%2010-12)][Monkeys]]
-   [[file:prediction][Prediction and Postdiction]]
-   [[file:defeasible_rules][Defeasible Rules]]
-   [[file:turkeys][Shooting Turkey]]
-   [[file:work][Going to Work]]
-   [[file:lifting][Lifing The Table]]
-   [[file:pendulum][Pendulum]]
-   [[file:publishing][Publishing]]
+   [[file:monkeys.prolog][Monkeys]]
+   [[file:prediction.prolog][Prediction and Postdiction]]
+   [[file:defeasible_rules.prolog][Defeasible Rules]]
+   [[file:turkeys.prolog][Shooting Turkey]]
+   [[file:work.prolog][Going to Work]]
+   [[file:lifting.prolog][Lifing The Table]]
+   [[file:pendulum.prolog][Pendulum]]
+   [[file:publishing.prolog][Publishing]]
 
    Akman et al:
-   [[file:zoo][Zoo]]
-   [[~/github/languageLearning/ccalc/][Zoo Landscape]]
-   [[file:animals][Zoo Animals]]
-   [[file:movement][Zoo Movement]]
-   [[file:actions][Zoo Actions]]
-   [[file:little_zoo][Little Zoo]]
+   [[file:zoo.prolog][Zoo]]
+   [[file:zoo_landscape.prolog][Zoo Landscape]]
+   [[file:animals.prolog][Zoo Animals]]
+   [[file:movement.prolog][Zoo Movement]]
+   [[file:actions.prolog][Zoo Actions]]
+   [[file:little_zoo.prolog][Little Zoo]]
 
-   [[file:traffic][Traffic]]
+   [[file:traffic.prolog][Traffic]]
 
    Lifschitz et al:
-   [[file:airport-domain][Airport Domain]]
-   [[file:airport-problem][Airport Problem]]
+   [[file:airport-domain.prolog][Airport Domain]]
+   [[file:airport-problem.prolog][Airport Problem]]
 
    Lee and Lifschitz:
-   [[file:spacecraft][Spacecraft Domain]]
-   [[file:spacecraft-test][Spacecraft Example]]
-   [[file:buying][Buying and Selling Domain]]
-   [[file:buying-test][Buying Example]]
-   [[file:mcp][Missionaries and Cannibals]]
-   [[file:mcp-test][Missionaries and Cannibals Test]]
+   [[file:spacecraft.prolog][Spacecraft Domain]]
+   [[file:spacecraft-test.prolog][Spacecraft Example]]
+   [[file:buying.prolog][Buying and Selling Domain]]
+   [[file:buying-test.prolog][Buying Example]]
+   [[file:mcp.prolog][Missionaries and Cannibals]]
+   [[file:mcp-test.prolog][Missionaries and Cannibals Test]]
 
    Other:
-   [[file:hanoi][Hanoi]]
-   [[file:bw][Blocks World Description]]
-   [[file:bw-test][Blocks World Problem]]
+   [[file:hanoi.prolog][Hanoi]]
+   [[file:bw.prolog][Blocks World Description]]
+   [[file:bw-test.prolog][Blocks World Problem]]
