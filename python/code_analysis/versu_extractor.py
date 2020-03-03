@@ -280,6 +280,9 @@ def extract_from_file(filename):
 
         state['last_line'] = current
 
+    # TODO Export into trie-explorer usable format
+
+
     data['in_order'].sort()
     return data
 
