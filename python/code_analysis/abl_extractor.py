@@ -3,18 +3,15 @@ Get abl files from data dir,
 extract names of behaviours mentioned
 output to similarly named files in analysis directory
 """
-import IPython
-from enum import Enum
 from os.path import join, isfile, exists, abspath
 from os.path import split, isdir, splitext, expanduser
 from os import listdir
 from random import shuffle
 import pyparsing as pp
-
+import networkx as nx
 import utils
 
 # Setup root_logger:
-from os.path import splitext, split
 import logging as root_logger
 LOGLEVEL = root_logger.DEBUG
 LOG_FILE_NAME = "log.{}".format(splitext(split(__file__)[1])[0])
@@ -29,7 +26,7 @@ logging = root_logger.getLogger(__name__)
 
 main_parser = None
 
-obj_e = Enum('Parse Objects', 'ENT ACT WME CONFLICT BEH COM SPAWN MENTAL PRECON SPEC INIT STEP COMMENT')
+obj_e = utils.ABL_E
 
 class AblEnt(utils.ParseBase):
 
@@ -38,6 +35,7 @@ class AblEnt(utils.ParseBase):
         self._type = obj_e.ENT
         self._name = name
 
+
 class AblRegistration(utils.ParseBase):
 
     def __init__(self, _type, name):
@@ -45,6 +43,7 @@ class AblRegistration(utils.ParseBase):
         assert(_type in [obj_e.WME, obj_e.ACT, obj_e.CONFLICT])
         self._type = _type
         self._name = name
+
 
 class AblBehavior(utils.ParseBase):
 
@@ -58,6 +57,7 @@ class AblBehavior(utils.ParseBase):
     def add_component(self, comp):
         self._components.append(comp)
 
+
 class AblComponent(utils.ParseBase):
 
     def __init__(self, _type, name=None, args=None):
@@ -68,7 +68,7 @@ class AblComponent(utils.ParseBase):
         if args:
             self._args += args
 
-    def __str__(self):
+    def to_dict(self):
         _type = ""
         if self._type == obj_e.MENTAL:
             _type = "MentalAct"
@@ -89,9 +89,9 @@ class AblComponent(utils.ParseBase):
         if self._name is not None:
             name = "{}".format(self._name)
 
-        args = ", ".join([str(x) for x in self._args if x not in ["act", "spawngoal", "subgoal"]])
+        args = [str(x) for x in self._args if x not in ["act", "spawngoal", "subgoal"]]
 
-        return "[{}: {} ({})]".format(_type, name, args)
+        return { 'type' : _type, 'name': name, 'args': args }
 
 
 class AblMisc(utils.ParseBase):
@@ -100,6 +100,7 @@ class AblMisc(utils.ParseBase):
         super().__init__()
         self._iden = iden
         self._text = text
+
 
 def build_parser():
 
@@ -141,7 +142,10 @@ def build_parser():
     register_act_stmt = s(register_abl + act_abl) + NAME
     register_wme_stmt = s(register_abl + wme_abl) + NAME
 
-    behavior_stmt = (op(atomic_abl) + op(joint_abl)).setResultsName("args") + pp.Or([sequential_abl, parallel_abl]).setResultsName('form') + s(behavior_abl) + pp.Group(NAME).setResultsName("name")
+    behavior_stmt = (op(atomic_abl) +
+                     op(joint_abl)).setResultsName("args") + \
+                     pp.Or([sequential_abl, parallel_abl]).setResultsName('form') + \
+                     s(behavior_abl) + pp.Group(NAME).setResultsName("name")
 
     spawn_stmt = pp.Or([spawn_abl, subgoal_abl, act_abl]) + NAME
     skip_to_spawn = s(pp.SkipTo(spawn_stmt)) + spawn_stmt
@@ -150,7 +154,7 @@ def build_parser():
     mental_stmt = mental_abl
     precondition_stmt = precond_abl
     spec_stmt = s(specificity_abl) + NUM
-    conflict_stmt = s(conflict_abl) + NAME + NAME;
+    conflict_stmt = s(conflict_abl) + NAME + NAME
     import_stmt = s(import_abl) + pp.restOfLine
 
     beh_ent_stmt.setParseAction(lambda x: AblEnt(x[0]))
@@ -164,7 +168,7 @@ def build_parser():
     precondition_stmt.setParseAction(lambda x: AblComponent(obj_e.PRECON))
     spec_stmt.setParseAction(lambda x: AblComponent(obj_e.SPEC, args=[float(x[0])]))
     initial_abl.setParseAction(lambda x: AblBehavior("initial_tree", [], True))
-    import_stmt.setParseAction(lambda x: AblMisc('import',x[:]))
+    import_stmt.setParseAction(lambda x: AblMisc('import', x[:]))
 
     pass_stmt = pp.restOfLine
     pass_stmt.setParseAction(lambda x: utils.ParseBase())
@@ -186,31 +190,30 @@ def build_parser():
                                 spec_stmt,
                                 pass_stmt])
 
-
     return abl_parser
+
 
 def extract_from_file(filename):
     logging.info("Extracting from: {}".format(filename))
-    data = { 'behaving_entity' : "",
-             'registrations' : [],
-             'behaviors' : [],
-             'comments' : 0
-    }
+    data = {'behaving_entity': "",
+            'registrations': [],
+            'behaviors': [],
+            'behavior_edges' : [],
+            'comments': 0}
+    graph = nx.DiGraph()
     lines = []
-    with open(filename,'r') as f:
+    with open(filename, 'r') as f:
         lines = f.readlines()
 
-    state = { 'bracket_count' : 0,
-              'current' : None,
-              'line' : 0}
+    state = {'bracket_count' : 0,
+             'current' : None,
+             'line' : 0}
     while bool(lines):
         state['line'] += 1
         # logging.info("line: {}".format(state['line']))
         current = lines.pop(0)
 
         result = main_parser.parseString(current)[0]
-        #Get open and close brackets
-        #handle result:
         if not result:
             continue
 
@@ -227,23 +230,35 @@ def extract_from_file(filename):
             elif isinstance(result, AblBehavior):
                 state['current'] = result
                 data['behaviors'].append(state['current'])
+                if result._name not in graph:
+                    graph.add_node(result._name)
             elif isinstance(result, AblComponent):
                 state['current'].add_component(result)
+                if result._type in [obj_e.PRECON, obj_e.SPEC]:
+                    continue
+                name = result._name
+                if name is None:
+                    name = str(result._type)
+                if name not in graph:
+                    graph.add_node(name)
+                graph.add_edge(state['current']._name, name)
             elif not isinstance(result, utils.ParseBase):
                 logging.warning("Unrecognised parse result: {}".format(result))
 
         except AttributeError as e:
             breakpoint()
 
+    # Convert graph into edgelist for data
+    data['behavior_edges'] += list(nx.generate_edgelist(graph, data=False))
 
     return data
 
 
 if __name__ == "__main__":
     main_parser = build_parser()
-    queue = [join("data","abl")]
+    queue = [join("data", "abl")]
     input_ext = ".abl"
-    output_lists = ["registrations", "behaviors"]
+    output_lists = ["behaviors"]
     output_ext = ".abl_analysis"
 
     utils.standard_main(queue,

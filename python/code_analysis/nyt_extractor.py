@@ -3,6 +3,7 @@ Get headlines from nyt jsons from data dir,
 
 output to similarly named files in analysis directory
 """
+import numpy as np
 import utils
 import datetime
 import spacy
@@ -91,8 +92,12 @@ def extract_from_file(filename):
     data = { 'key_set' : set(),
              'document_type_set' : set(),
              'entity_set' : set(),
-             'entries' : []
+             'entries' : [],
+             'id_sequence' : []
              }
+    headline_vectors = None
+    ngram_counts = {}
+    posgram_counts = {}
     raw_json = []
     with open(filename,'r') as f:
         raw_json = json.load(f)
@@ -102,7 +107,7 @@ def extract_from_file(filename):
     state = { 'bracket_count' : 0,
               'current' : None,
               'entry' : 0,
-              'counter' : 0
+              'counter' : 0,
               'counter_reset' : int(len(docs) / 100)
               }
 
@@ -129,9 +134,55 @@ def extract_from_file(filename):
         if entry._type in only_allow:
             data['entries'].append(entry)
 
+        blob = TextBlob(entry._headline.lower())
+        pos_blob = TextBlob(" ".join([x.tag_ for x in parsed_headline]))
+        # TODO Counts
+        # TODO verb pairs
+        # TODO heading lengths
+        # TODO POS ngrams
+        ngrams = blob.ngrams(n=2)
+        posgrams = pos_blob.ngrams(n=3)
+
+        for triple in ngrams:
+            joined = " ".join(triple)
+            if joined not in ngram_counts:
+                ngram_counts[joined] = 0
+            ngram_counts[joined] += 1
+
+        for triple in posgrams:
+            joined = " ".join(triple)
+            if joined not in posgram_counts:
+                posgram_counts[joined] = 0
+            posgram_counts[joined] += 1
+
+        # use parsed_headline.vector to cluster
+        data['id_sequence'].append(entry._id)
+        if headline_vectors is None:
+            headline_vectors = parsed_headline.vector
+        else:
+            headline_vectors = np.row_stack((headline_vectors,
+                                             parsed_headline.vector))
 
     data['key_set'] = list(data['key_set'])
     data['document_type_set'] = list(data['document_type_set'])
+
+    # Save other files:
+    basename = splitext(split(filename)[1])[0]
+    with open(join('analysis',
+                   "{}.vectors".format(basename)),
+              'wb') as f:
+        headline_vectors.dump(f)
+
+    with open(join('analysis',
+                   "{}_ngrams.json".format(basename)),
+              'w') as f:
+        json.dump(ngram_counts, f)
+
+    with open(join('analysis',
+                   "{}_posgrams.json".format(basename)),
+              'w') as f:
+        json.dump(posgram_counts, f)
+
     return data
 
 

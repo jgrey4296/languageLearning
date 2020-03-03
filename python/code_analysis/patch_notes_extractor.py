@@ -52,6 +52,9 @@ def extract_from_file(filename):
 def extract_from_dota_patch_notes(soup):
     data = { }
 
+    # TODO verify dota parsing
+    # TODO use dota parsing
+    # TODO create timeline from dota
     data['release_date'] = soup.find(id="firstHeading").text
     body_content = soup.find(id="bodyContent")
     initial_heading = body_content.find("h1")
@@ -91,6 +94,8 @@ def extract_from_dota_patch_notes(soup):
     return data
 
 def extract_from_release_info(soup):
+    # TODO verify release info parse
+    # TODO create timeline
     data = {}
     title = soup.find('h1')
     release_date = soup.find('p')

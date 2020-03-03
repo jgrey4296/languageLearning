@@ -35,9 +35,6 @@ def extract_from_file(filename):
 
     if "dialogue" in filename:
         data = handle_dialogue(text)
-    else:
-        data = handle_normal(text)
-
 
     return data
 
@@ -54,32 +51,9 @@ def handle_dialogue(text):
     data['num_speech_acts'] = len(data['speech_acts'])
     data['variables'] = variables
 
+    # TODO parse text?
 
     return data
-
-def handle_normal(text):
-    data = {}
-    csv_obj = csv.DictReader(text, delimiter="\t", restkey="remaining", quotechar='"')
-
-    rows = [x for x in csv_obj]
-
-    keys = [x for x in rows[0].keys()]
-    data['keys'] = keys
-    data['length'] = len(rows)
-
-    sum_keys = ["Start","End","Level","Rewards"]
-    data.update({x : [] for x in sum_keys})
-
-    selection = [choice(rows) for x in range(20)]
-
-    for row in selection:
-        for key in sum_keys:
-            data[key].append(row[key])
-
-    return data
-
-
-
 
 
 if __name__ == "__main__":
